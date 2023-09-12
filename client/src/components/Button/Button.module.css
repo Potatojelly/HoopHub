@@ -1,5 +1,5 @@
 .button {
-    background: grey;
+    background: var(--color-grey);
     height: 2rem;
     width: 5rem;
     margin-left: 1rem;

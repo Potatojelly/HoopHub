@@ -9,6 +9,7 @@ import {TbMessageCircleSearch} from "react-icons/tb";
 import {PiNotePencilBold} from "react-icons/pi";
 import {GiHamburgerMenu} from "react-icons/gi";
 import SideBar from '../SideBar/SideBar';
+import Logo from '../Logo/Logo';
 
 
 
@@ -23,13 +24,8 @@ export default function Header() {
                 <button className={styles.toggleBtn}>
                     <GiHamburgerMenu className={styles.toggle} onClick={showSidebar}/>
                 </button>
-                <SideBar sidebar={sidebar} showSidebar={showSidebar}/>
-                <Link to="/" style={{textDecoration:"none", color: "black"}}>
-                    <div className={styles.logoContainer}>
-                        <IoIosBasketball className={styles.logo}/>
-                        <h1>Hoop Hub</h1>
-                    </div>
-                </Link>
+                <SideBar sidebar={sidebar} showSidebar={showSidebar}/> 
+                <Logo/>
             </div>
             <nav className={styles.nav}>   
                 <Link to="/"> 
@@ -44,7 +40,9 @@ export default function Header() {
                 <Link to="/people"> 
                     <RiUserSearchFill  className={styles.service}/>
                 </Link>
-                <Button text={"Login"}></Button>
+                <Link to="/login">
+                    <Button text={"Login"}></Button>
+                </Link>
             </nav>
         </header>
     );

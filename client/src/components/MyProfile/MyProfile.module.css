@@ -1,0 +1,28 @@
+.myContainer {
+    background-color: green;
+    width:250px;
+    height: 200px;
+    border-bottom: 2px solid #000;
+    padding-left: 8px;
+}
+
+.mySubContainer {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.myProfile {
+    font-size: 7.5rem;
+}
+
+.myName {
+    font-size: 1.2rem;
+    width:200px;
+}
+
+.myStatus {
+    margin-top: 0.3rem;
+    text-align: left;
+    width:200px;
+}

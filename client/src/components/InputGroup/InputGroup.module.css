@@ -1,0 +1,30 @@
+.container {
+    margin-bottom: 0.5rem;
+}
+
+.inputContainer {
+    width: 100%; 
+    padding: 0.75rem; 
+    transition-property: background-color;
+    transition-duration: 0.2s; 
+    border: 1px solid #cbd5e0; 
+    border-radius: 0.25rem; 
+    background-color: var(--color-light-grey);
+}
+
+.inputContainer:focus {
+    background-color: white;
+}
+
+.inputContainer:hover {
+    background-color: white;
+}
+
+.inputError {
+    border-color: red;
+}
+
+.errorMsg {
+    font-weight: 500; 
+    color: red;
+}

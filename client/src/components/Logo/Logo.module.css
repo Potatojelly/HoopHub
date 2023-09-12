@@ -1,0 +1,12 @@
+.logoContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    color: orange;
+    font-size: 2rem; 
+    margin-left: 1rem;
+    margin-right: 0.3rem;
+}

@@ -1,5 +1,6 @@
 :root {
-  --color-grey: RGB(234, 237, 239);
+  --color-grey: #718096; 
+  --color-light-grey: #f7fafc; 
   --color-text: #22243b;
   --color-accent: RGB(242, 242, 242);
 

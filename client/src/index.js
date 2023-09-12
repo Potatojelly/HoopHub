@@ -8,6 +8,8 @@ import Forums from './pages/Forums';
 import People from './pages/People';
 import Messages from './pages/Messages';
 import FindChatRooms from './pages/FindChatRooms';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,14 @@ const router = createBrowserRouter([
       {path:"/messages", element: <Messages/>},
       {path:"/find-chat-rooms", element: <FindChatRooms/>},
     ]
+  },
+  {
+    path: "/login",
+    element: <Login/>
+  },
+  {
+    path: "/register",
+    element: <Register/>
   }
 ])
 
