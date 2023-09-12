@@ -23,18 +23,21 @@ export default function Register() {
                 <form onSubmit={handleSubmit}>
                     <InputGroup
                         placeholder="Email"
+                        type={"text"}
                         value={email}
                         setValue={setEmail}
                         error={errors.email}
                     />
                     <InputGroup
                         placeholder="Username"
+                        type={"text"}
                         value={username}
                         setValue={setUsername}
                         error={errors.username}
                     />
                     <InputGroup
                         placeholder="Password"
+                        type={"password"}
                         value={password}
                         setValue={setPassword}
                         error={errors.password}
