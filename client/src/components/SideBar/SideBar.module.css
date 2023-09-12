@@ -1,0 +1,99 @@
+.navMenu {
+    background-color:grey;
+    width: 250px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    transition: 850ms;
+}
+
+.toggle {
+    height:3rem;
+    color: grey;
+}
+
+.closeBtn {
+    font-size: 1.2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 1rem;
+    color: black;
+}
+
+.navMenuActive {
+    left: 0;
+    transition: 350ms;
+}
+
+.myContainer {
+    background-color: green;
+    width:250px;
+    height: 200px;
+    border-bottom: 2px solid #000;
+    padding-left: 8px;
+}
+
+.mySubContainer {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.myProfile {
+    font-size: 7.5rem;
+}
+
+.myName {
+    font-size: 1.2rem;
+    width:200px;
+}
+
+.myComment {
+    margin-top: 0.3rem;
+    text-align: left;
+    width:200px;
+}
+
+.friendContainer {
+    display:flex;
+    justify-content: left;
+    align-items: center;
+    background-color: lightgreen;
+    width: 250px;
+    height: 75px;
+    padding-left: 8px;
+}
+
+.friendSubContainer {
+    display:flex;
+    flex-direction: column;
+    align-items: left;
+    margin-left: 0.5rem;
+    width: 200px;
+    text-align: left;
+}
+
+.friendProfile {
+    font-size: 3.5rem;
+}
+
+.friendName, .friendComment {
+    width:200px;
+}
+
+.label {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stick {
+    border: none;
+    border-top: 1px dotted black;
+    height: 1px;
+    width: 30%;
+}
+

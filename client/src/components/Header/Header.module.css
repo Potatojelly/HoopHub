@@ -1,0 +1,52 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--text-accent);
+}
+
+.toggleBtn {
+    background:none;
+}
+
+.toggle {
+    font-size: 1.2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+    color: grey;
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    color: orange;
+    font-size: 2rem; 
+    margin-left: 1rem;
+    margin-right: 0.3rem;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left:auto;
+}
+
+.service {
+    color: orange;
+    font-size: 2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
