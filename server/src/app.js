@@ -2,6 +2,7 @@ import express, { application } from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import mainRouter from "./router/main.js";
+import {db} from "./db/database.js";
 
 const app = express();
 
@@ -21,6 +22,14 @@ app.use((error,req,res,next) => {
     res.sendStatus(500);
 });
 
+db.connect(err => {
+    if(err) console.log(err);
+    else console.log("PostgresSQL Connection Success");
+}) 
+
+db.query("SELECT NOW()", (err,res) => {
+    console.log(res);
+})
 let port = 8080;
 
 app.listen(port, async() => {
