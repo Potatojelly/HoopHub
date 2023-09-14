@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './InputGroup.module.css'
 
-export default function InputGroup({placeholder,value,setValue,error,type}) {
+export default function InputGroup({placeholder,value,setValue,error,type,onChange}) {
     const handleChange = (e) => {
         setValue(e.target.value);
     }
@@ -12,7 +12,7 @@ export default function InputGroup({placeholder,value,setValue,error,type}) {
                 type={type}
                 placeholder={placeholder}
                 value={value}
-                onChange={handleChange}
+                onChange={onChange ? onChange : handleChange}
                 required
             />
             <small className={styles.errorMsg}>{error}</small>
