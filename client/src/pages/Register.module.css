@@ -54,3 +54,10 @@
     font-size: 3rem;
     margin-right: 0.5rem;
 }
+
+.successMsg {
+    margin-top: 3rem;
+    color: lightgreen;
+    text-align: center;
+    font-weight: 700;
+}

@@ -10,26 +10,56 @@ import Messages from './pages/Messages';
 import FindChatRooms from './pages/FindChatRooms';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import HttpClient from './network/http';
+import AuthService from './service/auth';
+import { AuthProvider, AuthErrorEventBus } from './context/AuthContext';
+import ProtectedRoute from './pages/ProtectedRoute';
+
+const baseURL = process.env.REACT_APP_BASE_URL;
+const authErrorEventBus = new AuthErrorEventBus();
+const httpClient = new HttpClient(baseURL,authErrorEventBus);
+const authService = new AuthService(httpClient);
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
+    element: (<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                <App/>
+              </AuthProvider>),
     errorElement: <NotFound/>,
     children: [
       {index:true, path:"/", element: <Forums/>},
-      {path:"/people", element: <People/>},
-      {path:"/messages", element: <Messages/>},
-      {path:"/find-chat-rooms", element: <FindChatRooms/>},
+      {
+        path:"/people", 
+        element: (<ProtectedRoute>
+                    <People/>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/messages", 
+        element: (<ProtectedRoute>
+                  <Messages/>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/find-chat-rooms", 
+        element: (<ProtectedRoute>
+                  <FindChatRooms/>
+                  </ProtectedRoute>)
+      },
     ]
   },
   {
     path: "/login",
-    element: <Login/>
+    element:(<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+              <Login/>
+            </AuthProvider>) 
   },
   {
     path: "/register",
-    element: <Register/>
+    element: (<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+              <Register/>
+            </AuthProvider>) 
   }
 ])
 
