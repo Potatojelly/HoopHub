@@ -4,16 +4,18 @@ const AuthContext = createContext({});
 
 export function AuthProvider({authService, authErrorEventBus, children}) {
     const [user,setUser] = useState(undefined);
+    const [nickname,setNickname] = useState(undefined);
     const [imageURL,setImageURL] = useState(undefined);
     const [statusMsg,setStatusMsg] = useState(undefined);
     const navigate = useNavigate();
-    if(user) console.log(user);
+
     useEffect(() => {
         authService.me()
             .then((user)=>{
                 setUser({token:user.token, username: user.username})
                 setImageURL(user.imageURL);
                 setStatusMsg(user.statusMsg);
+                setNickname(user.nickname);
             })
             .catch((err)=>console.log(err));
     },[authService]);
@@ -41,6 +43,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                     setUser({token:user.token, username: user.username})
                     setImageURL(user.imageURL);
                     setStatusMsg(user.statusMsg);
+                    setNickname(user.nickname);
                 })
     ,[authService]);
 
@@ -54,6 +57,9 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
     const context = useMemo(
         ()=>({
             user,
+            nickname,
+            imageURL,
+            statusMsg,
             signup,
             login,
             logout

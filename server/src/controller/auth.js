@@ -49,7 +49,7 @@ export async function login(req,res) {
 
     const token = createJwtToken(user.id);
     setToken(res,token);
-    res.status(201).json({token,username,imageURL:user.imageURL,statusMsg:user.statusMsg});
+    res.status(201).json({token,username,imageURL:user.imageURL,statusMsg:user.statusMsg, nickname:user.nickname});
 }
 
 export async function logout(req,res) {
@@ -62,7 +62,7 @@ export async function me(req,res) {
     if(!user) {
         return res.status(401).json({message:"User not found"});
     }
-    res.status(200).json({token:req.token, username: user.username, imageURL: user.imageURL, statusMsg: user.statusMsg});
+    res.status(200).json({token:req.token, username: user.username, imageURL: user.imageURL, statusMsg: user.statusMsg, nickname:user.nickname});
 }
 
 function createJwtToken(id) {

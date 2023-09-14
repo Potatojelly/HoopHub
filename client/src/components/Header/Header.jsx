@@ -7,20 +7,21 @@ import {RiUserSearchFill} from "react-icons/ri";
 import {TbMessageCircleSearch} from "react-icons/tb";
 import {PiNotePencilBold} from "react-icons/pi";
 import {GiHamburgerMenu} from "react-icons/gi";
+import {IoIosArrowDown} from "react-icons/io";
 import SideBar from '../SideBar/SideBar'; 
 import Logo from '../Logo/Logo';
 import { useAuth } from '../../context/AuthContext';
+import Dropdown from '../Dropdown/Dropdown';
 
 
 
 export default function Header() {
-    const {user,logout} = useAuth();
+    const {user,nickname,imageURL} = useAuth();
     const [sidebar, setSidebar] = useState(false);
+    const [myStuff, setMyStuff] = useState(false);
     const showSidebar = () => setSidebar(!sidebar);
+    const showMyStuff = () => setMyStuff(!myStuff);
 
-    const handleLogout = () =>{
-        logout();
-    }
     return (
         <header className={styles.header}>
             <div className={styles.container}>
@@ -46,7 +47,18 @@ export default function Header() {
                         <Link to="/people"> 
                             <RiUserSearchFill  className={styles.service}/>
                         </Link>
-                        <Button text={"Logout"} onClick={handleLogout}></Button>
+                        <div className={styles.headerUser}>
+                            <button className={styles.headerUserBtn} onClick={showMyStuff}>
+                                <div>
+                                    <img src={`${imageURL ? imageURL : "defaultProfileImg.svg" }`} alt="userImg"  className={styles.userImg}/>
+                                </div>
+                                <span className={styles.userNickname}>
+                                    {nickname}
+                                </span>
+                                <IoIosArrowDown className={styles.arrowDown}/>
+                            </button>
+                            {myStuff && <Dropdown myStuff={myStuff}/>}
+                        </div>
                     </>}
                 {!user && <Link to="/login">
                     <Button text={"Login"}></Button>

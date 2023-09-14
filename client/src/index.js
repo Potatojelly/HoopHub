@@ -14,6 +14,8 @@ import HttpClient from './network/http';
 import AuthService from './service/auth';
 import { AuthProvider, AuthErrorEventBus } from './context/AuthContext';
 import ProtectedRoute from './pages/ProtectedRoute';
+import ResetPassword from './pages/ResetPassword';
+import EditProfile from './pages/EditProfile';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
@@ -45,6 +47,18 @@ const router = createBrowserRouter([
         path:"/find-chat-rooms", 
         element: (<ProtectedRoute>
                   <FindChatRooms/>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/edit-profile", 
+        element: (<ProtectedRoute>
+                  <EditProfile/>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/reset-password", 
+        element: (<ProtectedRoute>
+                  <ResetPassword/>
                   </ProtectedRoute>)
       },
     ]
