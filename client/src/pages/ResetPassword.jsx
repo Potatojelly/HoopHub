@@ -91,7 +91,7 @@ export default function ResetPassword() {
                         error={errors.confirmPassword}
                         onChange={handleConfirmPasswordChange}
                     />
-                    <button className={`${styles.resetBtn} ${!samePassword && matchPassword && styles.resetBtnActive}`}>
+                    <button className={`${styles.resetBtn} ${!samePassword && matchPassword && styles.resetBtnActive}`} disabled={samePassword && !matchPassword && true}>
                         Reset
                     </button>
                 </form>

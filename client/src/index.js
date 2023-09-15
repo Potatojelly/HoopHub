@@ -16,11 +16,15 @@ import { AuthProvider, AuthErrorEventBus } from './context/AuthContext';
 import ProtectedRoute from './pages/ProtectedRoute';
 import ResetPassword from './pages/ResetPassword';
 import EditProfile from './pages/EditProfile';
+import ForgotUsername from './pages/ForgotUsername';
+import ForgotPassword from './pages/ForgotPassword';
+import RetrieveService from './service/retr';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const authService = new AuthService(httpClient);
+const retrieveService = new RetrieveService(httpClient);
 
 const router = createBrowserRouter([
   {
@@ -74,6 +78,14 @@ const router = createBrowserRouter([
     element: (<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
               <Register/>
             </AuthProvider>) 
+  },
+  {
+    path: "/forgot-username",
+    element: <ForgotUsername retrieveService={retrieveService}/>
+  },
+  {
+    path: "/forgot-password",
+    element:<ForgotPassword retrieveService={retrieveService}/>
   }
 ])
 

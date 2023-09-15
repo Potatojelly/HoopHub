@@ -4,6 +4,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
 import authRouter from "./router/auth.js";
+import retrRouter from "./router/retr.js";
 import cookieParser from 'cookie-parser';
 import {db} from "./db/database.js";
 
@@ -23,6 +24,7 @@ app.use(helmet());
 
 
 app.use("/auth", authRouter);
+app.use("/retrieve", retrRouter);
 
 app.use((req,res,next) => {
     res.sendStatus(404);
@@ -38,9 +40,7 @@ db.connect(err => {
     else console.log("PostgresSQL Connection Success");
 }) 
 
-// db.query("SELECT NOW()", (err,res) => {
-//     console.log(res);
-// })
+
 let port = 8080;
 
 app.listen(port, async() => {

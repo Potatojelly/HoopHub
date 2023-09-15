@@ -51,10 +51,20 @@ export default function Login() {
                         Login
                     </button>
                 </form>
-                <small>
-                    New to Hoop Hub? 
-                    <a href="/register" className={styles.signUp}>Sign Up</a>
-                </small>
+                <div className={styles.smallContainer}>
+                    <small>
+                        New to Hoop Hub? 
+                        <a href="/register" className={styles.linkBtn}>Sign Up</a>
+                    </small>
+                    <div className={styles.forgotContainer}>
+                        <small>
+                            <a href="/forgot-username" className={styles.linkBtn}>Forgot username?</a>
+                        </small>
+                        <small>
+                            <a href="/forgot-password" className={styles.linkBtn}>Forgot password?</a>
+                        </small>
+                    </div>
+                </div>
             </div>
         </div>
     );

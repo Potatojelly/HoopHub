@@ -1,4 +1,4 @@
-.loginContainer {
+.container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,7 +7,7 @@
     padding: 1.5rem;
 }
 
-.loginSubContainer {
+.subContainer {
     width: 83%;
     margin-left: auto;
     margin-right: auto;
@@ -16,13 +16,16 @@
 }
 
 .title {
-    margin-bottom: 0.5rem;
     font-size: 2rem;
     font-weight: 500;
     font-family: var(--text-accent);
 }
 
-.loginBtn {
+.description {
+    margin-bottom: 1.5rem;
+}
+
+.submitBtn {
     width: 100%; 
     padding-top: 0.5rem; 
     padding-bottom: 0.5rem;
@@ -41,14 +44,9 @@
     color: #4299e1; 
 }
 
-.smallContainer {
-    display: flex;
+.successMsg {
+    margin-top: 3rem;
+    color: lightgreen;
+    text-align: center;
+    font-weight: 700;
 }
-
-.forgotContainer {
-    display: flex;
-    flex-direction: column;
-    margin-left: 6rem;
-}
-
-
