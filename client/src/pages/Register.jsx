@@ -5,7 +5,7 @@ import Logo from '../components/Logo/Logo';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
-    const [success,setSuccess] = useState("Sign Up Success!\nPlease Login!");
+    const [success,setSuccess] = useState("");
     const [email,setEmail] = useState("");
     const [nickname,setNickname] = useState("");
     const [username,setUsername] = useState("");
@@ -18,17 +18,19 @@ export default function Register() {
         signup(email,nickname,username,password)
             .then((data)=>{
                 if(data) {
+                    setErrors("");
                     setSuccess("Sign Up Success!\n Please login!");
                     setTimeout(()=>{setSuccess(null)},4000);
                 }
             })
             .catch((error) => {
-                const resultObject = {};
-                error.forEach(item=>{
-                    const key = Object.keys(item)[0];
-                    resultObject[key] = item[key];
-                });
-                setErrors(resultObject);
+                // const resultObject = {};
+                // error.forEach(item=>{
+                //     const key = Object.keys(item)[0];
+                //     resultObject[key] = item[key];
+                // });
+                // setErrors(resultObject);
+                setErrors(error);
             })
     }
 

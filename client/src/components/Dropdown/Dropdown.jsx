@@ -3,14 +3,16 @@ import styles from './Dropdown.module.css'
 import UserServiceButton from '../Button/UserServiceButton';
 import { useAuth } from '../../context/AuthContext';
 import {useNavigate} from "react-router-dom";
-export default function Dropdown({myStuff}) {
+export default function Dropdown({myStuff,showMyStuff}) {
     const {logout} = useAuth();
     const navigate = useNavigate();
 
     const directToEditProfile = () =>{
+        showMyStuff();
         navigate("/edit-profile");
     }
     const directToResetPassword = () =>{
+        showMyStuff();
         navigate("/reset-password");
     }
     return (

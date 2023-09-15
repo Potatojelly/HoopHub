@@ -1,0 +1,35 @@
+.editStatusMsgContainer{
+    /* /* position:relative;
+    border:1px solid orange; */
+    width: 350px;
+    height: 250px;
+}
+
+.editInputForm {
+    border:1px solid orange;
+    border-radius: 0.5rem; 
+    width: 350px;
+    height: 200px;
+    padding: 0.5rem;
+}
+
+.editInputForm:focus {
+    outline: none;
+}
+.editFormAction {
+    float: right;
+    margin-top: 1rem;
+}
+
+.formBtnUpdate,
+.formBtnCancel {
+    font-size: 0.8rem;
+    background: #1a9ff0;
+    font-weight: bold;
+    padding: 4px;
+}
+
+.formBtnCancel {
+    margin-left: 8px;
+    background: #cc473d;
+}

@@ -8,6 +8,16 @@ import {isAuth} from "../middleware/auth.js";
 
 const router = express.Router();
 
+const validateResetPassword = [
+    body("password")
+        .trim()
+        .isLength({min: 5}) .withMessage("password should be at least 5 characters"),
+    body("newPassword")
+        .trim()
+        .isLength({min: 5}) .withMessage("password should be at least 5 characters"),
+    validate
+]
+
 const validateLogin = [
     body("username")
         .trim()
@@ -22,13 +32,11 @@ const validateLogin = [
         }),
     body("password")
         .trim()
-        .isLength({min: 5})
-        .withMessage("password should be at least 5 characters"),
+        .isLength({min: 5}) .withMessage("password should be at least 5 characters"),
     validate
 ]
 
 const validateSignup = [
-    ...validateLogin.slice(0,2),
     body("email").isEmail().normalizeEmail().withMessage("invalid email"),
     body("nickname")
         .isLength({min : 5}).withMessage("nickname should be at least 5 characters")
@@ -39,14 +47,17 @@ const validateSignup = [
             }
             return true;
         }),
-    validate,
+    ...validateLogin,
 ]
+
 
 router.post("/signup", validateSignup, authController.signup);
 
 router.post("/login", validateLogin, authController.login);
 
 router.post("/logout", authController.logout);
+
+router.put("/reset-password", validateResetPassword, authController.resetPassword);
 
 router.get("/me", isAuth, authController.me);
 

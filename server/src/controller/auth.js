@@ -7,7 +7,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export async function signup(req,res) {
-    console.log(req);
     let errors = {};
 
     const {email, nickname, username, password} = req.body;
@@ -39,12 +38,12 @@ export async function login(req,res) {
     const {username, password} = req.body;
     const user = await userRepository.findByUsername(username);
     if(!user) {
-        return res.status(401).json([{username: "Invalid username"}]);
+        return res.status(401).json({username: "Invalid username"});
     }
 
     const isValidPassword = await bcrypt.compare(password,user.password);
     if(!isValidPassword) {
-        return res.status(401).json([{password: "Invalid password"}]);
+        return res.status(401).json({password: "Invalid password"});
     }
 
     const token = createJwtToken(user.id);
@@ -55,6 +54,26 @@ export async function login(req,res) {
 export async function logout(req,res) {
     res.cookie("token","");
     res.status(200).json({message:"User has been logged out"});
+}
+
+export async function resetPassword(req,res) {
+    const {username, password, newPassword} = req.body;
+
+    const user = await userRepository.findByUsername(username);
+    if(!user) {
+        return res.status(401).json({username: "Invalid username"});
+    }
+
+    const isValidPassword = await bcrypt.compare(password,user.password);
+    if(!isValidPassword) {
+        return res.status(401).json({password: "Invalid current password"});
+    }
+
+    const hashed = await bcrypt.hash(newPassword,parseInt(process.env.BYCRYPT_SALT_ROUNDS));
+    const result = await userRepository.resetPassword({username, newPassword:hashed});
+
+    if (result) res.status(200).json({username,message:"Reset Password Success"});
+    else res.status(500).json({message:"Server Error"});
 }
 
 export async function me(req,res) {

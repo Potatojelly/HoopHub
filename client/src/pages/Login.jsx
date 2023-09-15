@@ -18,12 +18,13 @@ export default function Login() {
         login(username,password)
             .then(()=>{navigate("/")})
             .catch((error) => {
-                const resultObject = {};
-                error.forEach(item=>{
-                    const key = Object.keys(item)[0];
-                    resultObject[key] = item[key];
-                });
-                setErrors(resultObject);
+                // const resultObject = {};
+                // error.forEach(item=>{
+                //     const key = Object.keys(item)[0];
+                //     resultObject[key] = item[key];
+                // });
+                // setErrors(resultObject);
+                setErrors(error);
             })
     }
     return (

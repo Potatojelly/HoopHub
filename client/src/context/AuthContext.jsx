@@ -7,15 +7,17 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
     const [nickname,setNickname] = useState(undefined);
     const [imageURL,setImageURL] = useState(undefined);
     const [statusMsg,setStatusMsg] = useState(undefined);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         authService.me()
             .then((user)=>{
-                setUser({token:user.token, username: user.username})
+                setUser({token:user.token, username: user.username});
                 setImageURL(user.imageURL);
                 setStatusMsg(user.statusMsg);
                 setNickname(user.nickname);
+                setLoading(!loading);
             })
             .catch((err)=>console.log(err));
     },[authService]);
@@ -40,10 +42,11 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
             authService
                 .login(username,password)
                 .then((user)=>{
-                    setUser({token:user.token, username: user.username})
+                    setUser({token:user.token, username: user.username});
                     setImageURL(user.imageURL);
                     setStatusMsg(user.statusMsg);
                     setNickname(user.nickname);
+                    setLoading(!loading);
                 })
     ,[authService]);
 
@@ -51,7 +54,17 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
         async () => 
             authService
                 .logout()
-                .then(()=>setUser(undefined))
+                .then(()=>{
+                    setUser(undefined);
+                    setLoading(!loading);
+                })
+    ,[authService]);
+
+    const resetPassword = useCallback(
+        async (username,password,newPassword) => 
+            authService
+                .resetPassword(username,password,newPassword)
+                .then((user)=>user)
     ,[authService]);
 
     const context = useMemo(
@@ -60,10 +73,12 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
             nickname,
             imageURL,
             statusMsg,
+            loading,
             signup,
             login,
-            logout
-        }),[user,signup,login,logout])
+            logout,
+            resetPassword,
+        }),[user,nickname,imageURL,statusMsg,loading,signup,login,logout,resetPassword])
 
     return (
         <AuthContext.Provider value={context}>

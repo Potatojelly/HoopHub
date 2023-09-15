@@ -1,0 +1,72 @@
+.editContainer {
+    display:flex;
+    justify-content:center;
+    height: 100vh;
+    padding: 1.5rem;
+}
+
+.editSubContainer {
+    width: 83%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top: 3rem;
+}
+
+.userImgContainer {
+    position: relative; 
+}
+
+.userImg {
+    width: 350px;
+    height: 350px;
+    border-radius: 0.5rem;
+}
+
+.editImgBtn {
+    position: absolute;
+    width: 4rem;
+    height: 4rem;
+    background-color:white;
+    border: 1px solid orange;
+    border-radius: 50%;
+    bottom: 0.1rem;
+    right: -1rem;
+}
+
+.editImgIcon {
+    font-size:2rem;
+}
+
+.userStatusMsgContainer {
+    position:relative;
+    border:1px solid orange;
+    width: 350px;
+    height: 200px;
+    border-radius: 0.5rem;
+}
+
+.statusMsg {
+    padding:0.5rem;
+    width: 350px;
+    height: 200px;
+    overflow: hidden; /* 내용이 넘칠 경우 숨기기 */
+    text-overflow: ellipsis; /* 생략 부호(...) 표시 */
+    white-space: normal; /* 여러 줄로 텍스트 표시 */
+    display: -webkit-box; /* 웹킷 브라우저 지원을 위해 사용 */
+    -webkit-line-clamp: 5; /* 최대 표시 줄 수 설정 */
+    /* -webkit-box-orient: vertical; 세로 방향으로 텍스트 표시 */
+}
+
+.editMsgBtn {
+    position: absolute;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color:white;
+    bottom: 0.1rem;
+    right: 0.5rem;
+}
+
+.editMsgIcon {
+    font-size:1.5rem;
+}

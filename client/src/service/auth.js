@@ -33,6 +33,18 @@ export default class AuthService {
         });
     }
 
+    async resetPassword(username, password, newPassword) {
+        const data =await this.http.fetch("/auth/reset-password", {
+            method: "PUT",
+            body: JSON.stringify({
+                username,
+                password,
+                newPassword,
+            })
+        });
+        return data;
+    }
+
     async me() {
         return this.http.fetch("/auth/me",{
             method:"GET",

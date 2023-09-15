@@ -4,36 +4,64 @@ import InputGroup from '../components/InputGroup/InputGroup';
 import { useAuth } from '../context/AuthContext';
 
 export default function ResetPassword() {
-    const [success,setSuccess] = useState("Reset Password Success!");
-    const [currentPassword,setCurrentPassword] = useState("");
+    const {user,resetPassword} = useAuth(); 
+    const [success,setSuccess] = useState("");
+    const [password,setPassword] = useState("");
     const [newPassword,setNewPassword] = useState("");
     const [confirmPassword,setConfirmPassword] = useState("");
+    const [samePassword,setSamePassword] = useState(false);
+    const [matchPassword,setMatchPassword] = useState(false);
     const [errors,setErrors] = useState("")
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // login(username,password)
-        //     .then(()=>{navigate("/")})
-        //     .catch((error) => {
-        //         const resultObject = {};
-        //         error.forEach(item=>{
-        //             const key = Object.keys(item)[0];
-        //             resultObject[key] = item[key];
-        //         });
-        //         setErrors(resultObject);
-        //     })
+        resetPassword(user.username, password, newPassword)
+            .then((data)=>{
+                console.log(data);
+                setSuccess(data.message);
+                setTimeout(()=>{setSuccess("")},4000);
+            })
+            .catch((error) => {
+                // const resultObject = {};
+                // error.forEach(item=>{
+                //     const key = Object.keys(item)[0];
+                //     resultObject[key] = item[key];
+                // });
+                // setErrors(resultObject);
+                setErrors(error);
+            })
+    }
+    
+    const handleNewPassWordChange = (e) => {
+        setNewPassword(e.target.value);
+        if(e.target.value === password) 
+        {
+            setErrors({newPassword: "New password is the same with the current password"});
+            setSamePassword(true);
+        }
+        else if(e.target.value !== password) {
+            setErrors({...errors,newPassword:""});
+            setSamePassword(false);
+        }
+
+        if(confirmPassword !== "" && e.target.value !== confirmPassword) {
+            setErrors({confirmPassword: "Password does not match"});
+        } 
     }
 
     const handleConfirmPasswordChange = (e) => {
         setConfirmPassword(e.target.value);
         if(e.target.value === "") {
-            setErrors("");
+            setErrors({...errors,confirmPassword:""});
+            setMatchPassword(false);
         }
         else if(e.target.value !== newPassword) {
-            setErrors({confirmPassword: "Password does not match"});
+            setErrors({...errors, confirmPassword: "Password does not match"});
+            setMatchPassword(false);
         }
-        else { 
-            setErrors("");
+        else if(e.target.value === newPassword) { 
+            setErrors({...errors,confirmPassword:""});
+            setMatchPassword(true);
         }
     }
     return (
@@ -44,9 +72,9 @@ export default function ResetPassword() {
                     <InputGroup
                         placeholder="Current Password"
                         type={"password"}
-                        value={currentPassword}
-                        setValue={setCurrentPassword}
-                        error={errors.currentPassword}
+                        value={password}
+                        setValue={setPassword}
+                        error={errors.password}
                     />
                     <InputGroup
                         placeholder="New Password"
@@ -54,6 +82,7 @@ export default function ResetPassword() {
                         value={newPassword}
                         setValue={setNewPassword}
                         error={errors.newPassword}
+                        onChange={handleNewPassWordChange}
                     />
                     <InputGroup
                         placeholder="Confirm Password"
@@ -62,7 +91,7 @@ export default function ResetPassword() {
                         error={errors.confirmPassword}
                         onChange={handleConfirmPasswordChange}
                     />
-                    <button className={styles.resetBtn}>
+                    <button className={`${styles.resetBtn} ${!samePassword && matchPassword && styles.resetBtnActive}`}>
                         Reset
                     </button>
                 </form>

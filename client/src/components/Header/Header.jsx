@@ -57,7 +57,7 @@ export default function Header() {
                                 </span>
                                 <IoIosArrowDown className={styles.arrowDown}/>
                             </button>
-                            {myStuff && <Dropdown myStuff={myStuff}/>}
+                            {myStuff && <Dropdown myStuff={myStuff} showMyStuff={showMyStuff}/>}
                         </div>
                     </>}
                 {!user && <Link to="/login">
