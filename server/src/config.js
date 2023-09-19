@@ -33,4 +33,10 @@ export const config = {
             pass: required("NODEMAILER_PASS"),
         },
     },
+    aws : {
+        accessKeyId: required("AWS_ACCESS_KEY_ID"),
+        secretAccessKey: required("AWS_SECRET_ACCESS_KEY_ID"),
+        region: required("AWS_REGION"),
+    },
+    bucket : required("AWS_S3_BUCKET_NAME"),
 }

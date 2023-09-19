@@ -50,4 +50,28 @@ export default class AuthService {
             method:"GET",
         });
     }
+
+    async updateStatusMsg(username, statusMsg) {
+        const data = await this.http.fetch("/auth/update-status-message", {
+            method: "PUT",
+            body: JSON.stringify({
+                username,
+                statusMsg,
+            })
+        });
+        return data;
+    }
+
+    async updateImg(username, formData) {
+        formData.append("username",JSON.stringify(username))
+        console.log(formData);
+        const data = await this.http.fetch("/auth/update-image", {
+            method: "PUT",
+            body: formData,
+            headers: {"Content-Type": "multipart/form-data"},
+        });
+        return data
+    }
+
+
 }

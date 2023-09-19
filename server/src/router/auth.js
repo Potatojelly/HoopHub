@@ -4,7 +4,9 @@ import {body} from "express-validator";
 import {validate} from '../middleware/validator.js';
 import * as authController from "../controller/auth.js";
 import {isAuth} from "../middleware/auth.js";
+import { fileUpload } from '../upload/uploadFile.js';
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const router = express.Router();
 
@@ -50,6 +52,26 @@ const validateSignup = [
     ...validateLogin,
 ]
 
+const validateStatusMsg = [
+    body("statusMsg").trim(),
+    validate
+]
+
+const validateImage = [
+    body("image")
+        .customSanitizer((value,{req}) => {
+            if(!req.file || !req.file.mimetype.startsWith("image/")) {
+                throw new Error("Only image files are accepted.");
+            }
+            if(req.file.size > MAX_FILE_SIZE) {
+                throw new Error("File size can be up to 5MB ");
+            }
+
+            return true;
+        }),
+    validate
+]
+
 
 router.post("/signup", validateSignup, authController.signup);
 
@@ -58,6 +80,10 @@ router.post("/login", validateLogin, authController.login);
 router.post("/logout", authController.logout);
 
 router.put("/reset-password", validateResetPassword, authController.resetPassword);
+
+router.put("/update-status-message", validateStatusMsg, authController.updateStatusMsg)
+
+router.put("/update-image", fileUpload.single("image"), validateImage, authController.updateImage)
 
 router.get("/me", isAuth, authController.me);
 

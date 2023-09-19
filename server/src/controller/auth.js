@@ -76,6 +76,25 @@ export async function resetPassword(req,res) {
     else res.status(500).json({message:"Server Error"});
 }
 
+export async function updateStatusMsg(req,res) {
+    const {username, statusMsg} = req.body;
+
+    const result = await userRepository.updateStatusMsg({username, statusMsg});
+
+    if(result) res.status(200).json({username,statusMsg,message:"Update Status Message Success"});
+    else res.status(500).json({statusMsg:"Server Error"});
+}
+
+export async function updateImage(req,res) {
+    const username = req.body.username.replace(/"/g,"");
+    console.log(username);
+    const imageURL = req.file.location;
+
+    const result = await userRepository.updateImage({username, imageURL});
+
+    if(result) res.status(200).json({username,imageURL,message:"Update Profile Image Success"});
+    else res.status(500).json({imageURL:"Server Error"});
+}
 export async function me(req,res) {
     const user = await userRepository.findById(req.userId);
     if(!user) {

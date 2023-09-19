@@ -6,15 +6,28 @@
 }
 
 .editSubContainer {
-    width: 83%;
+    width: 350px;
     display:flex;
     flex-direction:column;
     align-items:center;
     padding-top: 3rem;
 }
 
+.title {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-weight: 500;
+    font-family: var(--text-accent);
+    align-self: flex-start;
+}
+
 .userImgContainer {
     position: relative; 
+}
+
+.imageURLError {
+    border:1px solid red;
+    border-radius : 0.5rem;
 }
 
 .userImg {
@@ -44,18 +57,20 @@
     width: 350px;
     height: 200px;
     border-radius: 0.5rem;
+    padding:1rem;
+    display: flex;
+    justify-content: center;
 }
 
 .statusMsg {
-    padding:0.5rem;
-    width: 350px;
-    height: 200px;
-    overflow: hidden; /* 내용이 넘칠 경우 숨기기 */
-    text-overflow: ellipsis; /* 생략 부호(...) 표시 */
-    white-space: normal; /* 여러 줄로 텍스트 표시 */
-    display: -webkit-box; /* 웹킷 브라우저 지원을 위해 사용 */
-    -webkit-line-clamp: 5; /* 최대 표시 줄 수 설정 */
-    /* -webkit-box-orient: vertical; 세로 방향으로 텍스트 표시 */
+    width: 85%;
+    height: 130px; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 7; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
+    font-size: 1rem;
+    word-break: break-all;
 }
 
 .editMsgBtn {
@@ -69,4 +84,20 @@
 
 .editMsgIcon {
     font-size:1.5rem;
+}
+
+.statusMsgError {
+    border-color:red;
+}
+
+.errorMsg {
+    font-weight: 500; 
+    color: red;
+}
+
+.successMsg {
+    margin-top: 3rem;
+    color: lightgreen;
+    text-align: center;
+    font-weight: 700;
 }

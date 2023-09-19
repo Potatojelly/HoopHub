@@ -12,12 +12,11 @@ export default class HttpClient {
 
     async fetch(url, options) {
         const {body, method, headers} = options;
+        console.log(body);
         const req = {
             url,
             method,
-            headers: {
-                ...headers,
-            },
+            headers: headers,
             data: body,
         };
 

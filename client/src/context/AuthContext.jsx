@@ -67,6 +67,26 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .then((user)=>user)
     ,[authService]);
 
+    const updateStatusMsg = useCallback(
+        async (username, statusMsg) => 
+            authService
+                .updateStatusMsg(username, statusMsg)
+                .then((user)=>{
+                    setStatusMsg(user.statusMsg);
+                    return user.message;
+                })
+    ,[authService]);
+
+    const updateImg = useCallback(
+        async (username, formData) => 
+            authService
+                .updateImg(username, formData)
+                .then((user)=>{
+                    setImageURL(user.imageURL);
+                    return user.message;
+                })
+    ,[authService]);
+
     const context = useMemo(
         ()=>({
             user,
@@ -78,7 +98,9 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
             login,
             logout,
             resetPassword,
-        }),[user,nickname,imageURL,statusMsg,loading,signup,login,logout,resetPassword])
+            updateStatusMsg,
+            updateImg,
+        }),[user,nickname,imageURL,statusMsg,loading,signup,login,logout,resetPassword,updateStatusMsg,updateImg])
 
     return (
         <AuthContext.Provider value={context}>

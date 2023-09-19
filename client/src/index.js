@@ -56,13 +56,15 @@ const router = createBrowserRouter([
       {
         path:"/edit-profile", 
         element: (<ProtectedRoute>
-                  <EditProfile/>
+                    <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                      <EditProfile/>
+                      </AuthProvider>
                   </ProtectedRoute>)
       },
       {
         path:"/reset-password", 
         element: (<ProtectedRoute>
-                  <ResetPassword/>
+                      <ResetPassword/>
                   </ProtectedRoute>)
       },
     ]
