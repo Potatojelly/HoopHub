@@ -5,6 +5,7 @@ import helmet from "helmet";
 import cors from "cors";
 import authRouter from "./router/auth.js";
 import retrRouter from "./router/retr.js";
+import searchRouter from "./router/search.js";
 import cookieParser from 'cookie-parser';
 import {db} from "./db/database.js";
 
@@ -25,6 +26,7 @@ app.use(helmet());
 
 app.use("/auth", authRouter);
 app.use("/retrieve", retrRouter);
+app.use("/search", searchRouter);
 
 app.use((req,res,next) => {
     res.sendStatus(404);

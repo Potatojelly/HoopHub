@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import "express-async-errors";
-import * as userRepository from "../data/auth.js";
+import * as myRepository from "../data/auth.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -10,9 +10,9 @@ export async function signup(req,res) {
     let errors = {};
 
     const {email, nickname, username, password} = req.body;
-    const emailUser = await userRepository.findByEmail(email);
-    const usernameUser = await userRepository.findByUsername(username);
-    const nicknameUser =  await userRepository.findByNickname(nickname);
+    const emailUser = await myRepository.findByEmail(email);
+    const usernameUser = await myRepository.findByUsername(username);
+    const nicknameUser =  await myRepository.findByNickname(nickname);
 
     if(emailUser) errors.email = "The email address has already been used";
     if(usernameUser) errors.username = "The username has already been used";
@@ -23,7 +23,7 @@ export async function signup(req,res) {
     }
 
     const hashed = await bcrypt.hash(password,parseInt(process.env.BYCRYPT_SALT_ROUNDS));
-    const rowCount = await userRepository.createUser({
+    const rowCount = await myRepository.createUser({
         email,
         nickname,
         username,
@@ -36,7 +36,7 @@ export async function signup(req,res) {
 
 export async function login(req,res) {
     const {username, password} = req.body;
-    const user = await userRepository.findByUsername(username);
+    const user = await myRepository.findByUsername(username);
     if(!user) {
         return res.status(401).json({username: "Invalid username"});
     }
@@ -59,7 +59,7 @@ export async function logout(req,res) {
 export async function resetPassword(req,res) {
     const {username, password, newPassword} = req.body;
 
-    const user = await userRepository.findByUsername(username);
+    const user = await myRepository.findByUsername(username);
     if(!user) {
         return res.status(401).json({username: "Invalid username"});
     }
@@ -70,7 +70,7 @@ export async function resetPassword(req,res) {
     }
 
     const hashed = await bcrypt.hash(newPassword,parseInt(process.env.BYCRYPT_SALT_ROUNDS));
-    const result = await userRepository.resetPassword({username, newPassword:hashed});
+    const result = await myRepository.resetPassword({username, newPassword:hashed});
 
     if (result) res.status(200).json({username,message:"Reset Password Success"});
     else res.status(500).json({message:"Server Error"});
@@ -79,7 +79,7 @@ export async function resetPassword(req,res) {
 export async function updateStatusMsg(req,res) {
     const {username, statusMsg} = req.body;
 
-    const result = await userRepository.updateStatusMsg({username, statusMsg});
+    const result = await myRepository.updateStatusMsg({username, statusMsg});
 
     if(result) res.status(200).json({username,statusMsg,message:"Update Status Message Success"});
     else res.status(500).json({statusMsg:"Server Error"});
@@ -90,13 +90,13 @@ export async function updateImage(req,res) {
     console.log(username);
     const imageURL = req.file.location;
 
-    const result = await userRepository.updateImage({username, imageURL});
+    const result = await myRepository.updateImage({username, imageURL});
 
     if(result) res.status(200).json({username,imageURL,message:"Update Profile Image Success"});
     else res.status(500).json({imageURL:"Server Error"});
 }
 export async function me(req,res) {
-    const user = await userRepository.findById(req.userId);
+    const user = await myRepository.findById(req.userID);
     if(!user) {
         return res.status(401).json({message:"User not found"});
     }

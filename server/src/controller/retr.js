@@ -1,13 +1,13 @@
 import "express-async-errors";
 import bcrypt from "bcrypt";
-import * as userRepository from "../data/auth.js";
+import * as myRepository from "../data/auth.js";
 import nodemailer from "nodemailer";
 import {config} from "../config.js";
 
 export async function retrieveUsername(req, res) {
     const {email} = req.body;
 
-    const user = await userRepository.findByEmail(email);
+    const user = await myRepository.findByEmail(email);
     if(!user) {
         return res.status(401).json({success:false, email:"There is no account with this email"})
     }
@@ -27,7 +27,7 @@ export async function retrieveUsername(req, res) {
 export async function retrievePassword(req,res) {
     const {username} = req.body;
 
-    const user = await userRepository.findByUsername(username);
+    const user = await myRepository.findByUsername(username);
 
     if(!user) {
         return res.status(401).json({success:false, username:"There is no account with this username"});
@@ -35,7 +35,7 @@ export async function retrievePassword(req,res) {
 
     const tempPassword = generateTemporaryPassword();
     const hashed = await bcrypt.hash(tempPassword,parseInt(process.env.BYCRYPT_SALT_ROUNDS));
-    const result = await userRepository.resetPassword({username,newPassword:hashed});
+    const result = await myRepository.resetPassword({username,newPassword:hashed});
 
     if(result) {
         const content = {

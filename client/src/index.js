@@ -19,12 +19,14 @@ import EditProfile from './pages/EditProfile';
 import ForgotUsername from './pages/ForgotUsername';
 import ForgotPassword from './pages/ForgotPassword';
 import RetrieveService from './service/retr';
+import SearchService from './service/search';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const authService = new AuthService(httpClient);
 const retrieveService = new RetrieveService(httpClient);
+const searchService = new SearchService(httpClient);
 
 const router = createBrowserRouter([
   {
@@ -38,7 +40,7 @@ const router = createBrowserRouter([
       {
         path:"/people", 
         element: (<ProtectedRoute>
-                    <People/>
+                    <People searchService={searchService}/>
                   </ProtectedRoute>)
       },
       {

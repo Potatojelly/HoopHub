@@ -1,0 +1,40 @@
+.friendCard {
+    display: flex;
+    justify-content: center;
+    align-item: center;
+    padding: 0.5rem;
+    height: 15%;
+    width: 100%;
+}
+
+.friendCard:hover {
+    background-color: var(--color-light-grey);
+    cursor: pointer;
+}
+
+.friendImg {
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.friendName {
+    flex-grow: 1;
+    align-self:center;
+}
+
+.requestBtn {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--color-blue);
+    color:white;
+}
+
+.requestBtnInactive {
+    background-color:orange;
+}
+
+.requestBtnInactive:hover {
+    cursor: not-allowed;
+    background-color:orange;
+    filter:brightness(1);
+}
