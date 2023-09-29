@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './Header.module.css';
 import {Link} from "react-router-dom";
 import Button from '../Button/Button';
@@ -12,11 +12,11 @@ import SideBar from '../SideBar/SideBar';
 import Logo from '../Logo/Logo';
 import { useAuth } from '../../context/AuthContext';
 import Dropdown from '../Dropdown/Dropdown';
+import { useProfile } from '../../context/ProfileContext';
 
-
-
-export default function Header() {
-    const {user,nickname,imageURL} = useAuth();
+export default function Header({friendService}) {
+    const {user} = useAuth();
+    const {nickname, imageURL} =useProfile();
     const [sidebar, setSidebar] = useState(false);
     const [myStuff, setMyStuff] = useState(false);
     const showSidebar = () => setSidebar(!sidebar);
@@ -29,7 +29,7 @@ export default function Header() {
                     <button className={styles.toggleBtn}>
                         <GiHamburgerMenu className={styles.toggle} onClick={showSidebar}/>
                     </button>}
-                <SideBar sidebar={sidebar} showSidebar={showSidebar}/> 
+                <SideBar sidebar={sidebar} showSidebar={showSidebar} friendService={friendService}/> 
                 <Logo/>
             </div>
             <nav className={styles.nav}>   

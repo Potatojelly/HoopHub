@@ -4,8 +4,10 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
 import authRouter from "./router/auth.js";
+import profileRouter from "./router/profile.js";
 import retrRouter from "./router/retr.js";
 import searchRouter from "./router/search.js";
+import friendRouter from "./router/friend.js";
 import cookieParser from 'cookie-parser';
 import {db} from "./db/database.js";
 
@@ -25,8 +27,10 @@ app.use(helmet());
 
 
 app.use("/auth", authRouter);
+app.use("/profile", profileRouter);
 app.use("/retrieve", retrRouter);
 app.use("/search", searchRouter);
+app.use("/friend", friendRouter);
 
 app.use((req,res,next) => {
     res.sendStatus(404);

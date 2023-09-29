@@ -1,23 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './EditStatusMsg.module.css'
 import { useAuth } from '../../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
 
 export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSuccess}) {
     const [originalMsg,setOriginalMsg] = useState(currentMsg);
     const [charCount,setCharCount] = useState(currentMsg.length);
-    const {user, updateStatusMsg} = useAuth();
+    const {updateMsg} = useProfile();
 
-    const onSubmit = async (e) => {
+    const onSubmit = (e) => {
         e.preventDefault();
-        updateStatusMsg(user.username,currentMsg)
-            .then((message)=>{
-                setSuccess(message);
-                setTimeout(()=>{setSuccess("")},4000);
-            })
-            .catch((error)=>{
-                setErrors(error)
-                setTimeout(()=>setErrors(""),4000);
-            });
+        updateMsg.mutate(currentMsg,
+            {
+                onSuccess: (data)=>{
+                    setSuccess(data.message);
+                    setTimeout(()=>{setSuccess("")},4000);
+                },
+                onError: (error)=>{
+                    setErrors(error)
+                    setTimeout(()=>setErrors(""),4000);
+                }
+            }
+        )
         onClose();
     }
 

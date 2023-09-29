@@ -1,4 +1,4 @@
-.friendCard {
+.userCard {
     display: flex;
     justify-content: center;
     align-item: center;
@@ -7,17 +7,17 @@
     width: 100%;
 }
 
-.friendCard:hover {
+.userCard:hover {
     background-color: var(--color-light-grey);
     cursor: pointer;
 }
 
-.friendImg {
+.userImg {
     border-radius: 0.5rem;
     margin-right: 0.5rem;
 }
 
-.friendName {
+.userName {
     flex-grow: 1;
     align-self:center;
 }
@@ -36,5 +36,17 @@
 .requestBtnInactive:hover {
     cursor: not-allowed;
     background-color:orange;
+    filter:brightness(1);
+}
+
+.requestedBtn {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color:var(--color-grey);
+    color:white;
+}
+
+.requestedBtn:hover {
+    cursor: not-allowed;
     filter:brightness(1);
 }

@@ -1,0 +1,50 @@
+.requestCard {
+    display: flex;
+    justify-content: center;
+    align-item: center;
+    padding: 0.5rem;
+    height: 15%;
+    width: 100%;
+}
+
+.requestCard:hover {
+    background-color: var(--color-light-grey);
+    cursor: pointer;
+}
+
+.userImg {
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.userName {
+    flex-grow: 1;
+    align-self:center;
+}
+
+.requestStatus {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    background-color: orange;
+    color:white;
+}
+
+.deleteBtn {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: red;
+    color:white;
+}
+
+.resultBtn {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color:var(--color-grey);
+    color:white;
+}
+
+.resultBtn:hover {
+    filter: brightness(1);
+}
+

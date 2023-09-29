@@ -20,27 +20,43 @@ import ForgotUsername from './pages/ForgotUsername';
 import ForgotPassword from './pages/ForgotPassword';
 import RetrieveService from './service/retr';
 import SearchService from './service/search';
+import { ProfileProvider } from './context/ProfileContext';
+import ProfileService from './service/profile';
+import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import FriendService from './service/friend';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const authService = new AuthService(httpClient);
+const profileService = new ProfileService(httpClient);
 const retrieveService = new RetrieveService(httpClient);
 const searchService = new SearchService(httpClient);
+const friendService = new FriendService(httpClient);
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
-                <App/>
-              </AuthProvider>),
+    element: (<QueryClientProvider client={queryClient}>
+                <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                  <ProfileProvider profileService={profileService}>
+                    <App  friendService={friendService}/>
+                  </ProfileProvider>
+                </AuthProvider>
+                {/* <ReactQueryDevtools initialIsOpen={true}/> */}
+              </QueryClientProvider>),
     errorElement: <NotFound/>,
     children: [
       {index:true, path:"/", element: <Forums/>},
       {
         path:"/people", 
         element: (<ProtectedRoute>
-                    <People searchService={searchService}/>
+                    <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                      <People searchService={searchService} friendService={friendService}/>
+                    </AuthProvider>
                   </ProtectedRoute>)
       },
       {
@@ -58,9 +74,13 @@ const router = createBrowserRouter([
       {
         path:"/edit-profile", 
         element: (<ProtectedRoute>
+                  <ProfileProvider profileService={profileService}>
                     <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
-                      <EditProfile/>
+                        <ProfileProvider profileService={profileService}>
+                          <EditProfile/>
+                        </ProfileProvider>
                       </AuthProvider>
+                    </ProfileProvider>
                   </ProtectedRoute>)
       },
       {

@@ -1,10 +1,11 @@
 .navMenu {
-    background-color:grey;
-    width: 250px;
+    background-color:#DAE0E6;
+    width: 300px;
     height: 100vh;
     display: flex;
     justify-content: center;
     position: fixed;
+    border-right: 1px solid orange;
     top: 0;
     left: -100%;
     transition: 850ms;

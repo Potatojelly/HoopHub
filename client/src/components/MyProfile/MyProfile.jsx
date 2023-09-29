@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './MyProfile.module.css'
-import {CgProfile} from "react-icons/cg";
+import { useProfile } from '../../context/ProfileContext';
 
 export default function MyProfile() {
+    const {nickname, imageURL, statusMsg} = useProfile();
+
     return (
         <li className={styles.myContainer}>
             <div className={styles.mySubContainer}>
-                <CgProfile className={styles.myProfile}/>
-                <span className={styles.myName}>My name</span>
+                <img src={imageURL ? imageURL : "defaultProfileImg.svg"} alt="myImg"  className={styles.myImg}/>
+                <span className={styles.myName}>{nickname}</span>
             </div>
-            <p className={styles.myStatus}>My Status</p>
+            <p className={styles.myStatus}>{statusMsg}</p>
         </li>
     );
 }

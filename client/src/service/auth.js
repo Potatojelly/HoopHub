@@ -46,32 +46,77 @@ export default class AuthService {
     }
 
     async me() {
+        console.log("auth");
         return this.http.fetch("/auth/me",{
             method:"GET",
         });
     }
 
-    async updateStatusMsg(username, statusMsg) {
-        const data = await this.http.fetch("/auth/update-status-message", {
-            method: "PUT",
-            body: JSON.stringify({
-                username,
-                statusMsg,
-            })
+    // async updateStatusMsg(username, statusMsg) {
+    //     const data = await this.http.fetch("/auth/update-status-message", {
+    //         method: "PUT",
+    //         body: JSON.stringify({
+    //             username,
+    //             statusMsg,
+    //         })
+    //     });
+    //     return data;
+    // }
+
+    // async updateImg(username, formData) {
+    //     formData.append("username",JSON.stringify(username))
+    //     console.log(formData);
+    //     const data = await this.http.fetch("/auth/update-image", {
+    //         method: "PUT",
+    //         body: formData,
+    //         headers: {"Content-Type": "multipart/form-data"},
+    //     });
+    //     return data
+    // }
+
+    async getMyFriendRequest() {
+        const data = await this.http.fetch("/auth/my-friend-request", {
+            method: "GET"
         });
         return data;
     }
 
-    async updateImg(username, formData) {
-        formData.append("username",JSON.stringify(username))
-        console.log(formData);
-        const data = await this.http.fetch("/auth/update-image", {
-            method: "PUT",
-            body: formData,
-            headers: {"Content-Type": "multipart/form-data"},
+    async getReceivedFriendRequest() {
+        const data = await this.http.fetch("/auth/received-friend-request", {
+            method: "GET"
         });
-        return data
+        return data;
     }
 
+    async cancelMyFriendRequest(nickname) {
+        const data = await this.http.fetch(`/auth/cancel-my-friend-request/${nickname}`,{
+            method: "DELETE"
+        });
+        return data;
+    }
+
+    async acceptFriendRequest(nickname) {
+        const data = await this.http.fetch(`/auth/accept-friend-request/${nickname}`,{
+            method: "PUT"
+        })
+        return data;
+    }
+
+    async rejectFriendRequest(nickname) {
+        const data = await this.http.fetch(`/auth/reject-friend-request/${nickname}`,{
+            method: "DELETE"
+        });
+        return data;
+    }
+
+    async sendFriendRequest(nickname) {
+        const data = await this.http.fetch("/auth/send-friend-request", {
+            method: "POST",
+            body: JSON.stringify({
+                nickname,
+            })
+        })
+        return data;
+    }
 
 }

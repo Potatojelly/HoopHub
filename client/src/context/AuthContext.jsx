@@ -4,9 +4,8 @@ const AuthContext = createContext({});
 
 export function AuthProvider({authService, authErrorEventBus, children}) {
     const [user,setUser] = useState(undefined);
-    const [nickname,setNickname] = useState(undefined);
-    const [imageURL,setImageURL] = useState(undefined);
-    const [statusMsg,setStatusMsg] = useState(undefined);
+    // const [myFriendRequest,setMyFriendRequest] = useState(undefined);
+    // const [receivedFriendRequest,setReceivedFriendRequest] = useState(undefined);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -14,9 +13,6 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
         authService.me()
             .then((user)=>{
                 setUser({token:user.token, username: user.username});
-                setImageURL(user.imageURL);
-                setStatusMsg(user.statusMsg);
-                setNickname(user.nickname);
                 setLoading(!loading);
             })
             .catch((err)=>console.log(err));
@@ -43,9 +39,6 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .login(username,password)
                 .then((user)=>{
                     setUser({token:user.token, username: user.username});
-                    setImageURL(user.imageURL);
-                    setStatusMsg(user.statusMsg);
-                    setNickname(user.nickname);
                     setLoading(!loading);
                 })
     ,[authService]);
@@ -67,40 +60,61 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .then((user)=>user)
     ,[authService]);
 
-    const updateStatusMsg = useCallback(
-        async (username, statusMsg) => 
-            authService
-                .updateStatusMsg(username, statusMsg)
-                .then((user)=>{
-                    setStatusMsg(user.statusMsg);
-                    return user.message;
-                })
-    ,[authService]);
+    // const getReceivedFriendRequest = useCallback(
+    //     async () => 
+    //         authService
+    //             .getReceivedFriendRequest()
+    //             .then((user)=>{
+    //                 setReceivedFriendRequest(user.receivedRequest);
+    //             })
+    // ,[authService]);
 
-    const updateImg = useCallback(
-        async (username, formData) => 
-            authService
-                .updateImg(username, formData)
-                .then((user)=>{
-                    setImageURL(user.imageURL);
-                    return user.message;
-                })
-    ,[authService]);
+    // const getMyFriendRequest = useCallback(
+    //     async () => 
+    //         authService
+    //             .getMyFriendRequest()
+    //             .then((user)=>{
+    //                 setMyFriendRequest(user.myRequest);
+    //             })
+    // ,[authService]);
+
+    // const sendFriendRequest = useCallback(
+    //     async (nickname) =>
+    //         authService
+    //             .sendFriendRequest(nickname)
+    //             .then((data)=>data)
+    // )
+
+    // const cancelMyFriendRequest = useCallback(
+    //     async (nickname) =>
+    //         authService
+    //             .cancelMyFriendRequest(nickname)
+    //             .then((data)=>data)
+    // )
+
+    // const acceptReceivedFriendRequest = useCallback(
+    //     async (nickname) =>
+    //         authService
+    //             .acceptFriendRequest(nickname)
+    //             .then((data)=>data)
+    // )
+
+    // const rejectReceivedFriendRequest = useCallback(
+    //     async (nickname) =>
+    //         authService
+    //             .rejectFriendRequest(nickname)
+    //             .then((data)=>data)
+    // )
 
     const context = useMemo(
         ()=>({
             user,
-            nickname,
-            imageURL,
-            statusMsg,
             loading,
             signup,
             login,
             logout,
             resetPassword,
-            updateStatusMsg,
-            updateImg,
-        }),[user,nickname,imageURL,statusMsg,loading,signup,login,logout,resetPassword,updateStatusMsg,updateImg])
+        }),[user,loading,signup,login,logout,resetPassword])
 
     return (
         <AuthContext.Provider value={context}>

@@ -1,28 +1,37 @@
 .myContainer {
-    background-color: green;
-    width:250px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; */
+    background-color: white;
+    width:300px;
     height: 200px;
     border-bottom: 2px solid #000;
-    padding-left: 8px;
 }
 
 .mySubContainer {
     display: flex;
-    justify-content: left;
+    width: 275px;
+    justify-content: center;
     align-items: center;
 }
 
-.myProfile {
-    font-size: 7.5rem;
+.myImg {
+    width: 125px;
+    height: 125px;
+    margin:1rem 1rem 0 1rem;
+    border-radius:0.5rem;
 }
 
 .myName {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     width:200px;
 }
 
 .myStatus {
-    margin-top: 0.3rem;
+    margin-left: 1rem;
+    margin-top: 0.5rem;
     text-align: left;
-    width:200px;
+    word-break: break-all;
+    width:275px;
 }

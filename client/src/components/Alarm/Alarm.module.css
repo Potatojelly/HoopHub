@@ -1,0 +1,23 @@
+.msgContainer {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width : 350px;
+    height: 100px;
+    top: 80%;
+    left: 50%;
+    border: 1px solid lightgreen;
+    border-radius: 1rem;
+    transform: translate(-50%,-50%);
+}
+
+.logo {
+    color: orange;
+    font-size: 2.5rem;
+    margin: 0 1rem 0 1rem;
+}
+
+.msg {
+    color: green;
+}
