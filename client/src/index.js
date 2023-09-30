@@ -25,6 +25,7 @@ import ProfileService from './service/profile';
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import FriendService from './service/friend';
+import PostCreate from './pages/PostCreate';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
@@ -56,6 +57,14 @@ const router = createBrowserRouter([
         element: (<ProtectedRoute>
                     <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
                       <People searchService={searchService} friendService={friendService}/>
+                    </AuthProvider>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/create-post", 
+        element: (<ProtectedRoute>
+                    <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                      <PostCreate/>
                     </AuthProvider>
                   </ProtectedRoute>)
       },
