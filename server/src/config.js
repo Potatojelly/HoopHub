@@ -38,5 +38,12 @@ export const config = {
         secretAccessKey: required("AWS_SECRET_ACCESS_KEY_ID"),
         region: required("AWS_REGION"),
     },
-    bucket : required("AWS_S3_BUCKET_NAME"),
+    bucket : {
+        profile: required("AWS_S3_BUCKET_NAME1"),
+        forum: required("AWS_S3_BUCKET_NAME2"),
+    },
+    ff : {
+        ffmpeg: required("FFMPEG_PATH"),
+        ffprobe: required("FFPROBE_PATH"),
+    }
 }

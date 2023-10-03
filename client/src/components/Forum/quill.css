@@ -1,0 +1,9 @@
+.editor .ql-container {
+    min-height: 250px;
+    max-width: 715px;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.editor .ql-toolbar {
+    border-radius: 0.5rem 0.5rem 0 0;
+}

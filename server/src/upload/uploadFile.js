@@ -7,10 +7,10 @@ AWS.config.update(config.aws);
 
 const s3 = new AWS.S3();
 
-export const fileUpload = multer({
+export const profileUpload = multer({
     storage: multerS3({
         s3: s3,
-        bucket: config.bucket,
+        bucket: config.bucket.profile,
         acl: "public-read",
         contentType: multerS3.AUTO_CONTENT_TYPE,
         key: function(req,file,cb) {
@@ -23,4 +23,20 @@ export const fileUpload = multer({
     }),
 });
 
+export const forumUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: config.bucket.forum,
+        acl: "public-read",
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        key: function(req,file,cb) {
+            console.log(file);
+            const timestamp = Date.now();
+            const customName = "ForumFile";
+            const extension = file.originalname.split(".").pop();
+            const fileName = timestamp+"-"+customName+"."+extension;
+            cb(null,fileName);
+        }, 
+    }),
+});
 

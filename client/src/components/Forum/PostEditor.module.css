@@ -1,0 +1,59 @@
+.conatiner {
+    display:flex;
+    flex-direction: column;
+
+}
+
+.editor {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 0px 16px;
+}
+
+.titleContainer {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.counter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin-bottom: 0.5rem; 
+    font-size: 0.8rem;
+    user-select: none;
+    color: #718096; 
+}
+
+.subForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    width: 715px;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    padding-left: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+
+
+.btnContainer {
+    align-self: flex-end;
+}
+
+.createBtn:disabled:hover {
+    cursor: not-allowed;
+    filter: brightness(1);
+}
+
+.createBtn {
+    height: 35px;
+    width: 60px;
+    margin: 0.5rem 0 0 0;
+    border-radius: 0.5rem;
+}
+

@@ -26,6 +26,8 @@ import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import FriendService from './service/friend';
 import PostCreate from './pages/PostCreate';
+import PostService from './service/post';
+import ReadPost from './pages/ReadPost';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
@@ -35,6 +37,7 @@ const profileService = new ProfileService(httpClient);
 const retrieveService = new RetrieveService(httpClient);
 const searchService = new SearchService(httpClient);
 const friendService = new FriendService(httpClient);
+const postService = new PostService(httpClient);
 
 const queryClient = new QueryClient();
 
@@ -64,7 +67,7 @@ const router = createBrowserRouter([
         path:"/create-post", 
         element: (<ProtectedRoute>
                     <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
-                      <PostCreate/>
+                      <PostCreate postService={postService}/>
                     </AuthProvider>
                   </ProtectedRoute>)
       },
@@ -96,6 +99,12 @@ const router = createBrowserRouter([
         path:"/reset-password", 
         element: (<ProtectedRoute>
                       <ResetPassword/>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/forums/post/:title", 
+        element: (<ProtectedRoute>
+                      <ReadPost/>
                   </ProtectedRoute>)
       },
     ]
