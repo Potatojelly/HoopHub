@@ -1,0 +1,54 @@
+.reply {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0 0 55px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    margin: 0 0 0 55px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+}
+
+.replyTextArea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    resize: none;
+    min-height: 100px;
+    font-size: 14px;
+    margin-top: 0.5rem;
+    /* color: #007bff; */
+}
+
+.replyBtn {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100px;
+    height: 40px;
+    align-self: flex-end;
+}
+
+.authorHighlight {
+    color: #007bff;
+    font-weight: bold; 
+}
+
+.replyBtn:disabled {
+    background-color: var(--color-grey);
+    filter: brightness(1);
+    cursor: not-allowed;
+}

@@ -1,32 +1,21 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import ReactQuill, {Quill} from 'react-quill';
 import { useNavigate } from 'react-router-dom';
 import './quill.css';
 import 'react-quill/dist/quill.snow.css';
-import styles from './PostEditor.module.css';
+import styles from './PostCreator.module.css';
 import ImageResize from 'quill-image-resize';
 import simplifyDate from '../../date';
 import {BsFillEyeFill} from "react-icons/bs";
-import {useMutation,useQueryClient} from "@tanstack/react-query";
 
 Quill.register('modules/ImageResize', ImageResize);
 
-export default function PostEditor({postService,post,handleEdit, currentPage}) {
-    const queryClient = useQueryClient();
+export default function PostCreator({postService}) {
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
     const quillRef = useRef();
-
-    useEffect(()=>{
-        setTitle(post.title);
-        setContent(post.body);
-        const editor = quillRef.current.getEditor(); 
-        const delta = editor.clipboard.convert(post.body);
-        editor.setContents(delta);
-        editor.focus();
-    },[post])
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -36,6 +25,8 @@ export default function PostEditor({postService,post,handleEdit, currentPage}) {
 
         const elementsWithSrc = tempElement.querySelectorAll('[src]');
         const srcAttributes = [];
+
+        console.log(elementsWithSrc.length);
 
         const formData = new FormData();
         let jsonData = {};
@@ -51,35 +42,40 @@ export default function PostEditor({postService,post,handleEdit, currentPage}) {
                 if(srcAttributes.find((src)=>src===element.URL)) {
                     if(element.video) {
                         validFiles.push({type:"video",file:element.video});
-                    }  else if(element.image) {
+                    } else if(element.image) {
                         validFiles.push({type:"image",file:element.image});
-                    } 
+                    }
                 } 
             })
 
-            //console.log(validFiles);
+
             validFiles.forEach((element)=>{
                 if(element.type === "video") {
                     formData.append("video",element.file);
-                    //console.log(element.file);
+                    console.log(element.file);
                 } else if(element.type === "image") {
                     formData.append("image",element.file);
-                    //console.log(element.file);
+                    console.log(element.file);
                 }
                 
             })
+
+            if(validFiles[0].type === "video") {
+                jsonData = {title,content,video:true};
+            } else {
+                jsonData = {title,content,video:false};
+            }
+            formData.append("jsonFile", JSON.stringify(jsonData));
+        }
+        else {
+            jsonData = {title,content,video:false};
+            formData.append("jsonFile", JSON.stringify(jsonData));
         }
 
-        jsonData = {title,content};
-        formData.append("jsonFile", JSON.stringify(jsonData));
-
-        postService.updatePost(formData,post.id)
+        postService.createPost(formData)
             .then((response)=>{
-                console.log(response);
-                handleEdit();
-                if(response.success === true) {
-                    navigate(`/forums/post/${response.title}`,{state: {currentPage, selectedPost: post.id}});
-                }
+                const post = {...response}
+                navigate(`/forums/post/${response.title}`,{state: post});
             })
             .catch((error)=>{console.log(error)})
         
@@ -87,7 +83,7 @@ export default function PostEditor({postService,post,handleEdit, currentPage}) {
 
     const handleContent = (contents) => {
         setContent(contents);
-        //console.log(contents);
+        console.log(contents);
     };
 
     
@@ -167,6 +163,7 @@ export default function PostEditor({postService,post,handleEdit, currentPage}) {
     return (
 
         <div className={styles.container}>
+            <h1>Create Post</h1>
             <div className={styles.editor}>
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.subForm}>
@@ -178,7 +175,7 @@ export default function PostEditor({postService,post,handleEdit, currentPage}) {
                                     value={title}
                                     onChange={(e)=>setTitle(e.target.value)}/>
                             <div className={styles.counter}>{title.trim().length}/100</div>
-                            {post &&
+                            {/* {post &&
                             <div className={styles.postInfo}>
                                 <img className={styles.profileImg} src={post.image_url} alt="userImg" />
                                 <div className={styles.postInfoSubContainer}>
@@ -189,15 +186,15 @@ export default function PostEditor({postService,post,handleEdit, currentPage}) {
                                     <BsFillEyeFill/>
                                     {post.views}
                                 </div>
-                            </div>}
+                            </div>} */}
                         </div>
                         <ReactQuill className={"editor"}
                                     ref={quillRef}
                                     onChange={handleContent}
                                     modules={modules}/>
                         <div className={styles.btnContainer}>
-                            <button className={styles.cancelBtn} onClick={()=>{handleEdit()}}>Cancel</button>
-                            <button className={styles.createBtn} disabled={title.trim().length === 0}>Edit</button>
+                            <button className={styles.cancelBtn} onClick={()=>{navigate("/")}}>Cancel</button>
+                            <button className={styles.createBtn} disabled={title.trim().length === 0}>Create</button>
                         </div>
                     </div>
                 </form>

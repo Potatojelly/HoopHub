@@ -15,9 +15,14 @@ export default function Dropdown({myStuff,showMyStuff}) {
         showMyStuff();
         navigate("/reset-password");
     }
+    const directToMyActivity = () =>{
+        showMyStuff();
+        navigate("/manage-my-activity");
+    }
     return (
         <div className={`${styles.container} ${myStuff && styles.containerActive}`}>
             <UserServiceButton text={"Edit Profile"} onClick={directToEditProfile}/>
+            <UserServiceButton text={"Manage My Activity"} onClick={directToMyActivity}/>
             <UserServiceButton text={"Reset Password"} onClick={directToResetPassword}/>
             <UserServiceButton text={"Logout"} onClick={logout}/>
         </div>

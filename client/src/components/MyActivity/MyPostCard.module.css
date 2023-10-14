@@ -1,0 +1,54 @@
+.container {
+    width: 800px;
+    height: 40px;
+    border-bottom: 1px solid var(--color-grey);
+    display: flex;
+    align-items: center;
+    user-select:none
+}
+
+.container:hover {
+    background-color: var(--color-light-grey);
+    cursor: pointer;
+    filter: brightness(0.8);
+}
+
+.selectedContainer {
+    background-color: var(--color-light-grey);
+    pointer-event: none;
+    filter: brightness(0.8);
+}
+
+
+
+.postNum {
+    width: 70px;
+    text-align: center;
+}
+
+.postSubContainer {
+    display: flex;
+    justify-content: center;
+    width: 410px;
+}
+
+.postCommentCounter {
+    color:red;
+}
+
+.postTitle {
+    text-align: center;
+    max-width:400px;
+    overflow: hidden;          
+    text-overflow: ellipsis;  
+}
+
+.postCreatedDate {
+    width: 220px;
+    text-align: center;
+}
+
+.postView {
+    width: 50px;
+    text-align: center;
+}

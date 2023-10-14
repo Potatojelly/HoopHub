@@ -23,7 +23,7 @@ export default function Header({friendService}) {
     const showMyStuff = () => setMyStuff(!myStuff);
 
     return (
-        <header className={styles.header}>
+        <header id="header" className={styles.header}>
             <div className={styles.container}>
                 {user && 
                     <button className={styles.toggleBtn}>

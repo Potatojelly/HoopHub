@@ -27,7 +27,9 @@ import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import FriendService from './service/friend';
 import PostCreate from './pages/PostCreate';
 import PostService from './service/post';
-import ReadPost from './pages/ReadPost';
+import MyActivity from './pages/MyActivity';
+import MyPost from './pages/MyPost';
+import { SelectedCardProvider } from './context/SelectedCardContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
@@ -54,7 +56,9 @@ const router = createBrowserRouter([
               </QueryClientProvider>),
     errorElement: <NotFound/>,
     children: [
-      {index:true, path:"/", element: <Forums/>},
+      {index:true, 
+        path:"/", 
+        element: (<Forums postService={postService}/>)},
       {
         path:"/people", 
         element: (<ProtectedRoute>
@@ -104,7 +108,24 @@ const router = createBrowserRouter([
       {
         path:"/forums/post/:title", 
         element: (<ProtectedRoute>
-                      <ReadPost/>
+                      {/* <ReadPost postService={postService}/> */}
+                      <Forums postService={postService}/>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/manage-my-activity", 
+        element: (<ProtectedRoute>
+                      <SelectedCardProvider>
+                        <MyActivity postService={postService}/>
+                      </SelectedCardProvider>
+                  </ProtectedRoute>)
+      },
+      {
+        path:"/manage-my-activity/my-post/:title", 
+        element: (<ProtectedRoute>
+                    <SelectedCardProvider>
+                      <MyPost postService={postService}/>
+                    </SelectedCardProvider>
                   </ProtectedRoute>)
       },
     ]

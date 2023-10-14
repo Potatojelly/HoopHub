@@ -1,0 +1,44 @@
+.container {
+    width: 1000px;
+    height: 900px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.activityContainer {
+    margin-top: 3rem;
+}
+
+.myPosts {
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    width: 200px;
+    margin-right: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: white;
+    border: 1px solid orange;
+    color: orange;
+}
+
+.myComments {
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    width: 200px;
+    margin-left: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: white;
+    border: 1px solid orange;
+    color: orange;
+}
+
+.active {
+    background-color: orange;
+    color:white;
+    pointer-event: none;
+}
+
+.active:hover {
+    filter: brightness(1);
+}

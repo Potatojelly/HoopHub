@@ -1,0 +1,158 @@
+.commentCard {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.commentCardWithReply {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: none;
+}
+
+.comment {
+    display: flex;
+}
+
+.profileImg {
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.comment {
+    display: flex;
+}
+
+.commentReply {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+}
+
+.commentText {
+    font-size: 0.9rem;
+}
+.commentAuthor {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.commentAction {
+    margin-top: 1px;
+}
+
+.commentTime {
+    font-size: 14px;
+    color: var(--color-grey);
+}
+
+.replyBtn {
+    color: #4299e1; 
+    cursor: pointer;
+}
+
+.replyBtn:hover {
+    text-decoration: underline;
+}
+
+.replySubmitBtn {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100px;
+    height: 40px;
+    align-self: flex-end;
+}
+
+.comments {
+    border: 1px solid #ddd;
+    margin: 0px 0 0 55px ;
+    border-bottom: none;
+}
+
+.editContainer {
+    width: 85px;
+    display:flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.editIcon {
+    margin-right: 1rem;
+}
+
+.editIcon:hover {
+    cursor:pointer;
+    color: blue;
+}
+
+.trashIcon:hover {
+    cursor:pointer;
+    color: red;
+}
+
+.commentEdit {
+    display: flex;
+    align-items: center;
+}
+.commentTextEdit {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    resize: none;
+    min-height: 50px;
+    min-width: 450px;
+    font-size: 14px;
+    margin-top: 0.5rem;
+}
+
+.cancelBtn {
+    margin-top: 0.5rem;
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    height: 60px;
+    width: 60px;
+}
+
+.editBtn {
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    height: 60px;
+    width: 60px;
+}
+
+.deletedCommentCard {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    height: 80px;
+    border-bottom: 1px solid #ddd;
+    color: var(--color-grey);
+}
+
+.deletedCommentCardWithReply {
+    border-bottom: none; 
+}
+
+.targetCard {
+    border: 1px ridge orange;
+
+}

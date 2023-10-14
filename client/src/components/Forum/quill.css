@@ -7,3 +7,18 @@
 .editor .ql-toolbar {
     border-radius: 0.5rem 0.5rem 0 0;
 }
+
+.reply .ql-container {
+    border-radius: 0.5rem;
+}
+
+.reply .ql-editor[data-placeholder]:before {
+    font-style: normal 
+}
+
+.replyEdit .ql-container {
+    min-height: 50px;
+    min-width: 400px;
+    border-radius: 0.5rem;
+}
+

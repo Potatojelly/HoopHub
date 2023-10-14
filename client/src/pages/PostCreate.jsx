@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from './PostCreate.module.css';
-import PostEditor from "../components/Forum/PostEditor";
+import PostCreator from "../components/Forum/PostCreator";
 export default function PostCreate({postService}) {
     return (
         <div className={styles.container}>
-            <PostEditor postService={postService}/>
+            <PostCreator postService={postService}/>
         </div>
     );
 }
