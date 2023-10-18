@@ -45,7 +45,7 @@ const validateFiles = [
 router.post("/create-post", isAuth,  forumUpload.fields([{name:"image"},{name:"video"}]), validateFiles, forumController.createPost );
 router.put("/update-post/:postID", isAuth, forumUpload.fields([{name:"image"},{name:"video"}]), validateFiles, forumController.updatePost);
 router.delete("/delete-post/:postID", isAuth, forumController.deletePost);
-router.get("/get-posts/:page/:postsPerPage",forumController.getPosts);
+router.get("/get-posts/:keyword/:page/:postsPerPage",forumController.getPosts);
 router.get("/get-post/:postID",forumController.getPost);
 
 router.post("/create-comment",isAuth, forumController.createComment);
@@ -63,6 +63,7 @@ router.get("/get-my-posts/:currentPage/:postsPerPage",isAuth,forumController.get
 router.get("/get-my-comments/:currentPage/:commentsPerPage",isAuth,forumController.getMyComments);
 
 router.get("/get-target-comment-number/:postID/:commentID",isAuth,forumController.getTargetCommentNumber);
+
 
 
 export default router;

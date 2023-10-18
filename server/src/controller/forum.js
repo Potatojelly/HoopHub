@@ -19,16 +19,6 @@ export async function getComments(req,res) {
     const commentsPerPage = parseInt(req.params.commentsPerPage);
     const postID = req.params.postID;
     let result = await forumRepository.getComments(postID,currentPage,commentsPerPage);
-    // if(result) {
-    //     let comments = [];
-    //     for (const comment of result.comments) {
-    //         const replies = await forumRepository.getReplies(comment.id);
-    //         comment.replies = replies;
-    //         comments.push(comment);
-    //     }
-    //     result.comments = comments
-    //     res.status(200).json({ success: true, ...result });
-    // }
     if(result) res.status(200).json({ success: true, ...result });
     else res.status(500).json({success:false, message:"Server Error"});
 }
@@ -100,9 +90,10 @@ export async function updateView(req,res) {
 
 
 export async function getPosts(req,res) {
+    const keyword = req.params.keyword === "null" ? null : req.params.keyword;
     const currentPage = req.params.page;
     const postsPerPage = parseInt(req.params.postsPerPage);
-    const result = await forumRepository.getPosts(currentPage,postsPerPage);
+    const result = await forumRepository.getPosts(keyword,currentPage,postsPerPage);
     if(result) res.status(200).json({success:true, ...result});
     else res.status(500).json({success:false, message:"Server Error"});
 }
@@ -366,3 +357,6 @@ export async function getTargetCommentNumber(req,res) {
     if(comment_number) res.status(200).json({success:true, comment_number:parseInt(comment_number)});
     else res.status(500).json({success:false, message:"Server Error"});
 }
+
+
+

@@ -10,21 +10,28 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        authService.me()
+        if(authErrorEventBus) {
+            authService.me()
             .then((user)=>{
                 setUser({token:user.token, username: user.username});
                 setLoading(!loading);
             })
             .catch((err)=>console.log(err));
+        }
     },[authService]);
  
     useEffect(()=>{
-        authErrorEventBus.listen((error)=>{
-            window.confirm(error);
-            console.log(error);
-            setUser(undefined);
-            navigate("/");
-        })
+        if(authErrorEventBus) {
+            authErrorEventBus.listen((error)=>{
+                console.log(error);
+                setUser(undefined);
+                if(window.confirm(error)) {
+                    navigate("/"); 
+                } else {
+                    navigate("/"); 
+                }
+            })
+        }
     },[authErrorEventBus,navigate]);
 
     const signup = useCallback(

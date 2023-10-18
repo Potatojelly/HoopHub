@@ -3,11 +3,12 @@ import styles from './Posts.module.css'
 import PostCard from './PostCard';
 import {v4 as uuidv4} from "uuid";
 import usePost from '../../hooks/usePost';
+import SearchBar from './SearchBar';
 
 const POSTSPERPAGE = 5;
 
 // export default function Posts({postService}) {
-function Posts({postService,page,selectedPost}) {
+function Posts({postService,page,selectedPost,keyword}) {
     const [isSelected,setIsSelected] = useState(null);
     useEffect(()=>{
         setIsSelected(selectedPost);
@@ -24,7 +25,7 @@ function Posts({postService,page,selectedPost}) {
         handlePrevious,
         handleNext,
         handlePage,
-    } = usePost(postService,page);
+    } = usePost(postService,page,keyword ? keyword : null);
 
     const handleSelection = (postID) => {
         setIsSelected(postID)
@@ -44,11 +45,10 @@ function Posts({postService,page,selectedPost}) {
         handlePage(startPage,index);
         setIsSelected(null);
     }
-
     return (
         <div className={styles.posts}>
             <h1 className={styles.title}>Posts</h1>
-            {posts &&
+            {posts && posts.length > 0 &&
             <div className={styles.postsContainer}>
                 <div className={styles.postsSubContainer}>
                     {posts.map((post, index)=>{
@@ -58,6 +58,7 @@ function Posts({postService,page,selectedPost}) {
                                                                         post={post} 
                                                                         isSelected={isSelected}
                                                                         currentPage={currentPage}
+                                                                        keyword={keyword}
                                                                         last={true} />
                                                             </div>)   
                         else return (<div  key={uuidv4()}  onClick={()=>{handleSelection(post.id)}}>
@@ -65,13 +66,15 @@ function Posts({postService,page,selectedPost}) {
                                             num={(currentPage-1)*5+(index+1)} 
                                             post={post}
                                             currentPage={currentPage}
+                                            keyword={keyword}
                                             isSelected={isSelected}/>
                                     </div>)       
                     })}
                 </div>
             </div>
             }
-            {totalPage && 
+            {posts.length === 0 && <div className={styles.noContent}> <span>No Posts</span> </div>}
+            {posts && posts.length > 0 && totalPage && 
             <footer>
                 <nav className={styles.nav}>
                     {hasPrev && 
@@ -96,6 +99,7 @@ function Posts({postService,page,selectedPost}) {
                     </button>}
                 </nav>                
             </footer>}
+            <SearchBar postService={postService}/>
         </div>
     );
 }

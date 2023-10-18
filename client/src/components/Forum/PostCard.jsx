@@ -7,19 +7,27 @@ import simplifyDate from "../../date.js";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 
-export default function PostCard({id, num, post, isSelected, currentPage, last}) {
+export default function PostCard({id, num, post, isSelected, currentPage, keyword, last}) {
     const navigate = useNavigate();
     const {user} = useAuth();
+    const [highlightedTitle,setHighlightedTitle] = useState("");
 
     const handleClick = () => {
         if(user) {
             const contentElement = document.querySelector('#header');
             contentElement.scrollIntoView({ behavior: 'smooth' });
-            navigate(`/forums/post/${post.title}`,{state: {currentPage, selectedPost: id} })
+            navigate(`/forums/post/${post.title}`,{state: {currentPage, selectedPost: id, keyword,} })
         }
         else alert("You do not have permission to view articles, Please Log in");
     }
 
+    useEffect(()=>{
+        if(keyword) {
+            console.log("Calling");
+            const pattern = new RegExp(keyword, 'g');
+            setHighlightedTitle(post.title.replace(pattern, `<em>${keyword}</em>`));
+        }
+    },[keyword])
 
     return (
         <>
@@ -28,7 +36,7 @@ export default function PostCard({id, num, post, isSelected, currentPage, last})
                 <div className={styles.postNum}>{num}</div>
                 {post.thumbnail_url && <img src={post.thumbnail_url} alt="postImg" className={styles.postImg}/>}
                 {!post.thumbnail_url && <PiArticle className={styles.iconImg}/>}
-                <div className={styles.title}>{post.title}</div>
+                {keyword ? <div className={styles.title} dangerouslySetInnerHTML={{ __html: highlightedTitle }} /> : <div className={styles.title}>{post.title}</div>}
                 <div className={styles.commentCounter}><GoComment className={styles.commentIcon}/>{`[${post.total_comments}]`}</div>
                 <div className={styles.author}>{post.nickname}</div>
                 <div className={styles.createdAt}>{simplifyDate(post.created_at)}</div>

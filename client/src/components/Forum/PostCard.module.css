@@ -50,6 +50,10 @@
     text-overflow: ellipsis;  
 }
 
+em {
+    color:orange;
+}
+
 .commentIcon {
     
 }

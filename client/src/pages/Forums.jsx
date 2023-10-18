@@ -10,8 +10,11 @@ export default function Forums({postService}) {
     return (
         <div className={styles.forum}>
             {!post && <PostCreateEntry/>}
-            {post && <Post postID={post && (post.selectedPost ? post.selectedPost : post.id)} currentPage={post && post.currentPage} postService={postService}/>}
-            <Posts postService={postService} page={post && post.currentPage} selectedPost={post && post.selectedPost}/>
+            {post && post.currentPage && <Post postID={post && (post.selectedPost ? post.selectedPost : post.id)} currentPage={post && post.currentPage} postService={postService}/>}
+            <Posts postService={postService} 
+                    page={post && post.currentPage && post.currentPage} 
+                    selectedPost={post && post.selectedPost && post.selectedPost}
+                    keyword={post && post.keyword && post.keyword}/>
         </div>
     );
 }

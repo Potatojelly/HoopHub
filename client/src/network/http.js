@@ -22,9 +22,18 @@ export default class HttpClient {
 
         try {
             const res = await this.client(req);
-            if(res.status === 401) this.authErrorEventBus.notify("Token has been expired!");
+            // if(res.status === 401) {
+            //     console.log("hi");
+            //     this.authErrorEventBus.notify("Token has been expired!");
+            //     return;
+            // }
             return res.data;
         } catch(err) {
+            if(err.response.status === 401) {
+                console.log(err);
+                this.authErrorEventBus.notify("Token has been expired!");
+                throw err.response.data;
+            }
             throw err.response.data;
         }
     }

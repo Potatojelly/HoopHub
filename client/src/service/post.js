@@ -3,8 +3,8 @@ export default class PostService {
         this.http = http;
     }
 
-    async getPosts(page,postsPerPage) {
-        const data = await this.http.fetch(`/forum/get-posts/${page}/${postsPerPage}`, {
+    async getPosts(keyword,page,postsPerPage) {
+        const data = await this.http.fetch(`/forum/get-posts/${keyword}/${page}/${postsPerPage}`, {
             method: "GET"
         });
         return data;

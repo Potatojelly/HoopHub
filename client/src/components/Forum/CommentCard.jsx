@@ -39,7 +39,7 @@ const CommentCard = ({index,comment,postID,postPage,setPost,commentPage,targetCo
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            submitEditedComment();
+            submitEditedComment(e);
         }
     }
 
@@ -48,7 +48,8 @@ const CommentCard = ({index,comment,postID,postPage,setPost,commentPage,targetCo
         setEditedComment(comment.body);
     }
 
-    const submitEditedComment = () => {
+    const submitEditedComment = (e) => {
+        e.preventDefault();
         postService.updateComment(comment.post_id, comment.id, editedComment)
             .then((result)=>{
                 queryClient.invalidateQueries(["comments", postID, commentPage]);

@@ -29,7 +29,7 @@ export default function Header({friendService}) {
                     <button className={styles.toggleBtn}>
                         <GiHamburgerMenu className={styles.toggle} onClick={showSidebar}/>
                     </button>}
-                <SideBar sidebar={sidebar} showSidebar={showSidebar} friendService={friendService}/> 
+                {sidebar && <SideBar sidebar={sidebar} showSidebar={showSidebar} friendService={friendService}/>}
                 <Logo/>
             </div>
             <nav className={styles.nav}>   

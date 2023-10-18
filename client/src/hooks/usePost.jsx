@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 const DISPLAYPAGENUM = 5;
 const POSTSPERPAGE = 5;
-export default function usePost(postService,page) {
+export default function usePost(postService,page,keyword) {
     const queryClient = useQueryClient();
     const [posts, setPosts] = useState([]);
     const [currentPage, setCurrentPage] = useState(page ? page : 1);
@@ -48,7 +48,7 @@ export default function usePost(postService,page) {
         setHasNext(getHasNext(tmpEndPage,totalPage));
     }
 
-    const {data}= useQuery(["posts",currentPage],()=>postService.getPosts(currentPage,POSTSPERPAGE),
+    const {data}= useQuery(["posts", keyword, currentPage],()=>postService.getPosts(keyword, currentPage,POSTSPERPAGE),
                                                                     {
                                                                         staleTime:1000 * 60 * 1,
                                                                         onSuccess: (result) => {
@@ -60,28 +60,28 @@ export default function usePost(postService,page) {
                                                                     });
 
     useEffect(()=>{
-        if(data) {
-            queryClient.invalidateQueries(['posts', currentPage]);
+        if(data) {;
+            queryClient.invalidateQueries(['posts', keyword, currentPage]);
         }
     }
-    ,[posts])
+    ,[posts,keyword])
 
     const handlePrevious = () => {
         const page = currentPage-DISPLAYPAGENUM
         setCurrentPage(page)
-        queryClient.invalidateQueries(['posts', page]);
+        queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
     const handleNext = () => {
         const page = currentPage+DISPLAYPAGENUM
         setCurrentPage(page)
-        queryClient.invalidateQueries(['posts', page]);
+        queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
     const handlePage = (startPage,index) => {
         const page = startPage + index;
         setCurrentPage(page);
-        queryClient.invalidateQueries(['posts', page]);
+        queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
     return {

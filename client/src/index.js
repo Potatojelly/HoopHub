@@ -113,6 +113,13 @@ const router = createBrowserRouter([
                   </ProtectedRoute>)
       },
       {
+        path:"/forums/search/:keyword", 
+        element: (<ProtectedRoute>
+                      {/* <ReadPost postService={postService}/> */}
+                      <Forums postService={postService}/>
+                  </ProtectedRoute>)
+      },
+      {
         path:"/manage-my-activity", 
         element: (<ProtectedRoute>
                       <SelectedCardProvider>
@@ -132,13 +139,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element:(<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+    element:(<AuthProvider authService={authService} >
               <Login/>
-            </AuthProvider>) 
+            </AuthProvider>)
   },
   {
     path: "/register",
-    element: (<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+    element: (<AuthProvider authService={authService} >
               <Register/>
             </AuthProvider>) 
   },
