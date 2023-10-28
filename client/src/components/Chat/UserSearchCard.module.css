@@ -1,0 +1,33 @@
+.userCard {
+    display: flex;
+    justify-content: center;
+    align-item: center;
+    padding: 0.5rem;
+    height: 15%;
+    width: 100%;
+}
+
+.userCard:hover {
+    background-color: var(--color-light-grey);
+    cursor: pointer;
+}
+
+.inactiveUserCard {
+    background-color: var(--ccolor-mid-grey);
+}
+
+.inactiveUserCard:hover {
+    background-color: var(--ccolor-mid-grey);
+    cursor: auto;
+}
+
+
+.userImg {
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.userName {
+    flex-grow: 1;
+    align-self:center;
+}

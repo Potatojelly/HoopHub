@@ -1,0 +1,125 @@
+.chatScreen {
+    border-top: 2px solid var(--color-border);
+    border-bottom: 2px solid var(--color-border);
+    flex-grow:1;
+}
+
+.titleContainer {
+    height: 45px;
+    border-bottom: 2px solid var(--color-border);
+    font-size: 1.3rem;
+    font-family: var(--text-main);
+    display: flex;
+    align-items:center;
+}
+
+.chatTitle {
+    padding-left: 1rem;
+    flex-grow:1;
+}
+
+.mainScreen {
+    height: 90vh;
+    display:flex;
+    flex-direction: column;
+}
+
+.conversationScreen {
+    flex-grow: 1;
+    max-height: 800px;
+    overflow: auto;
+}
+
+.msgContainer {
+    display: flex;
+    width: 100%;
+    justify-content:center;
+    align-self: flex-end;
+    padding: 0.5rem;
+
+}
+
+.textContainer {
+    background-color: var(--color-mid-grey);
+    /* width: 1200px; */
+    flex-grow:1;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    border-radius: 1rem;
+    padding: 0 12px 0 12px;
+}
+
+.msgText {
+    padding: 10px;
+    border: none;
+    resize: none;
+    height: auto;
+    font-size: 14px;
+    background-color: transparent;
+    outline: none;
+    flex-grow: 1;
+    max-height: 90px; 
+    word-break: nowrap;
+}
+
+
+.imgBtn {
+    background-color:transparent;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+}
+
+.imgBtn:hover {
+    background-color: var(--color-grey);
+}
+
+.imgIcon {
+    font-size: 1.3rem;
+}
+
+.sendBtn {
+    width: 60px;
+    padding: 12px;
+    margin-left: 0.5rem;
+    background-color:orange;
+    color:white;
+    border-radius: 0.5rem;
+}
+
+.sendBtn:disabled{
+    background-color: var(--color-mid-grey);
+}
+
+.sendBtn:disabled:hover {
+    background-color: var(--color-mid-grey);
+    filter: none;
+    cursor:auto;
+}
+
+.exitBtn {
+    background-color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-right: 1rem;
+}
+
+
+.exitIcon {
+    font-size: 1.3rem;
+}
+
+.loadingSpinner {
+    display: flex;
+    justify-content:center;
+}
+

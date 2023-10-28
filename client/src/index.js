@@ -30,6 +30,17 @@ import PostService from './service/post';
 import MyActivity from './pages/MyActivity';
 import MyPost from './pages/MyPost';
 import { SelectedCardProvider } from './context/SelectedCardContext';
+import { ChatRoomProvider } from './context/ChatRoomContext';
+import ChatService from './service/chat';
+import { UserSearchProvider } from './context/UserSearchContext';
+import ChatScreen from './components/Chat/ChatScreen';
+import UserSearch from './components/Chat/UserSearch';
+import ChatInbox from './components/Chat/ChatInbox';
+import Post from './components/Forum/Post';
+import Posts from './components/Forum/Posts';
+import ViewPost from './pages/ViewPost';
+import { PostProvider } from './context/PostContext';
+import { MyActivityProvider } from './context/MyActivityContext';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();
@@ -40,6 +51,7 @@ const retrieveService = new RetrieveService(httpClient);
 const searchService = new SearchService(httpClient);
 const friendService = new FriendService(httpClient);
 const postService = new PostService(httpClient);
+const chatService = new ChatService(httpClient);
 
 const queryClient = new QueryClient();
 
@@ -49,7 +61,11 @@ const router = createBrowserRouter([
     element: (<QueryClientProvider client={queryClient}>
                 <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
                   <ProfileProvider profileService={profileService}>
-                    <App  friendService={friendService}/>
+                    <ChatRoomProvider>
+                      <PostProvider>
+                        <App  friendService={friendService}/>
+                      </PostProvider>
+                    </ChatRoomProvider>
                   </ProfileProvider>
                 </AuthProvider>
                 {/* <ReactQueryDevtools initialIsOpen={true}/> */}
@@ -58,13 +74,14 @@ const router = createBrowserRouter([
     children: [
       {index:true, 
         path:"/", 
-        element: (<Forums postService={postService}/>)},
+        element:(<Forums postService={postService}/>)
+      },
       {
         path:"/people", 
         element: (<ProtectedRoute>
-                    <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                    {/* <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}> */}
                       <People searchService={searchService} friendService={friendService}/>
-                    </AuthProvider>
+                    {/* </AuthProvider> */}
                   </ProtectedRoute>)
       },
       {
@@ -78,8 +95,28 @@ const router = createBrowserRouter([
       {
         path:"/messages", 
         element: (<ProtectedRoute>
-                  <Messages/>
-                  </ProtectedRoute>)
+                    <ProfileProvider profileService={profileService}>
+                      {/* <ChatRoomProvider> */}
+                        <UserSearchProvider>
+                          <Messages searchService={searchService} chatService={chatService}/>
+                        </UserSearchProvider>
+                      {/* </ChatRoomProvider> */}
+                    </ProfileProvider>
+                  </ProtectedRoute>),
+        children:[
+          {
+            path:"inbox",
+            element: (<ChatInbox/>)
+          },
+          {
+            path:"search-user",
+            element: (<UserSearch searchService={searchService} />)
+          },
+          {
+            path:":title",
+            element: (<ChatScreen chatService={chatService}/>)
+          }
+      ]
       },
       {
         path:"/find-chat-rooms", 
@@ -91,11 +128,11 @@ const router = createBrowserRouter([
         path:"/edit-profile", 
         element: (<ProtectedRoute>
                   <ProfileProvider profileService={profileService}>
-                    <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                    {/* <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}> */}
                         <ProfileProvider profileService={profileService}>
                           <EditProfile/>
                         </ProfileProvider>
-                      </AuthProvider>
+                      {/* </AuthProvider> */}
                     </ProfileProvider>
                   </ProtectedRoute>)
       },
@@ -106,16 +143,23 @@ const router = createBrowserRouter([
                   </ProtectedRoute>)
       },
       {
-        path:"/forums/post/:title", 
+        path:"/forums", 
         element: (<ProtectedRoute>
-                      {/* <ReadPost postService={postService}/> */}
                       <Forums postService={postService}/>
-                  </ProtectedRoute>)
+                  </ProtectedRoute>),
+        children:
+        [
+          {
+            path:"post/:title",
+            element: (<MyActivityProvider>
+                        <Post postService={postService}/>
+                      </MyActivityProvider>)
+          }
+        ]
       },
       {
         path:"/forums/search/:keyword", 
         element: (<ProtectedRoute>
-                      {/* <ReadPost postService={postService}/> */}
                       <Forums postService={postService}/>
                   </ProtectedRoute>)
       },
@@ -123,15 +167,25 @@ const router = createBrowserRouter([
         path:"/manage-my-activity", 
         element: (<ProtectedRoute>
                       <SelectedCardProvider>
-                        <MyActivity postService={postService}/>
+                          <MyActivity postService={postService}/>
                       </SelectedCardProvider>
-                  </ProtectedRoute>)
+                  </ProtectedRoute>),
+        // children: [
+        //   {
+        //     path:"my-post/:title", 
+        //     element: (<ProtectedRoute>
+        //                 <MyPost postService={postService}/>
+        //               </ProtectedRoute>)
+        //   },
+        // ]
       },
       {
         path:"/manage-my-activity/my-post/:title", 
         element: (<ProtectedRoute>
                     <SelectedCardProvider>
-                      <MyPost postService={postService}/>
+                      <MyActivityProvider>
+                        <MyPost postService={postService}/>
+                      </MyActivityProvider>
                     </SelectedCardProvider>
                   </ProtectedRoute>)
       },

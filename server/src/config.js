@@ -24,6 +24,9 @@ export const config = {
         database: required("DB_DATABASE"),
         password: required("DB_PASSWORD"),
     },
+    mongoDB: {
+        host: required("MONGO_DB_HOST"),
+    },
     mail : {
         service :required("NODEMAILER_SERVICE"),
         port : parseInt(required("NODEMAILER_PORT")),
@@ -41,6 +44,7 @@ export const config = {
     bucket : {
         profile: required("AWS_S3_BUCKET_NAME1"),
         forum: required("AWS_S3_BUCKET_NAME2"),
+        chat: required("AWS_S3_BUCKET_NAME3"),
     },
     ff : {
         ffmpeg: required("FFMPEG_PATH"),

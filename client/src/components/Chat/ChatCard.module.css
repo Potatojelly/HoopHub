@@ -1,0 +1,91 @@
+.chatCard {
+    height: 65px;
+    border-bottom: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.chatCard:hover {
+    background-color: var(--color-light-grey);
+    filter: brightness(0.9);
+    cursor: pointer;
+}
+
+.selectedChatCard {
+    background-color: var(--color-mid-grey);
+}
+
+.selectedChatCard:hover {
+    background-color: var(--color-mid-grey);
+    filter: none;
+    cursor: auto;
+}
+
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.5rem;
+    flex-grow: 1;
+    max-width: 250px;
+}
+
+.chatImg {
+    width: 40px;
+    margin-left: 0.5rem;
+}
+
+.recentTime {
+    font-weight: bold;
+    color: var(--color-grey);
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.chatTitle, .recentMsg {
+    white-space:nowrap;
+    overflow: hidden;          
+    text-overflow: ellipsis;  
+}
+
+.chatTitle {
+    flex-grow: 1;
+    font-weight: bold;
+}
+
+.recentMsg {
+    color: var(--color-grey);
+    flex-grow: 1;
+    max-width: 200px;
+}
+
+.pictureImage {
+    font-size: 3rem;
+}
+
+
+.topLine {
+    display: flex;
+    flex-grow: 1;
+}
+
+.bottomLine {
+    display: flex;
+    align-items:center;
+}
+
+.unreadMessageCounter {
+    margin-right: 0.5rem;
+    border-radius: 100%;
+    background-color: red;
+    color: white;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items:center;
+}
+
+.countNumber {
+
+}

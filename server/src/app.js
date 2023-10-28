@@ -9,13 +9,14 @@ import retrRouter from "./router/retr.js";
 import searchRouter from "./router/search.js";
 import friendRouter from "./router/friend.js";
 import forumRouter from "./router/forum.js";
+import chatRouter from "./router/chat.js";
 import cookieParser from 'cookie-parser';
-import {db} from "./db/database.js";
+import {connectMongoDB, db} from "./db/database.js";
 
 const app = express();
 
 const corsOption = {
-    origin:"http://localhost:3000",
+    origin:["http://localhost:3000","http://localhost:3001"],
     optionSuccessStatus: 200,
     credentials: true,
 }
@@ -33,6 +34,7 @@ app.use("/retrieve", retrRouter);
 app.use("/search", searchRouter);
 app.use("/friend", friendRouter);
 app.use("/forum", forumRouter);
+app.use("/chat", chatRouter);
 
 app.use((req,res,next) => {
     res.sendStatus(404);
@@ -48,6 +50,11 @@ db.connect(err => {
     else console.log("PostgresSQL Connection Success");
 }) 
 
+connectMongoDB()
+    .then(()=> {
+        console.log("MongooseDB Connection Success")
+    })
+    .catch(console.error);
 
 let port = 8080;
 

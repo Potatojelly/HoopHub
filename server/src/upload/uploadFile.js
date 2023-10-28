@@ -40,3 +40,19 @@ export const forumUpload = multer({
     }),
 });
 
+export const chatUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: config.bucket.chat,
+        acl: "public-read",
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        key: function(req,file,cb) {
+            const timestamp = Date.now();
+            const customName = "ChatImg";
+            const extension = file.originalname.split(".").pop();
+            const fileName = timestamp+"-"+customName+"."+extension;
+            cb(null,fileName);
+        }, 
+    }),
+});
+

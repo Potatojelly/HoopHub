@@ -1,0 +1,67 @@
+.msgLine {
+    display:flex;
+    padding: 8px 16px 0 0;
+    flex-direction: row-reverse;
+}
+
+.initialSpeechBubble {
+	position: relative;
+	background: var(--color-blue);
+	border-radius: .4em;
+    padding: 8px;
+    color:white;
+	display: flex;
+	flex-direction: column;
+}
+
+.initialSpeechBubble:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 0.8em solid transparent;
+	border-left-color: var(--color-blue);
+	border-right: 0;
+	border-top: 0;
+	margin-top: -0.359em;
+	margin-right: -0.719em;
+}
+
+.speechBubble {
+	position: relative;
+	background: var(--color-blue);
+	border-radius: .4em;
+    padding: 8px;
+    color:white;
+	display: flex;
+	flex-direction: column;
+}
+
+.message {
+    max-width: 650px;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.info {
+    display:flex;
+    flex-direction:column-reverse;
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+    color:var(--color-grey);
+}
+
+.time {
+    align-self: flex-end;
+}
+
+.imageFile {
+	width: 155px;
+	height: 206px;
+}
+
+.errorMsg {
+	color: red;
+}
