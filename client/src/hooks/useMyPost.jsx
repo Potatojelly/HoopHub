@@ -1,92 +1,73 @@
 import {useMutation,useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
-import { useAuth } from '../context/AuthContext';
+import { AuthErrorEventBus, useAuth } from '../context/AuthContext';
 import { useEffect, useState } from 'react';
+import HttpClient from '../network/http';
+import PostService from '../service/post';
 
+const baseURL = process.env.REACT_APP_BASE_URL;
+const authErrorEventBus = new AuthErrorEventBus();
+const httpClient = new HttpClient(baseURL,authErrorEventBus);
+const postService = new PostService(httpClient);
 const DISPLAYPAGENUM = 5;
 const POSTSPERPAGE = 10;
-export default function useMyPost(postService,page) {
+export default function useMyPost() {
     const queryClient = useQueryClient();
-    const [posts, setPosts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(page ? page : 1);
     const [totalPage,setTotalPage] = useState(undefined);
     const [startPage,setStartPage] = useState(undefined);
     const [endPage,setEndPage] = useState(undefined);
     const [hasPrev,setHasPrev] = useState(undefined);
     const [hasNext,setHasNext] = useState(undefined);
 
-    const getTotalPages = (totalPosts, postsPerPage) => {
-        return parseInt(((totalPosts - 1)/postsPerPage) + 1);
+    const getTotalPage = (totalPosts) => {
+        const total_page = parseInt(((totalPosts - 1)/POSTSPERPAGE) + 1);
+        setTotalPage(total_page);
     }
 
-    const getStartPage = (currentPage, displayPageNum) => {
-        return (parseInt((currentPage-1)/displayPageNum)) * displayPageNum + 1;
+    const getStartPage = (currentPage) => {
+        const start_page = (parseInt((currentPage-1)/DISPLAYPAGENUM)) * DISPLAYPAGENUM + 1;
+        setStartPage(start_page);
+        const result = (start_page === 1) ? false : true;
+        setHasPrev(result);
     }
 
-    const getEndPage = (currentPage, displayPageNum, totalPages) => {
-        let endPage = (parseInt(((currentPage-1)/displayPageNum))+1) * displayPageNum;
-        if(totalPages < endPage) {
-            endPage = totalPages;
+    const getEndPage = (currentPage, totalPosts) => {
+        const total_page = parseInt(((totalPosts - 1)/POSTSPERPAGE) + 1);
+        let end_page = (parseInt(((currentPage-1)/DISPLAYPAGENUM))+1) * DISPLAYPAGENUM;
+        if(total_page < end_page) {
+            end_page = total_page;
         }
-        return endPage;
+        setEndPage(end_page);
+        const result = (end_page == total_page) ? false : true;
+        setHasNext(result);
     }
 
-    const getHasPrev = (startPage) => {
-        return (startPage === 1) ? false : true;
+    const setPageInfo = (totalPosts, currentPage) => {
+        getTotalPage(totalPosts);
+        getStartPage(currentPage);
+        getEndPage(currentPage,totalPosts);
     }
 
-    const getHasNext = (endPage, totalPages) => {
-        return (endPage == totalPages) ? false : true;
-    }
 
-    const setPageInfo = (totalPage, currentPage) => {
-        const tmpStartPage = getStartPage(currentPage,DISPLAYPAGENUM) 
-        setStartPage(tmpStartPage);
-        const tmpEndPage = getEndPage(currentPage,DISPLAYPAGENUM,totalPage) 
-        setEndPage(tmpEndPage);
-        setHasPrev(getHasPrev(tmpStartPage));
-        setHasNext(getHasNext(tmpEndPage,totalPage));
-    }
-
-    const {data}= useQuery(["myPosts",currentPage],()=>postService.getMyPosts(currentPage,POSTSPERPAGE),
-                                                                    {
-                                                                        staleTime:1000 * 60 * 1,
-                                                                        onSuccess: (result) => {
-                                                                            setPosts(result.my_posts);
-                                                                            const tmpTotalPage = getTotalPages(result.total_posts,result.posts_per_page);
-                                                                            setTotalPage(tmpTotalPage);
-                                                                            setPageInfo(tmpTotalPage,currentPage);
-                                                                        },
-                                                                    });
-
-    useEffect(()=>{
-        if(data) {
-            queryClient.invalidateQueries(['myPosts', currentPage]);
-        }
-    }
-    ,[currentPage])
-
-    const handlePrevious = () => {
-        const page = currentPage-DISPLAYPAGENUM
+    const handlePrevious = (setCurrentPage) => {
+        const page = startPage-DISPLAYPAGENUM
         setCurrentPage(page)
         queryClient.invalidateQueries(['myPosts', page]);
     }
 
-    const handleNext = () => {
-        const page = currentPage+DISPLAYPAGENUM
+    const handleNext = (setCurrentPage) => {
+        const page = startPage+DISPLAYPAGENUM
         setCurrentPage(page)
         queryClient.invalidateQueries(['myPosts', page]);
     }
 
-    const handlePage = (startPage,index) => {
+    const handlePage = (startPage,index,setCurrentPage) => {
         const page = startPage + index;
         setCurrentPage(page);
         queryClient.invalidateQueries(['myPosts', page]);
     }
 
     return {
-        posts,
-        currentPage,
         totalPage,
         startPage,
         endPage,
@@ -94,6 +75,19 @@ export default function useMyPost(postService,page) {
         hasNext,
         handlePrevious,
         handleNext,
-        handlePage
+        handlePage,
+        setPageInfo,
     };
+}
+
+export function useMyPostQuery(currentPage) {
+    return useQuery(["myPosts",currentPage],()=>postService.getMyPosts(currentPage,POSTSPERPAGE),
+                                                                    {
+                                                                        onSuccess: (result) => {
+                                                                            console.log(result);
+                                                                        },
+                                                                        keepPreviousData:true,
+                                                                        refecthOnMount: true, 
+                                                                        refetchOnWindowFocus: false
+                                                                    });
 }

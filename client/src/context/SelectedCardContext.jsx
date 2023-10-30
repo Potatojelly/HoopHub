@@ -5,8 +5,8 @@ const SelectedCardContext = createContext();
 export const SelectedCardProvider = ({ children }) => {
     const [selectedCard, setSelectedCard] = useState(null);
 
-    const selectCard = (idx) => {
-        setSelectedCard(idx);
+    const selectCard = (userID,userNickname) => {
+        setSelectedCard({id:userID,nickname:userNickname});
     };
 
     return (

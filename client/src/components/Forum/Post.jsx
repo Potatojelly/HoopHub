@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Post.module.css'
 import Comments from './Comments';
-import simplifyDate from '../../date';
+import {simplifyDate} from '../../date';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 import {FaRegCommentAlt} from "react-icons/fa";
@@ -11,9 +11,11 @@ import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
 import {useNavigate} from "react-router-dom";
 import PostEditor from './PostEditor';
+import { usePostContext } from '../../context/PostContext';
 
 
-export default function Post({postID, currentPage, targetPage, targetCommentID, postService}) {
+export default function Post({postService}) {
+    const {selectedPage,selectedPostID} = usePostContext();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [isEdit,setIsEdit] = useState(false);
@@ -22,32 +24,30 @@ export default function Post({postID, currentPage, targetPage, targetCommentID, 
 
     useEffect(()=>{
         if(isEdit === false) {
-            postService.updateView(postID)
+            postService.updateView(selectedPostID)
             .then(()=>{
-                postService.getPost(postID)
+                postService.getPost(selectedPostID)
                     .then((result)=>{
-                        // console.log(result);
                         if(result.post.deleted === 1) {
-                            console.log("called!")
                             alert(`The post "${result.post.title}" has been deleted!`);
                             navigate('/', {replace: true} );
                         } else {
                             setPost(result.post)
-                            queryClient.invalidateQueries(['posts', currentPage]);
+                            queryClient.invalidateQueries('posts');
                         }
                     })
                     .catch((err)=>console.log(err))
             })
             .catch((err)=>console.log(err))
         }
-    },[postID,isEdit]);
+    },[selectedPostID,isEdit]);
 
     const handleConfirm = (text) => {
         const result = window.confirm(text);
         if(result) {
-            postService.deletePost(postID)
+            postService.deletePost(selectedPostID)
                 .then((result)=>{
-                    queryClient.invalidateQueries(['posts', currentPage]);
+                    queryClient.invalidateQueries(['posts', selectedPage]);
                 })
                 navigate('/', {replace: true} );
         } 
@@ -91,11 +91,11 @@ export default function Post({postID, currentPage, targetPage, targetCommentID, 
                         </span>
                     </div>
                 </div>
-                <Comments postID={post.id} postPage={currentPage} setPost={setPost} targetPage={targetPage} targetCommentID={targetCommentID} postService={postService}/>
+                <Comments setPost={setPost} postService={postService}/>
             </div>
         }
             {isEdit &&
-                <PostEditor postService={postService} post={post} handleEdit={handleEdit} currentPage={currentPage}/>
+                <PostEditor postService={postService} post={post} handleEdit={handleEdit}/>
             }
         </>
     );

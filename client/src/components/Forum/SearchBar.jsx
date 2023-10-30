@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import styles from './SearchBar.module.css'
 import {FiSearch} from "react-icons/fi";
 import {useNavigate} from "react-router-dom";
+import { usePostContext } from '../../context/PostContext';
 
 export default function SearchBar({postService}) {
-
+    const {setSelectedPage,setPostID} = usePostContext();
     const [searchTerm,setSearchTerm] = useState("");
     const navigate = useNavigate();
 
@@ -15,6 +16,8 @@ export default function SearchBar({postService}) {
 
     const submitKeyword = (e) => {
         e.preventDefault();
+        setSelectedPage(null);
+        setPostID(null);
         navigate(`/forums/search/${searchTerm}`,{state: {keyword: searchTerm}});
     }
 

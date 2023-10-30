@@ -13,6 +13,9 @@ import Logo from '../Logo/Logo';
 import { useAuth } from '../../context/AuthContext';
 import Dropdown from '../Dropdown/Dropdown';
 import { useProfile } from '../../context/ProfileContext';
+import { useChatRoomID } from '../../context/ChatRoomContext';
+import { useUserSearch } from '../../context/UserSearchContext';
+import { usePostContext } from '../../context/PostContext';
 
 export default function Header({friendService}) {
     const {user} = useAuth();
@@ -21,7 +24,8 @@ export default function Header({friendService}) {
     const [myStuff, setMyStuff] = useState(false);
     const showSidebar = () => setSidebar(!sidebar);
     const showMyStuff = () => setMyStuff(!myStuff);
-
+    const {selectChatRoom} = useChatRoomID();
+    const {selectedPostID,selectedPage,setSelectedPage,setPostID} = usePostContext();
     return (
         <header id="header" className={styles.header}>
             <div className={styles.container}>
@@ -36,9 +40,9 @@ export default function Header({friendService}) {
                 {user &&
                     <>
                         <Link to="/"> 
-                            <PiNotePencilBold className={styles.service}/>
+                            <PiNotePencilBold className={styles.service} onClick={()=>{setSelectedPage(null); setPostID(null);}}/>
                         </Link>
-                        <Link to="/messages"> 
+                        <Link to="/messages/inbox" onClick={()=>{selectChatRoom(null)}}> 
                             <AiOutlineMessage  className={styles.service}/>
                         </Link>
                         <Link to="/find-chat-rooms"> 

@@ -7,10 +7,12 @@ import styles from './PostCreator.module.css';
 import ImageResize from 'quill-image-resize';
 import simplifyDate from '../../date';
 import {BsFillEyeFill} from "react-icons/bs";
+import { usePostContext } from '../../context/PostContext';
 
 Quill.register('modules/ImageResize', ImageResize);
 
 export default function PostCreator({postService}) {
+    const {selectedPostID,setPostID} = usePostContext();
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
@@ -75,7 +77,9 @@ export default function PostCreator({postService}) {
         postService.createPost(formData)
             .then((response)=>{
                 const post = {...response}
-                navigate(`/forums/post/${response.title}`,{state: post});
+                console.log(response);
+                setPostID(post.id);
+                navigate(`/forums/post/${response.title}`);
             })
             .catch((error)=>{console.log(error)})
         

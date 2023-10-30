@@ -4,8 +4,11 @@ import ReactQuill, {Quill} from 'react-quill';
 import {useMutation,useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
 import './quill.css';
+import { usePostContext } from '../../context/PostContext';
+import { useMyActivityContext } from '../../context/MyActivityContext';
 
-const CreateReply = ({author,postID,postPage,commentPage,setPost,commentID, postService, handleReplyClick, custom})=> {
+const CreateReply = ({author,setPost,commentID, commentPage, postService, handleReplyClick, custom})=> {
+    const {selectedPage,selectedPostID} = usePostContext();
     const queryClient = useQueryClient();
     const [reply,setReply] = useState(()=>author ? author : "");
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
@@ -37,14 +40,14 @@ const CreateReply = ({author,postID,postPage,commentPage,setPost,commentID, post
 
     const submitReply = (e) => {
         e.preventDefault();
-        postService.createReply(postID,commentID,reply)
+        postService.createReply(selectedPostID,commentID,reply)
             .then((data)=>{
                 if(data.success === true) {
-                    postService.getPost(postID)
+                    postService.getPost(selectedPostID)
                         .then((result)=>{setPost(result.post)})
                         .catch((err)=>console.log(err))
-                    queryClient.invalidateQueries(['posts', postPage]);
-                    queryClient.invalidateQueries(["comments",postID,commentPage]);
+                    queryClient.invalidateQueries(['posts', selectedPage]);
+                    queryClient.invalidateQueries(["comments",selectedPostID,commentPage]);
                     handleReplyClick();
                     setIsSubmitDisabled(true);
                 }

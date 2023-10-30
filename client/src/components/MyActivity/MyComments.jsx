@@ -1,23 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './MyComments.module.css'
 import MyCommentCard from "../MyActivity/MyCommentCard";
-import useMyComment from '../../hooks/useMyComment';
+import useMyComment, { useMyCommentQuery } from '../../hooks/useMyComment';
 
 const COMMENTSPERPAGE = 10;
 export default function MyComments({postService}) {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_comments ? window.history.state.my_comments : null);
+    const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/COMMENTSPERPAGE) : 1);
     const {
-        comments,
-        currentPage,
-        totalComments,
+        totalPage,
         startPage,
         endPage,
         hasPrev,
         hasNext,
         handlePrevious,
         handleNext,
-        handlePage
-    } = useMyComment(postService,selectedCard ? Math.ceil(selectedCard/COMMENTSPERPAGE) : null);
+        handlePage,
+        setPageInfo
+    } = useMyComment();
+
+    const {
+        data,
+        isFetching,
+    } = useMyCommentQuery(currentPage);
+
+    useEffect(()=>{
+        if(data) {
+            if(selectedCard) setPageInfo(data.total_comments,Math.ceil(selectedCard/COMMENTSPERPAGE));
+            else setPageInfo(data.total_comments,currentPage);
+        } 
+    },[data])
+
+    const customHandlePrevious = () => {
+        handlePrevious(setCurrentPage);
+    }
+
+    const customHandleNext = () => {
+        handleNext(setCurrentPage);
+    }
+
+    const customHandlePage = (startPage,index) => {
+        handlePage(startPage,index,setCurrentPage)
+    }
+
+
     return (
         <div className={styles.container}>
             <div className={styles.infoContainer}>
@@ -25,35 +51,35 @@ export default function MyComments({postService}) {
                 <span className={styles.infoComment}>Comment</span>
                 <span className={styles.infoCreatedDate}>Created Date</span>
             </div>
-            {!comments && <div className={styles.noContent}> <span>No Comments</span> </div>}
-            {comments && comments.map((comment,index)=><MyCommentCard key={index} 
+            {data && !data.my_comments && <div className={styles.noContent}> <span>No Comments</span> </div>}
+            {data && data.my_comments.map((comment,index)=><MyCommentCard key={index} 
                                                                     comment={comment} 
                                                                     num={(currentPage-1)*COMMENTSPERPAGE+(index+1)}
                                                                     selectedCard={selectedCard}
                                                                     setSelectedCard={setSelectedCard}
                                                                     />)}
-            {comments && 
+            {data && data.my_comments && totalPage && 
             <footer>          
                 <nav className={styles.nav}>
                     {hasPrev && 
-                    <button className={styles.btn} onClick={()=>{handlePrevious(); setSelectedCard(null)}}> 
+                    <button className={styles.btn} onClick={customHandlePrevious}> 
                         {"<<"}
                     </button>}
-                    {comments.length > 0 && 
+                    {data && data.my_comments.length > 0 && 
                         Array(endPage-startPage+1)
                         .fill()
                         .map(( _,index) => 
                             (
                                 <button className={styles.btn} 
                                         key={index} 
-                                        onClick={()=>{handlePage(startPage,index); setSelectedCard(null)}} 
+                                        onClick={()=>{customHandlePage(startPage,index)}} 
                                         aria-current={currentPage === startPage+index ? "selected" : null}>
                                     {(startPage+index)}
                                 </button>
                             )
                         )
                     }
-                    {hasNext && <button  className={styles.btn} onClick={()=>{handleNext(); setSelectedCard(null)}}> 
+                    {hasNext && <button  className={styles.btn} onClick={customHandleNext}> 
                         {">>"}
                     </button>}
                 </nav>                

@@ -5,14 +5,14 @@ import './quill.css';
 import 'react-quill/dist/quill.snow.css';
 import styles from './PostEditor.module.css';
 import ImageResize from 'quill-image-resize';
-import simplifyDate from '../../date';
+import {simplifyDate} from '../../date';
 import {BsFillEyeFill} from "react-icons/bs";
 import {useMutation,useQueryClient} from "@tanstack/react-query";
+import { usePostContext } from '../../context/PostContext';
 
 Quill.register('modules/ImageResize', ImageResize);
 
-export default function PostEditor({postService,post,handleEdit, currentPage}) {
-    const queryClient = useQueryClient();
+export default function PostEditor({postService,post,handleEdit}) {
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
@@ -78,7 +78,8 @@ export default function PostEditor({postService,post,handleEdit, currentPage}) {
                 console.log(response);
                 handleEdit();
                 if(response.success === true) {
-                    navigate(`/forums/post/${response.title}`,{state: {currentPage, selectedPost: post.id}});
+                    navigate(`/forums/post/${response.title}`);
+                    // navigate(`/forums/post/${response.title}`,{state: {currentPage, selectedPost: post.id}});
                 }
             })
             .catch((error)=>{console.log(error)})

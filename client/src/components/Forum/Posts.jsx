@@ -2,21 +2,22 @@ import React, { useEffect, useState } from 'react';
 import styles from './Posts.module.css'
 import PostCard from './PostCard';
 import {v4 as uuidv4} from "uuid";
-import usePost from '../../hooks/usePost';
+import { usePostQuery, usePost  } from '../../hooks/usePost';
 import SearchBar from './SearchBar';
-
+import { usePostContext } from '../../context/PostContext';
+import useMyPost from '../../hooks/useMyPost';
+import {useQuery} from '@tanstack/react-query';
 const POSTSPERPAGE = 5;
 
-// export default function Posts({postService}) {
-function Posts({postService,page,selectedPost,keyword}) {
-    const [isSelected,setIsSelected] = useState(null);
+function Posts({postService,keyword}) {
+    const {selectedPostID,selectedPage,setSelectedPage,setPostID} = usePostContext();
+    const [currentPage, setCurrentPage] = useState(selectedPage ? selectedPage : 1);
+
     useEffect(()=>{
-        setIsSelected(selectedPost);
+        console.log("mount!");
     },[])
 
     const {
-        posts,
-        currentPage,
         totalPage,
         startPage,
         endPage,
@@ -25,56 +26,65 @@ function Posts({postService,page,selectedPost,keyword}) {
         handlePrevious,
         handleNext,
         handlePage,
-    } = usePost(postService,page,keyword ? keyword : null);
+        setPageInfo,
+    } = usePost();
+
+    const {
+        data,
+        isFetching,
+    } = usePostQuery(currentPage,keyword ? keyword : null);
+
+
+    useEffect(()=>{
+        if(data) {
+            if(selectedPostID) setPageInfo(data.total_posts,selectedPage);
+            else setPageInfo(data.total_posts,currentPage);
+        } 
+    },[data])
 
     const handleSelection = (postID) => {
-        setIsSelected(postID)
+        setPostID(postID);
     }
 
     const customHandlePrevious = () => {
-        handlePrevious();
-        setIsSelected(null);
+        handlePrevious(setCurrentPage,setSelectedPage);
     }
 
     const customHandleNext = () => {
-        handleNext();
-        setIsSelected(null);
+        handleNext(setCurrentPage,setSelectedPage);
+
     }
 
     const customHandlePage = (startPage,index) => {
-        handlePage(startPage,index);
-        setIsSelected(null);
+        handlePage(startPage,index,setCurrentPage,setSelectedPage)
     }
     return (
         <div className={styles.posts}>
             <h1 className={styles.title}>Posts</h1>
-            {posts && posts.length > 0 &&
+            {data && data.posts.length > 0 &&
             <div className={styles.postsContainer}>
                 <div className={styles.postsSubContainer}>
-                    {posts.map((post, index)=>{
-                        if(posts.length === index+1) return (<div  key={uuidv4()}  onClick={()=>{handleSelection(post.id)}}>
-                                                                <PostCard   id ={post.id}
+                    {data.posts.map((post, index)=>{
+                        if(data.posts.length === index+1) return (<PostCard key={post.id}   
+                                                                        id ={post.id}
                                                                         num={(currentPage-1)*POSTSPERPAGE+(index+1)} 
                                                                         post={post} 
-                                                                        isSelected={isSelected}
-                                                                        currentPage={currentPage}
+                                                                        handleSelection={handleSelection}
                                                                         keyword={keyword}
-                                                                        last={true} />
-                                                            </div>)   
-                        else return (<div  key={uuidv4()}  onClick={()=>{handleSelection(post.id)}}>
-                                    <PostCard id={post.id} 
+                                                                        last={true} />)   
+                        else return (<PostCard  key={post.id}
+                                            id={post.id} 
                                             num={(currentPage-1)*5+(index+1)} 
+                                            handleSelection={handleSelection}
                                             post={post}
-                                            currentPage={currentPage}
                                             keyword={keyword}
-                                            isSelected={isSelected}/>
-                                    </div>)       
+                                            />)       
                     })}
                 </div>
             </div>
             }
-            {posts.length === 0 && <div className={styles.noContent}> <span>No Posts</span> </div>}
-            {posts && posts.length > 0 && totalPage && 
+            {data && data.posts.length === 0 && <div className={styles.noContent}> <span>No Posts</span> </div>}
+            {data && data.posts.length > 0 && totalPage && 
             <footer>
                 <nav className={styles.nav}>
                     {hasPrev && 
@@ -99,7 +109,6 @@ function Posts({postService,page,selectedPost,keyword}) {
                     </button>}
                 </nav>                
             </footer>}
-            <SearchBar postService={postService}/>
         </div>
     );
 }

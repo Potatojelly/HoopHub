@@ -2,13 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from './Comments.module.css'
 import CommentCard from './CommentCard';
 import {v4 as uuidv4} from "uuid";
-import useComment from '../../hooks/useComment';
+import useComment, { useCommentQuery } from '../../hooks/useComment';
 import ReplyCard from './ReplyCard';
 import { useProfile } from '../../context/ProfileContext';
 import {useQueryClient} from "@tanstack/react-query";
+import { usePostContext } from '../../context/PostContext';
+import { useMyActivityContext } from '../../context/MyActivityContext';
 
-const COMMENTSPERPAGE = 5;
-export default function Comments({postID, postPage, setPost, targetPage, targetCommentID,  postService}) {
+export default function Comments({setPost, targetCommentID,  postService}) {
+    const {setSelectedPage,selectedPage,selectedPostID} = usePostContext();
+    const {selectedCommentID,selectedCommentPage} = useMyActivityContext();
+    const [currentPage, setCurrentPage] = useState(selectedCommentPage ? selectedCommentPage : 1);
     const queryClient = useQueryClient();
     const {nickname} = useProfile();
     const [commentText,setCommentText] = useState("");
@@ -16,20 +20,27 @@ export default function Comments({postID, postPage, setPost, targetPage, targetC
     const [openReplyIndex, setOpenReplyIndex] = useState(null);
 
     const {
-        comments,
-        currentPage,
-        postTotalComments,
-        totalComments,
+        totalPage,
         startPage,
         endPage,
         hasPrev,
         hasNext,
         handlePrevious,
         handleNext,
-        handlePage
-    } = useComment(postService, postID, targetPage);
+        handlePage,
+        setPageInfo
+    } = useComment();
 
-    
+    const {
+        data,
+        isFetching,
+    } = useCommentQuery(currentPage,selectedPostID);
+
+    useEffect(()=>{
+        if(data) {
+            setPageInfo(data.total_comments,currentPage);
+        } 
+    },[data])
 
     const onReply = (index) => {
         if (openReplyIndex === index) {
@@ -47,25 +58,31 @@ export default function Comments({postID, postPage, setPost, targetPage, targetC
 
     const submitComment = (e) => {
         e.preventDefault();
-        postService.createComment(postID,commentText)
+        postService.createComment(selectedPostID,commentText)
             .then((data)=>{
                 if(data.success === true) {
-                    postService.getPost(postID)
+                    postService.getPost(selectedPostID)
                         .then((result)=>{setPost(result.post)})
                         .catch((err)=>console.log(err))
-                    queryClient.invalidateQueries(['posts', postPage]);
-                    queryClient.invalidateQueries(["comments", postID, 1]);
-                    handlePage(startPage,0);
+                    queryClient.invalidateQueries(['posts', selectedPage]);
+                    queryClient.invalidateQueries(["comments", selectedPostID, 1]);
+                    // handlePage(currentPage,0,setCurrentPage);
                     setCommentText("");
                     setIsSubmitDisabled(true);
                 }
             });
     }
 
-    // comments && console.log(comments);
+    const customHandlePrevious = () => {
+        handlePrevious(selectedPostID,setCurrentPage);
+    }
 
-    const movePage = (startPage,index) => {
-        handlePage(startPage,index)
+    const customHandleNext = () => {
+        handleNext(selectedPostID,setCurrentPage);
+    }
+
+    const customHandlePage = (startPage,index) => {
+        handlePage(startPage,index,selectedPostID,setCurrentPage)
         const contentElement = document.querySelector('#cmts');
         contentElement.scrollIntoView({ behavior: 'smooth' });
     }
@@ -92,58 +109,52 @@ export default function Comments({postID, postPage, setPost, targetPage, targetC
             </form>
             <span id="cmts">Comments</span>
             <ul className={styles.commentsContainer}>
-                {comments && comments.map((comment,index)=>{
+                {data && data.comments.map((comment,index)=>{
                     return comment.type === "comment" ?   
                     <CommentCard key={index}
                                 index={(currentPage-1)*5+(index+1)} 
                                 setPost={setPost}
                                 comment={comment} 
-                                postID={postID}
-                                postPage={postPage}
                                 commentPage={currentPage}
                                 postService={postService} 
-                                hasReply={(index !== comments.length-1 && comment.id === comments[index+1].reply_parent_id) ? true : false}
+                                hasReply={(index !== data.comments.length-1 && comment.id === data.comments[index+1].reply_parent_id) ? true : false}
                                 openReplyIndex={openReplyIndex}
-                                targetCommentID={targetCommentID}
                                 handleReplyClick={() => onReply((currentPage-1)*5+(index+1))}
                                 /> :
                     <ReplyCard key={index} 
                                 index={(currentPage-1)*5+(index+1)}
                                 setPost={setPost}
                                 reply={comment} 
-                                postPage={postPage}
                                 commentPage={currentPage}
-                                postID={comment.post_id} 
                                 commentID={comment.reply_parent_id} 
-                                isFirst={(index !==0 && comments[index-1].type === "comment") ? true : false}
+                                isFirst={(index !==0 && data.comments[index-1].type === "comment") ? true : false}
                                 openReplyIndex={openReplyIndex}
-                                targetReplyID={targetCommentID}
                                 handleReplyClick={() => onReply((currentPage-1)*5+(index+1))}
                                 postService={postService}/>
                 })}
             </ul>
-            {comments && 
+            {data && data.comments && 
             <footer>          
                 <nav className={styles.nav}>
                     {hasPrev && 
-                    <button className={styles.btn} onClick={handlePrevious}> 
+                    <button className={styles.btn} onClick={customHandlePrevious}> 
                         {"<<"}
                     </button>}
-                    {comments.length > 0 && 
+                    {data && data.comments.length > 0 && totalPage &&
                         Array(endPage-startPage+1)
                         .fill()
                         .map(( _,index) => 
                             (
                                 <button className={styles.btn} 
                                         key={uuidv4()} 
-                                        onClick={()=>{movePage(startPage,index)}} 
+                                        onClick={()=>{customHandlePage(startPage,index)}} 
                                         aria-current={currentPage === startPage+index ? "page" : null}>
                                     {(startPage+index)}
                                 </button>
                             )
                         )
                     }
-                    {hasNext && <button  className={styles.btn} onClick={handleNext}> 
+                    {hasNext && <button  className={styles.btn} onClick={customHandleNext}> 
                         {">>"}
                     </button>}
                 </nav>                

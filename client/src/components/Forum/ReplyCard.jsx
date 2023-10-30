@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './ReplyCard.module.css'
 import CreateReply from './CreateReply';
-import simplifyDate from '../../date';
+import {simplifyDate} from '../../date';
 import {PiArrowElbowDownRightBold} from "react-icons/pi";
 import {useMutation,useQueryClient} from "@tanstack/react-query";
 import { useProfile } from '../../context/ProfileContext';
@@ -9,20 +9,24 @@ import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs";
 import ReactQuill, {Quill} from 'react-quill';
 import './quill.css';
+import { useMyActivityContext } from '../../context/MyActivityContext';
+import { usePostContext } from '../../context/PostContext';
 
-export default function ReplyCard ({index,reply,postID,commentPage,postPage,targetReplyID,setPost,handleReplyClick,openReplyIndex,commentID,isFirst,postService})  {
+export default function ReplyCard ({index,reply,setPost,handleReplyClick,commentPage,openReplyIndex,commentID,isFirst,postService})  {
     const queryClient = useQueryClient();
+    const {selectedPostID} = usePostContext();
+    const {selectedCommentType,setCommentID, selectedCommentID} = useMyActivityContext();
     const [isEdit,setIsEdit] = useState(false);
-    const [targetCardEffect,setTargetCardEffect] = useState(reply.id===targetReplyID);
+    const [targetCardEffect,setTargetCardEffect] = useState(selectedCommentType === "reply" && reply.id===selectedCommentID ? true : false);
     const [editedReply,setEditedReply] = useState("");
     const {nickname} = useProfile();
     const quillRef = useRef();
 
     useEffect(()=>{
         if(targetCardEffect) {
-            setTimeout(()=>{setTargetCardEffect(false);},5000);
+            setTimeout(()=>{setTargetCardEffect(false); setCommentID(null)},2000);
         }
-    },[])
+    },[reply])
 
     const handleText = (contents) => {
         setEditedReply(contents);
@@ -33,7 +37,7 @@ export default function ReplyCard ({index,reply,postID,commentPage,postPage,targ
         if(result) {
             postService.deleteReply(reply.post_id, reply.reply_parent_id, reply.id)
                 .then((result)=>{
-                    queryClient.invalidateQueries(["comments", postID, commentPage]);
+                    queryClient.invalidateQueries(["comments", selectedPostID, commentPage]);
                 })
         } 
     } 
@@ -63,7 +67,7 @@ export default function ReplyCard ({index,reply,postID,commentPage,postPage,targ
         e.preventDefault();
         postService.updateReply(reply.post_id, reply.reply_parent_id, reply.id, editedReply)
             .then((result)=>{
-                queryClient.invalidateQueries(["comments", postID, commentPage]);
+                queryClient.invalidateQueries(["comments", selectedPostID, commentPage]);
                 setIsEdit((prev)=>!prev);
             })
     }
@@ -109,11 +113,9 @@ export default function ReplyCard ({index,reply,postID,commentPage,postPage,targ
             </div>}
             {openReplyIndex === index && 
                     <CreateReply author={"@"+reply.nickname} 
-                                postPage={postPage}
                                 setPost={setPost}
-                                commentPage={commentPage}
-                                postID = {postID} 
                                 commentID ={commentID} 
+                                commentPage={commentPage}
                                 postService={postService} 
                                 handleReplyClick={handleReplyClick}
                                 custom={true}/>    

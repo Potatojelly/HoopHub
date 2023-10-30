@@ -147,15 +147,12 @@ const router = createBrowserRouter([
         element: (<ProtectedRoute>
                       <Forums postService={postService}/>
                   </ProtectedRoute>),
-        children:
-        [
-          {
-            path:"post/:title",
-            element: (<MyActivityProvider>
-                        <Post postService={postService}/>
-                      </MyActivityProvider>)
-          }
-        ]
+      },
+      {
+        path:"/forums/post/:title",
+        element: (<MyActivityProvider>
+                    <ViewPost postService={postService}/>
+                  </MyActivityProvider>)
       },
       {
         path:"/forums/search/:keyword", 
@@ -194,22 +191,30 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element:(<AuthProvider authService={authService} >
-              <Login/>
+              <PostProvider>
+                <Login/>
+              </PostProvider>
             </AuthProvider>)
   },
   {
     path: "/register",
     element: (<AuthProvider authService={authService} >
-              <Register/>
+              <PostProvider>
+                <Register/>
+              </PostProvider>
             </AuthProvider>) 
   },
   {
     path: "/forgot-username",
-    element: <ForgotUsername retrieveService={retrieveService}/>
+    element: (<PostProvider>
+                <ForgotUsername retrieveService={retrieveService}/>
+              </PostProvider>)
   },
   {
     path: "/forgot-password",
-    element:<ForgotPassword retrieveService={retrieveService}/>
+    element:(<PostProvider>
+              <ForgotPassword retrieveService={retrieveService}/>
+            </PostProvider>)
   }
 ])
 

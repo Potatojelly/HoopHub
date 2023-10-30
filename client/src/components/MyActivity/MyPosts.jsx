@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import styles from './MyPosts.module.css'
 import MyPostCard from './MyPostCard';
-import useMyPost from '../../hooks/useMyPost';
+import useMyPost, { useMyPostQuery } from '../../hooks/useMyPost';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelectedCard } from '../../context/SelectedCardContext';
 import { useSearchParams } from 'react-router-dom';
 
 const POSTSPERPAGE = 10;
-export default function MyPosts({postService}) {
+export default function MyPosts() {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_posts ? window.history.state.my_posts : null);
-
+    const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/POSTSPERPAGE) : 1);
+    window.history.state.my_posts && console.log(window.history.state)
     const {
-        posts,
-        currentPage,
         totalPage,
         startPage,
         endPage,
@@ -21,7 +20,32 @@ export default function MyPosts({postService}) {
         handlePrevious,
         handleNext,
         handlePage,
-    } = useMyPost(postService, selectedCard ? Math.ceil(selectedCard/POSTSPERPAGE) : null);
+        setPageInfo,
+    } = useMyPost();
+
+    const {
+        data,
+        isFetching,
+    } = useMyPostQuery(currentPage);
+
+    useEffect(()=>{
+        if(data) {
+            if(selectedCard) setPageInfo(data.total_posts,Math.ceil(selectedCard/POSTSPERPAGE));
+            else setPageInfo(data.total_posts,currentPage);
+        } 
+    },[data])
+
+        const customHandlePrevious = () => {
+        handlePrevious(setCurrentPage);
+    }
+
+    const customHandleNext = () => {
+        handleNext(setCurrentPage);
+    }
+
+    const customHandlePage = (startPage,index) => {
+        handlePage(startPage,index,setCurrentPage)
+    }
 
     return (
         <div className={styles.container}>
@@ -31,34 +55,34 @@ export default function MyPosts({postService}) {
                 <span className={styles.infoCreatedDate}>Created Date</span>
                 <span className={styles.infoView}>Views</span>
             </div>
-            {!posts && <div className={styles.noContent}> <span>No Posts</span> </div>}
-            {posts && posts.map((post,index)=><MyPostCard key={index} 
+            {data && !data.my_posts && <div className={styles.noContent}> <span>No Posts</span> </div>}
+            {data && data.my_posts.map((post,index)=><MyPostCard key={index} 
                                                         post={post} 
                                                         num={(currentPage-1)*POSTSPERPAGE+(index+1)}
                                                         selectedCard={selectedCard}
                                                         setSelectedCard={setSelectedCard}/>)}
-            {posts && 
+            {data && data.my_posts && totalPage &&
             <footer>          
                 <nav className={styles.nav}>
                     {hasPrev && 
-                    <button className={styles.btn} onClick={()=>{handlePrevious(); setSelectedCard(null)}}> 
+                    <button className={styles.btn} onClick={customHandlePrevious}> 
                         {"<<"}
                     </button>}
-                    {posts.length > 0 && 
+                    {data.my_posts.length > 0 && 
                         Array(endPage-startPage+1)
                         .fill()
                         .map(( _,index) => 
                             (
                                 <button className={styles.btn} 
                                         key={index} 
-                                        onClick={()=>{handlePage(startPage,index); setSelectedCard(null)}} 
+                                        onClick={()=>{customHandlePage(startPage,index)}} 
                                         aria-current={currentPage === startPage+index ? "selected" : null}>
                                     {(startPage+index)}
                                 </button>
                             )
                         )
                     }
-                    {hasNext && <button  className={styles.btn} onClick={()=>{handleNext(); setSelectedCard(null)}}> 
+                    {hasNext && <button  className={styles.btn} onClick={customHandleNext}> 
                         {">>"}
                     </button>}
                 </nav>                

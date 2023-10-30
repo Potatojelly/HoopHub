@@ -2,25 +2,30 @@ import React, { forwardRef, useEffect, useRef, useState, memo } from 'react';
 import styles from './CommentCard.module.css'
 import CreateReply from './CreateReply';
 import Reply from './ReplyCard';
-import simplifyDate from '../../date';
+import {simplifyDate} from '../../date';
 import {useMutation,useQueryClient} from "@tanstack/react-query";
 import {v4 as uuidv4} from "uuid";
 import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
 import { useProfile } from '../../context/ProfileContext';
+import { usePostContext } from '../../context/PostContext';
+import { useMyActivityContext } from '../../context/MyActivityContext';
 
-const CommentCard = ({index,comment,postID,postPage,setPost,commentPage,targetCommentID,handleReplyClick,openReplyIndex,postService,hasReply}) => {
+const CommentCard = ({index,comment,setPost,commentPage,handleReplyClick,openReplyIndex,postService,hasReply}) => {
     const queryClient = useQueryClient();
-    const [targetCardEffect,setTargetCardEffect] = useState(comment.id===targetCommentID);
+    const {selectedCommentType,setCommentID,selectedCommentID} = useMyActivityContext();
+    const {selectedPostID} = usePostContext();
+    const [targetCardEffect,setTargetCardEffect] = useState(selectedCommentType === "comment" && comment.id===selectedCommentID ? true : false);
     const [isEdit,setIsEdit] = useState(false);
     const [editedComment,setEditedComment] = useState("");
     const {nickname} = useProfile();
 
+
     useEffect(()=>{
         if(targetCardEffect) {
-            setTimeout(()=>{setTargetCardEffect(false);},5000);
+            setTimeout(()=>{setTargetCardEffect(false);setCommentID(null)},2000);
         }
-    },[])
+    },[comment])
 
     const handleText = (e) => {
         setEditedComment(e.target.value);
@@ -31,7 +36,7 @@ const CommentCard = ({index,comment,postID,postPage,setPost,commentPage,targetCo
         if(result) {
             postService.deleteComment(comment.post_id, comment.id)
                 .then((result)=>{
-                    queryClient.invalidateQueries(["comments", postID, commentPage]);
+                    queryClient.invalidateQueries(["comments", selectedPostID, commentPage]);
                 })
         } 
     } 
@@ -52,7 +57,7 @@ const CommentCard = ({index,comment,postID,postPage,setPost,commentPage,targetCo
         e.preventDefault();
         postService.updateComment(comment.post_id, comment.id, editedComment)
             .then((result)=>{
-                queryClient.invalidateQueries(["comments", postID, commentPage]);
+                queryClient.invalidateQueries(["comments", selectedPostID, commentPage]);
                 setIsEdit((prev)=>!prev);
             })
     }
@@ -92,9 +97,7 @@ const CommentCard = ({index,comment,postID,postPage,setPost,commentPage,targetCo
                     </div>}
                 </div>
                 {openReplyIndex === index && 
-                <CreateReply postID={comment.post_id} 
-                            postPage={postPage}
-                            setPost={setPost}
+                <CreateReply setPost={setPost}
                             commentPage={commentPage}
                             commentID={comment.id} 
                             postService={postService} 

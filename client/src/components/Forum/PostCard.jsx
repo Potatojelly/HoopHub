@@ -3,20 +3,26 @@ import styles from './PostCard.module.css'
 import {PiArticle} from "react-icons/pi";
 import {GoComment} from "react-icons/go";
 import {BsFillEyeFill} from "react-icons/bs";
-import simplifyDate from "../../date.js";
+import {simplifyDate} from "../../date.js";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
+import { usePostContext } from '../../context/PostContext';
+import {useMutation,useQueryClient} from "@tanstack/react-query";
 
-export default function PostCard({id, num, post, isSelected, currentPage, keyword, last}) {
+export default function PostCard({id, num, post, handleSelection, keyword, last}) {
+    const queryClient = useQueryClient();
+    const {selectedPage,selectedPostID} = usePostContext();
     const navigate = useNavigate();
     const {user} = useAuth();
     const [highlightedTitle,setHighlightedTitle] = useState("");
 
     const handleClick = () => {
         if(user) {
+            handleSelection(id);
             const contentElement = document.querySelector('#header');
             contentElement.scrollIntoView({ behavior: 'smooth' });
-            navigate(`/forums/post/${post.title}`,{state: {currentPage, selectedPost: id, keyword,} })
+            navigate(`/forums/post/${post.title}`,{state:true});
+            // navigate(`/forums/post/${post.title}`,{state: {currentPage, selectedPost: id, keyword,} })
         }
         else alert("You do not have permission to view articles, Please Log in");
     }
@@ -32,7 +38,7 @@ export default function PostCard({id, num, post, isSelected, currentPage, keywor
     return (
         <>
             {post.deleted === 0 && 
-            <div className={`${styles.container} ${last && styles.lastContainer} ${isSelected === id && styles.selectedContainer}`} onClick={handleClick}>
+            <div className={`${styles.container} ${last && styles.lastContainer} ${selectedPostID === id && styles.selectedContainer}`} onClick={handleClick}>
                 <div className={styles.postNum}>{num}</div>
                 {post.thumbnail_url && <img src={post.thumbnail_url} alt="postImg" className={styles.postImg}/>}
                 {!post.thumbnail_url && <PiArticle className={styles.iconImg}/>}
@@ -54,4 +60,6 @@ export default function PostCard({id, num, post, isSelected, currentPage, keywor
         </>
     );
 }
+
+
 
