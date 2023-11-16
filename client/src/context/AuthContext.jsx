@@ -1,6 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, createRef, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {useNavigate} from "react-router-dom";
+
 const AuthContext = createContext({});
+
+const tokenRef  = createRef();
 
 export function AuthProvider({authService, authErrorEventBus, children}) {
     const [user,setUser] = useState(undefined);
@@ -9,16 +12,21 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    useEffect(()=>{
+        tokenRef.current = user ? user.token : undefined;
+    },[user])
+
     useEffect(() => {
         if(authErrorEventBus) {
             authService.me()
             .then((user)=>{
                 setUser({token:user.token, username: user.username});
+                document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 setLoading(!loading);
             })
             .catch((err)=>console.log(err));
         }
-    },[authService]);
+    },[]);
  
     useEffect(()=>{
         if(authErrorEventBus) {
@@ -45,6 +53,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
             authService
                 .login(username,password)
                 .then((user)=>{
+                    console.log(user);
                     setUser({token:user.token, username: user.username});
                     setLoading(!loading);
                 })
@@ -121,6 +130,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
             login,
             logout,
             resetPassword,
+            setUser
         }),[user,loading,signup,login,logout,resetPassword])
 
     return (
@@ -129,6 +139,8 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
         </AuthContext.Provider>
     )
 }
+
+let authErrorEventBus;
 
 export class AuthErrorEventBus {
     listen(callback) {
@@ -139,6 +151,24 @@ export class AuthErrorEventBus {
         this.callback(error);
     }
 }
+
+export function initAuthErrorEventBus() {
+    if(!authErrorEventBus) {
+        authErrorEventBus = new AuthErrorEventBus();
+    }
+}
+
+export function getAuthErrorEventBus() {
+    if(!authErrorEventBus) {
+        authErrorEventBus = new AuthErrorEventBus();
+        // throw new Error("Please call init AuthErrorEventBus first");
+    }
+    return authErrorEventBus;
+}
+
+
+
+export const fetchToken = () => tokenRef.current;
 
 export function useAuth() {
     return useContext(AuthContext);

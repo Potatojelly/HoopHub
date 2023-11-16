@@ -1,17 +1,17 @@
-import {useMutation,useQueryClient} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
-import { AuthErrorEventBus, useAuth } from '../context/AuthContext';
-import { useEffect, useState } from 'react';
+import { getAuthErrorEventBus } from '../context/AuthContext';
+import { useState } from 'react';
 import HttpClient from '../network/http';
 import PostService from '../service/post';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
-const authErrorEventBus = new AuthErrorEventBus();
+const authErrorEventBus = getAuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const postService = new PostService(httpClient);
 const DISPLAYPAGENUM = 5;
 const COMMENTSPERPAGE = 10;
-export default function useMyComment() {
+export default function useActivityComment() {
     const queryClient = useQueryClient();
     const [totalPage,setTotalPage] = useState(undefined);
     const [startPage,setStartPage] = useState(undefined);
@@ -79,8 +79,8 @@ export default function useMyComment() {
     };
 }
 
-export function useMyCommentQuery(currentPage) {
-    return useQuery(["Mycomments", currentPage],()=>postService.getMyComments(currentPage,COMMENTSPERPAGE),
+export function useUserCommentQuery(nickname, currentPage) {
+    return useQuery(["user-comments", nickname, currentPage],()=>postService.getUserComments(nickname,currentPage,COMMENTSPERPAGE),
                                                                                 {
                                                                                     onSuccess: (result) => {
                                                                                         console.log(result);

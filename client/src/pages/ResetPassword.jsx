@@ -17,17 +17,10 @@ export default function ResetPassword() {
         e.preventDefault();
         resetPassword(user.username, password, newPassword)
             .then((data)=>{
-                console.log(data);
                 setSuccess(data.message);
                 setTimeout(()=>{setSuccess("")},4000);
             })
             .catch((error) => {
-                // const resultObject = {};
-                // error.forEach(item=>{
-                //     const key = Object.keys(item)[0];
-                //     resultObject[key] = item[key];
-                // });
-                // setErrors(resultObject);
                 setErrors(error);
             })
     }

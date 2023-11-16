@@ -57,14 +57,11 @@ export default function PostEditor({postService,post,handleEdit}) {
                 } 
             })
 
-            //console.log(validFiles);
             validFiles.forEach((element)=>{
                 if(element.type === "video") {
                     formData.append("video",element.file);
-                    //console.log(element.file);
                 } else if(element.type === "image") {
                     formData.append("image",element.file);
-                    //console.log(element.file);
                 }
                 
             })
@@ -75,11 +72,9 @@ export default function PostEditor({postService,post,handleEdit}) {
 
         postService.updatePost(formData,post.id)
             .then((response)=>{
-                console.log(response);
                 handleEdit();
                 if(response.success === true) {
                     navigate(`/forums/post/${response.title}`);
-                    // navigate(`/forums/post/${response.title}`,{state: {currentPage, selectedPost: post.id}});
                 }
             })
             .catch((error)=>{console.log(error)})
@@ -88,7 +83,6 @@ export default function PostEditor({postService,post,handleEdit}) {
 
     const handleContent = (contents) => {
         setContent(contents);
-        //console.log(contents);
     };
 
     

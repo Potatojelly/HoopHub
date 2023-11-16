@@ -7,11 +7,10 @@ import {simplifyDate} from "../../date.js";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import { usePostContext } from '../../context/PostContext';
-import {useMutation,useQueryClient} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default function PostCard({id, num, post, handleSelection, keyword, last}) {
-    const queryClient = useQueryClient();
-    const {selectedPage,selectedPostID} = usePostContext();
+    const {selectedPostID} = usePostContext();
     const navigate = useNavigate();
     const {user} = useAuth();
     const [highlightedTitle,setHighlightedTitle] = useState("");
@@ -22,7 +21,6 @@ export default function PostCard({id, num, post, handleSelection, keyword, last}
             const contentElement = document.querySelector('#header');
             contentElement.scrollIntoView({ behavior: 'smooth' });
             navigate(`/forums/post/${post.title}`,{state:true});
-            // navigate(`/forums/post/${post.title}`,{state: {currentPage, selectedPost: id, keyword,} })
         }
         else alert("You do not have permission to view articles, Please Log in");
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './UserSearchResultCard.module.css'
 import useFriend from '../../hooks/useFriend';
 
@@ -18,10 +18,9 @@ export default function FriendSearchResultCard({ imageURL, nickname, friendship,
         )
     }
 
-
     return (
         <li className={styles.userCard}>
-            <img src={imageURL ? imageURL : "defaultProfileImg.svg" } alt="userImg" className={styles.userImg}/>
+            <img src={imageURL} alt="userImg" className={styles.userImg}/>
             <div className={styles.userName}>{nickname}</div>
             <button 
                 className={`${styles.requestBtn} ${friendship && styles.requestBtnInactive} ${isRequested && styles.requestedBtn}`} 

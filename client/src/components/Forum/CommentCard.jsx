@@ -1,24 +1,24 @@
-import React, { forwardRef, useEffect, useRef, useState, memo } from 'react';
+import React, { useEffect,useState, memo } from 'react';
 import styles from './CommentCard.module.css'
 import CreateReply from './CreateReply';
-import Reply from './ReplyCard';
 import {simplifyDate} from '../../date';
-import {useMutation,useQueryClient} from "@tanstack/react-query";
-import {v4 as uuidv4} from "uuid";
+import {useQueryClient} from "@tanstack/react-query";
 import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
 import { useProfile } from '../../context/ProfileContext';
+import {useNavigate} from "react-router-dom";
 import { usePostContext } from '../../context/PostContext';
-import { useMyActivityContext } from '../../context/MyActivityContext';
+import { useActivityContext } from '../../context/ActivityContext';
 
 const CommentCard = ({index,comment,setPost,commentPage,handleReplyClick,openReplyIndex,postService,hasReply}) => {
     const queryClient = useQueryClient();
-    const {selectedCommentType,setCommentID,selectedCommentID} = useMyActivityContext();
+    const {selectedCommentType,setCommentID,selectedCommentID} = useActivityContext();
     const {selectedPostID} = usePostContext();
     const [targetCardEffect,setTargetCardEffect] = useState(selectedCommentType === "comment" && comment.id===selectedCommentID ? true : false);
     const [isEdit,setIsEdit] = useState(false);
     const [editedComment,setEditedComment] = useState("");
     const {nickname} = useProfile();
+    const navigate = useNavigate();
 
 
     useEffect(()=>{
@@ -62,6 +62,10 @@ const CommentCard = ({index,comment,setPost,commentPage,handleReplyClick,openRep
             })
     }
 
+    const viewUserActivity = () => {
+        navigate(`/view-user-activity/${comment.nickname}`)
+    }
+
 
     return (
         <>
@@ -76,7 +80,7 @@ const CommentCard = ({index,comment,setPost,commentPage,handleReplyClick,openRep
                         <img className={styles.profileImg} src={comment.image_url} alt="userImg" />
                     </div>
                     <div className={styles.commentSubContainer}>
-                        <div className={styles.commentAuthor}>{comment.nickname}</div>
+                        <div className={styles.commentAuthor} onClick={viewUserActivity}>{comment.nickname}</div>
                         {!isEdit && <div className={styles.commentText}>{comment.body}</div>}
                         {isEdit && <form className={styles.commentEdit}>
                                         <textarea className={styles.commentTextEdit}

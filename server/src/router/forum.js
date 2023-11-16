@@ -12,7 +12,6 @@ const router = express.Router();
 const validateFiles = [
     body("image")
         .customSanitizer((value,{req}) => {
-            console.log("checking", req.file);
             if(!req.files.image) {
                 return true
             }
@@ -59,8 +58,8 @@ router.delete("/delete-reply/:postID/:commentID/:replyID",isAuth, forumControlle
 
 router.put("/update-view/:postID",isAuth, forumController.updateView);
 
-router.get("/get-my-posts/:currentPage/:postsPerPage",isAuth,forumController.getMyPosts);
-router.get("/get-my-comments/:currentPage/:commentsPerPage",isAuth,forumController.getMyComments);
+router.get("/get-user-posts/:nickname/:currentPage/:postsPerPage",isAuth,forumController.getUserPosts);
+router.get("/get-user-comments/:nickname/:currentPage/:commentsPerPage",isAuth,forumController.getUserComments);
 
 router.get("/get-target-comment-number/:postID/:commentID",isAuth,forumController.getTargetCommentNumber);
 

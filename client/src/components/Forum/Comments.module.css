@@ -50,11 +50,6 @@
     text-decoration: none;
 }
 
-.commentName:hover {
-    text-decoration: underline;
-    cursor: pointer;
-}
-
 .commentContent {
     width: 100%;
     padding: 12px;

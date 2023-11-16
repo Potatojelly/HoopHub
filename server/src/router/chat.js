@@ -27,9 +27,9 @@ const validateImage = [
 
 router.get("/get-chat-rooms", isAuth, chatController.getChatRooms);
 
-router.post("/create-chat-room/:opponentID", isAuth, chatController.createChatRoom);
+router.post("/create-chat-room", isAuth, chatController.createChatRoom);
 
-router.get("/get-message/:chatRoomID/:page",isAuth, chatController.getMessage);
+router.get("/get-message/:chatRoomID/:offset",isAuth, chatController.getMessage);
 
 router.post("/send-message",isAuth, chatController.sendMessage);
 
@@ -38,5 +38,13 @@ router.get("/count-unread-message/:chatRoomID",isAuth, chatController.countUnrea
 router.put("/save-last-read-message",isAuth, chatController.saveLastReadMessage);
 
 router.post("/send-image-message",isAuth, chatUpload.single("image"), validateImage, chatController.sendImageMessage);
+
+router.put("/exit-chat-room/:chatRoomID",isAuth,chatController.exitChatRoom);
+
+router.put("/invite",isAuth,chatController.invite);
+
+router.put("/kickout",isAuth,chatController.kickout);
+
+router.put("/chatName",isAuth,chatController.chatName);
 
 export default router;

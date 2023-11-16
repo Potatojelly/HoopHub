@@ -1,8 +1,8 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 
-const MyActivityContext = createContext();
+const ActivityContext = createContext();
 
-export const MyActivityProvider = ({children}) => {
+export const ActivityProvider = ({children}) => {
     const [selectedMyActivityPostID,setMyActivityPostID] = useState(null);
     const [selectedCommentType,setCommentType] = useState(null);
     const [selectedCommentPage,setCommentPage] = useState(null);
@@ -14,12 +14,12 @@ export const MyActivityProvider = ({children}) => {
     },[selectedMyActivityPostID,selectedCommentID,selectedCommentPage,selectedCommentType])
 
     return (
-        <MyActivityContext.Provider value={context}>
+        <ActivityContext.Provider value={context}>
             {children}
-        </MyActivityContext.Provider>
+        </ActivityContext.Provider>
     )
 }
 
-export const useMyActivityContext = () => {
-    return useContext(MyActivityContext);
+export const useActivityContext = () => {
+    return useContext(ActivityContext);
 }

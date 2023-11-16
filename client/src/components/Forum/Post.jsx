@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styles from './Post.module.css'
 import Comments from './Comments';
 import {simplifyDate} from '../../date';
-import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 import {FaRegCommentAlt} from "react-icons/fa";
-import {useMutation,useQueryClient} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 import {BsFillEyeFill} from "react-icons/bs";
 import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
@@ -59,6 +58,10 @@ export default function Post({postService}) {
         contentElement.scrollIntoView({ behavior: 'smooth' });
     }
 
+    const viewUserActivity = () => {
+        navigate(`/view-user-activity/${post.nickname}`)
+    }
+
     return (
         <>
         {(post && !isEdit) &&
@@ -74,7 +77,7 @@ export default function Post({postService}) {
                 <div className={styles.postInfo}>
                     <img className={styles.profileImg} src={post.image_url} alt="userImg" />
                     <div className={styles.postInfoSubContainer}>
-                        <div className={styles.postNickname}>{post.nickname}</div>
+                        <div className={styles.postNickname} onClick={viewUserActivity}>{post.nickname}</div>
                         <div className={styles.postTime}>{simplifyDate(post.created_at)}</div>
                     </div>
                     <div className={styles.views}>

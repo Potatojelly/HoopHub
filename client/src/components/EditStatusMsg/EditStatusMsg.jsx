@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './EditStatusMsg.module.css'
-import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 
 export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSuccess}) {

@@ -4,6 +4,7 @@ const ChatRoomContext = createContext({});
 
 export const ChatRoomProvider = ({children}) => {
     const [chatRoomID, setChatRoomID] = useState(null);
+    const [selectedChatRoom,setSelectedChatRoom] = useState(null);
 
     const selectChatRoom = (chatRoomID) => {
         setChatRoomID(chatRoomID);
@@ -11,8 +12,8 @@ export const ChatRoomProvider = ({children}) => {
 
 
     const context = useMemo(()=>{
-        return {chatRoomID,selectChatRoom};
-    },[chatRoomID])
+        return {chatRoomID,selectChatRoom,selectedChatRoom,setSelectedChatRoom};
+    },[chatRoomID,selectedChatRoom])
 
     return (
         <ChatRoomContext.Provider value={context}>

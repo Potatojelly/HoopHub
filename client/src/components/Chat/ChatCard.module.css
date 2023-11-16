@@ -31,8 +31,10 @@
 }
 
 .chatImg {
-    width: 40px;
-    margin-left: 0.5rem;
+    flex-grow: 1;
+    height: auto;
+    min-width: 20px;
+    min-height: 20px;
 }
 
 .recentTime {
@@ -86,6 +88,21 @@
     align-items:center;
 }
 
-.countNumber {
+.profileBox {
+    width: 50px;
+    height: 50px;
+    margin-left: 5px;
+    gap:1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    border: 1px solid var(--color-grey)
+}
 
+.noParticipants {
+    width: 50px;
+    height: 48px;
+    background: linear-gradient(45deg, orange 25%, white 0, white 50%, orange 0, orange 75%, white 0 );
+    background-size:42.4px 42.4px;
 }

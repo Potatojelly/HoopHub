@@ -32,6 +32,8 @@ const validateImage = [
 
 router.get("/get-profile", isAuth, profileController.getProfile);
 
+router.get("/get-profile/:nickname", isAuth, profileController.getUserProfile);
+
 router.put("/update-status-message", isAuth, validateStatusMsg, profileController.updateStatusMsg);
 
 router.put("/update-image", isAuth, profileUpload.single("image"), validateImage, profileController.updateImage);

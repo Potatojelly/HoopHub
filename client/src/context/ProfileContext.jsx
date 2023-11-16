@@ -11,7 +11,7 @@ export function ProfileProvider({profileService,children}) {
     const [imageURL,setImageURL] = useState("");
     const [statusMsg,setStatusMsg] = useState("");
 
-    const {data:profile, error} = useQuery(["profile"],()=>profileService.getProfile(),{staleTime:Infinity, enabled: !!user});
+    const {data:profile, error} = useQuery(["profile",user],()=>profileService.getProfile(),{staleTime:Infinity, enabled: !!user});
     if(error) console.log(error);
 
     useEffect(()=>{

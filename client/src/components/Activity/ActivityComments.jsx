@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import styles from './MyComments.module.css'
-import MyCommentCard from "../MyActivity/MyCommentCard";
-import useMyComment, { useMyCommentQuery } from '../../hooks/useMyComment';
+import styles from './ActivityComments.module.css';
+import {useUserCommentQuery } from '../../hooks/useActivityComment';
+import ActivityCommentCard from './ActivityCommentCard';
+import useActivityComment from '../../hooks/useActivityComment';
+import { useProfile } from '../../context/ProfileContext';
 
 const COMMENTSPERPAGE = 10;
-export default function MyComments({postService}) {
+export default function ActivityComments({userNickname}) {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_comments ? window.history.state.my_comments : null);
     const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/COMMENTSPERPAGE) : 1);
+    const {nickname} = useProfile();
     const {
         totalPage,
         startPage,
@@ -17,12 +20,12 @@ export default function MyComments({postService}) {
         handleNext,
         handlePage,
         setPageInfo
-    } = useMyComment();
+    } = useActivityComment();
 
     const {
         data,
         isFetching,
-    } = useMyCommentQuery(currentPage);
+    } = useUserCommentQuery(userNickname ? userNickname : nickname,currentPage);
 
     useEffect(()=>{
         if(data) {
@@ -52,7 +55,7 @@ export default function MyComments({postService}) {
                 <span className={styles.infoCreatedDate}>Created Date</span>
             </div>
             {data && !data.my_comments && <div className={styles.noContent}> <span>No Comments</span> </div>}
-            {data && data.my_comments.map((comment,index)=><MyCommentCard key={index} 
+            {data && data.my_comments.map((comment,index)=><ActivityCommentCard key={index} 
                                                                     comment={comment} 
                                                                     num={(currentPage-1)*COMMENTSPERPAGE+(index+1)}
                                                                     selectedCard={selectedCard}

@@ -79,76 +79,10 @@ export async function resetPassword(req,res) {
 export async function me(req,res) {
     const user = await myRepository.findById(req.userID);
     if(!user) {
-        return res.status(401).json({message:"User not found"});
+        return res.status(401).json({message:"Token has expired"});
     }
     res.status(200).json({token:req.token, username:user.username});
 }
-
-// export async function getMyFriend(req,res) {
-//     const result = await myRepository.getMyFriend(req.userID);
-
-//     if(result) res.status(200).json({success:true, myFriend:result});
-//     else res.status(500).json({myRequest:"Server Error"});
-// }
-
-// export async function getMyFriendRequest(req,res) {
-//     const result = await myRepository.getMyFriendRequest(req.userID);
-
-//     if(result) res.status(200).json({success:true, myRequest:result});
-//     else res.status(500).json({myRequest:"Server Error"});
-// }
-
-// export async function getReceivedFriendRequest(req,res) {
-//     const result = await myRepository.getReceivedFriendRequest(req.userID);
-
-//     if(result) res.status(200).json({success:true, receivedRequest:result});
-//     else res.status(500).json({receivedRequest:"Server Error"});
-// }
-
-// export async function sendFriendRequest(req,res) {
-//     const user = await myRepository.findByNickname(req.body.nickname);
-//     const checkDuplicated = await myRepository.findFriendRequest(req.userID,user.id);
-//     if(checkDuplicated) return res.status(403).json({success:false,message:"Already Friends OR Requested"});
-
-//     const result = await myRepository.sendFriendRequest(req.userID,user.id);
-
-//     if(result) res.status(200).json({success:true});
-//     else res.status(500).json({success:false,message:"Server Error"});
-// }
-
-// export async function cancelFriendRequest(req,res) {
-//     const user = await myRepository.findByNickname(req.params.nickname);
-//     const result = await myRepository.cancelFriendRequest(req.userID,user.id);
-
-//     if(result) res.status(200).json({success:true});
-//     else res.status(500).json({success:false,message:"Server Error"});
-// }
-
-// export async function accceptFriendRequest(req,res) {
-//     const user = await myRepository.findByNickname(req.params.nickname);
-//     const result = await myRepository.acceptFriendRequest(req.userID,user.id);
-//     if(!result) res.status(500).json({success:false,message:"Server Error"});
-
-//     if(result) res.status(200).json({success:true});
-//     else res.status(500).json({success:false,message:"Server Error"});
-// }
-
-// export async function rejectFriendRequest(req,res) {
-//     const user = await myRepository.findByNickname(req.params.nickname);
-//     const result = await myRepository.rejectFriendRequest(req.userID,user.id);
-
-//     if(result) res.status(200).json({success:true});
-//     else res.status(500).json({success:false,message:"Server Error"});
-// }
-
-// export async function deleteFriend(req,res) {
-//     const user = await myRepository.findByNickname(req.params.nickname);
-//     const result = await myRepository.deleteFriend(req.userID,user.id);
-
-//     if(result) res.status(200).json({success:true});
-//     else res.status(500).json({success:false,message:"Server Error"});
-// }
-
 
 function createJwtToken(id) {
     return jwt.sign({id},process.env.JWT_SECRET,{expiresIn: parseInt(process.env.JWT_EXPIRES_SEC)});

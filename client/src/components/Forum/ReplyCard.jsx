@@ -1,26 +1,28 @@
-import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './ReplyCard.module.css'
 import CreateReply from './CreateReply';
 import {simplifyDate} from '../../date';
 import {PiArrowElbowDownRightBold} from "react-icons/pi";
-import {useMutation,useQueryClient} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 import { useProfile } from '../../context/ProfileContext';
 import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs";
-import ReactQuill, {Quill} from 'react-quill';
+import {useNavigate} from "react-router-dom";
+import ReactQuill from 'react-quill';
 import './quill.css';
-import { useMyActivityContext } from '../../context/MyActivityContext';
+import { useActivityContext } from '../../context/ActivityContext';
 import { usePostContext } from '../../context/PostContext';
 
 export default function ReplyCard ({index,reply,setPost,handleReplyClick,commentPage,openReplyIndex,commentID,isFirst,postService})  {
     const queryClient = useQueryClient();
     const {selectedPostID} = usePostContext();
-    const {selectedCommentType,setCommentID, selectedCommentID} = useMyActivityContext();
+    const {selectedCommentType,setCommentID, selectedCommentID} = useActivityContext();
     const [isEdit,setIsEdit] = useState(false);
     const [targetCardEffect,setTargetCardEffect] = useState(selectedCommentType === "reply" && reply.id===selectedCommentID ? true : false);
     const [editedReply,setEditedReply] = useState("");
     const {nickname} = useProfile();
     const quillRef = useRef();
+    const navigate = useNavigate();
 
     useEffect(()=>{
         if(targetCardEffect) {
@@ -44,6 +46,10 @@ export default function ReplyCard ({index,reply,setPost,handleReplyClick,comment
 
     const handleEdit = () => {
         setIsEdit((prev)=>!prev);
+    }
+
+    const viewUserActivity = () => {
+        navigate(`/view-user-activity/${reply.nickname}`)
     }
 
     useEffect(()=>{
@@ -92,7 +98,7 @@ export default function ReplyCard ({index,reply,setPost,handleReplyClick,comment
                         <img className={styles.profileImg} src={reply.image_url} alt="userImg" />
                     </div>
                     <div className={styles.replySubContainer}>
-                        <div className={styles.replyAuthor}>{reply.nickname}</div>
+                        <div className={styles.replyAuthor} onClick={viewUserActivity}>{reply.nickname}</div>
                         {!isEdit && <div className={styles.replyText} dangerouslySetInnerHTML={{ __html: reply.body }}/>}
                         {isEdit && <form className={styles.commentEdit}>
                                         <ReactQuill className={"replyEdit"}

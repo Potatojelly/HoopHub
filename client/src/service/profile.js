@@ -10,6 +10,13 @@ export default class ProfileService {
         return data;
     }
 
+    async getUserProfile(nickname) {
+        const data = await this.http.fetch(`/profile/get-profile/${nickname}`, {
+            method: "GET",
+        });
+        return data;
+    }
+
     async updateStatusMsg(statusMsg) {
         const data = await this.http.fetch("/profile/update-status-message", {
             method: "PUT",

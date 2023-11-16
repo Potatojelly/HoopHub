@@ -61,6 +61,13 @@
 
 .postNickname {
     font-weight: bold;
+    color: #4299e1; 
+    text-decoration: none;
+}
+
+.postNickname:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .views {

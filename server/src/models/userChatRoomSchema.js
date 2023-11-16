@@ -10,6 +10,7 @@ const userChatRoomSchema = mongoose.Schema(
         },
         chat: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
         lastReadMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message', default: null},
+        isDeleted: {type:Boolean, default: false},
 
     },
     {

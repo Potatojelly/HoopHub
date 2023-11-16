@@ -1,15 +1,13 @@
 import pg from "pg";
-import dotenv from "dotenv";
 import Mongoose from "mongoose";
 import {config} from "../config.js";
-dotenv.config();
 
 const pool = new pg.Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    user: config.db.user,
+    host: config.db.host,
+    database: config.db.database,
+    password: config.db.password,
+    port:  config.db.port,
 });
 
 export const db = pool;

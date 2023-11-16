@@ -1,6 +1,5 @@
 import {mongoose} from "mongoose";
 import { useVirtualId } from "../db/database.js";
-import { Timestamp } from 'mongodb';
 
 const messageSchema = mongoose.Schema(
     {

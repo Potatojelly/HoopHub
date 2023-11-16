@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import styles from './MyPosts.module.css'
-import MyPostCard from './MyPostCard';
-import useMyPost, { useMyPostQuery } from '../../hooks/useMyPost';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useSelectedCard } from '../../context/SelectedCardContext';
-import { useSearchParams } from 'react-router-dom';
+import styles from './ActivityPosts.module.css';
+import MyPostCard from './ActivityPostCard';
+import { useUserPostQuery } from '../../hooks/useActivityPost';
+import useActivityPost from '../../hooks/useActivityPost';
+import { useProfile } from '../../context/ProfileContext';
 
 const POSTSPERPAGE = 10;
-export default function MyPosts() {
+export default function ActivityPosts({userNickname}) {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_posts ? window.history.state.my_posts : null);
     const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/POSTSPERPAGE) : 1);
+    const {nickname} = useProfile();
     window.history.state.my_posts && console.log(window.history.state)
     const {
         totalPage,
@@ -21,12 +21,12 @@ export default function MyPosts() {
         handleNext,
         handlePage,
         setPageInfo,
-    } = useMyPost();
+    } = useActivityPost();
 
     const {
         data,
         isFetching,
-    } = useMyPostQuery(currentPage);
+    } = useUserPostQuery(userNickname ? userNickname : nickname,currentPage);
 
     useEffect(()=>{
         if(data) {

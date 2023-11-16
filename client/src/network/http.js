@@ -31,7 +31,8 @@ export default class HttpClient {
         } catch(err) {
             if(err.response.status === 401) {
                 console.log(err);
-                this.authErrorEventBus.notify("Token has been expired!");
+                console.log(err.response.data.message);
+                if(err.response.data.message === "Authentication Error") this.authErrorEventBus.notify("Token has expired!");
                 throw err.response.data;
             }
             throw err.response.data;

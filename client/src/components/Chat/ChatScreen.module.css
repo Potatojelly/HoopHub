@@ -15,7 +15,6 @@
 
 .chatTitle {
     padding-left: 1rem;
-    flex-grow:1;
 }
 
 .mainScreen {
@@ -41,7 +40,6 @@
 
 .textContainer {
     background-color: var(--color-mid-grey);
-    /* width: 1200px; */
     flex-grow:1;
     display: flex;
     justify-content:center;
@@ -79,6 +77,11 @@
     background-color: var(--color-grey);
 }
 
+.imgBtn:disabled:hover {
+    background-color:transparent;
+    cursor: auto;
+}
+
 .imgIcon {
     font-size: 1.3rem;
 }
@@ -113,7 +116,11 @@
     margin-right: 1rem;
 }
 
-
+.titleSubContainer {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
 .exitIcon {
     font-size: 1.3rem;
 }
@@ -123,3 +130,34 @@
     justify-content:center;
 }
 
+.editIcon {
+    margin-left: 0.5rem;
+}
+
+.editIcon:hover {
+    color:var(--color-blue);
+}
+
+.editChatNameContainer {
+    margin-left: 0.5rem;
+    height: 1.2rem;
+    border: none;
+    border-bottom: 1px solid black;
+    outline: none;
+}
+
+.editBtn {
+    margin-left: 0.5rem;
+    background: var(--color-mid-grey);
+    color: black;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+}
+
+.cancelBtn {
+    margin-left: 0.5rem;
+    background: var(--color-mid-grey);
+    color: black;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+}

@@ -7,11 +7,11 @@ import ReplyCard from './ReplyCard';
 import { useProfile } from '../../context/ProfileContext';
 import {useQueryClient} from "@tanstack/react-query";
 import { usePostContext } from '../../context/PostContext';
-import { useMyActivityContext } from '../../context/MyActivityContext';
+import { useActivityContext } from '../../context/ActivityContext';
 
 export default function Comments({setPost, targetCommentID,  postService}) {
     const {setSelectedPage,selectedPage,selectedPostID} = usePostContext();
-    const {selectedCommentID,selectedCommentPage} = useMyActivityContext();
+    const {selectedCommentID,selectedCommentPage} = useActivityContext();
     const [currentPage, setCurrentPage] = useState(selectedCommentPage ? selectedCommentPage : 1);
     const queryClient = useQueryClient();
     const {nickname} = useProfile();
@@ -66,7 +66,6 @@ export default function Comments({setPost, targetCommentID,  postService}) {
                         .catch((err)=>console.log(err))
                     queryClient.invalidateQueries(['posts', selectedPage]);
                     queryClient.invalidateQueries(["comments", selectedPostID, 1]);
-                    // handlePage(currentPage,0,setCurrentPage);
                     setCommentText("");
                     setIsSubmitDisabled(true);
                 }

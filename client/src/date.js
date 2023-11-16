@@ -13,7 +13,7 @@ export function simplifyDate(originalDate) {
     return simplifiedDate;
 }
 
-export function simplifyDateForMsg(originalDate) {
+export function simplifyTimeForMsg(originalDate) {
     const dateObject = new Date(originalDate);
     const hours = dateObject.getHours();
     const minutes = dateObject.getMinutes();

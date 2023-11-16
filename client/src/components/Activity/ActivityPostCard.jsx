@@ -1,11 +1,10 @@
 import React from 'react';
-import styles from './MyPostCard.module.css'
+import styles from './ActivityPostCard.module.css';
 import {simplifyDate} from '../../date';
 import {useNavigate} from "react-router-dom";
-import { useSelectedCard } from '../../context/SelectedCardContext';
 import { usePostContext } from '../../context/PostContext';
 
-export default function MyPostCard({post,num,selectedCard,setSelectedCard}) {
+export default function ActivityPostCard({post,num,selectedCard,setSelectedCard}) {
     const navigate = useNavigate();
     const {setSelectedPage,setPostID} =usePostContext();
     const navigateToPost = () => {
@@ -15,7 +14,6 @@ export default function MyPostCard({post,num,selectedCard,setSelectedCard}) {
         setSelectedCard(num);
         setPostID(post.id);
         setSelectedPage(null);
-        // navigate(`/manage-my-activity/my-post/${post.title}`,{state: post});
         navigate(`/manage-my-activity/my-post/${post.title}`);
     }
 

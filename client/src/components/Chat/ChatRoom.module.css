@@ -3,6 +3,7 @@
     flex-direction: column;
     width: 300px;
     border: 2px solid var(--color-border);
+    overflow-y:scroll;
 }
 
 .chatHeader {

@@ -12,7 +12,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import HttpClient from './network/http';
 import AuthService from './service/auth';
-import { AuthProvider, AuthErrorEventBus } from './context/AuthContext';
+import { AuthProvider, AuthErrorEventBus, initAuthErrorEventBus, getAuthErrorEventBus } from './context/AuthContext';
 import ProtectedRoute from './pages/ProtectedRoute';
 import ResetPassword from './pages/ResetPassword';
 import EditProfile from './pages/EditProfile';
@@ -27,8 +27,8 @@ import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import FriendService from './service/friend';
 import PostCreate from './pages/PostCreate';
 import PostService from './service/post';
-import MyActivity from './pages/MyActivity';
-import MyPost from './pages/MyPost';
+import MyActivity from './pages/ActivityLog';
+import MyPost from './pages/ActivityPost';
 import { SelectedCardProvider } from './context/SelectedCardContext';
 import { ChatRoomProvider } from './context/ChatRoomContext';
 import ChatService from './service/chat';
@@ -40,10 +40,18 @@ import Post from './components/Forum/Post';
 import Posts from './components/Forum/Posts';
 import ViewPost from './pages/ViewPost';
 import { PostProvider } from './context/PostContext';
-import { MyActivityProvider } from './context/MyActivityContext';
+import { ActivityProvider } from './context/ActivityContext';
+import { SocketProvider } from './context/SocketContext';
+import { ChatRoomsProvider } from './context/ChatRoomsContext';
+import ActivityLog from './pages/ActivityLog';
+import ActivityPost from './pages/ActivityPost';
+import UserActivityLog from './pages/UserActivityLog';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
-const authErrorEventBus = new AuthErrorEventBus();
+
+initAuthErrorEventBus();
+const authErrorEventBus = getAuthErrorEventBus();
+// const authErrorEventBus = new AuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const authService = new AuthService(httpClient);
 const profileService = new ProfileService(httpClient);
@@ -52,7 +60,6 @@ const searchService = new SearchService(httpClient);
 const friendService = new FriendService(httpClient);
 const postService = new PostService(httpClient);
 const chatService = new ChatService(httpClient);
-
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -87,21 +94,21 @@ const router = createBrowserRouter([
       {
         path:"/create-post", 
         element: (<ProtectedRoute>
-                    <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
+                    {/* <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}> */}
                       <PostCreate postService={postService}/>
-                    </AuthProvider>
+                    {/* </AuthProvider> */}
                   </ProtectedRoute>)
       },
       {
         path:"/messages", 
         element: (<ProtectedRoute>
-                    <ProfileProvider profileService={profileService}>
-                      {/* <ChatRoomProvider> */}
                         <UserSearchProvider>
-                          <Messages searchService={searchService} chatService={chatService}/>
+                          <SocketProvider>
+   
+                              <Messages chatService={chatService}/>
+
+                          </SocketProvider>
                         </UserSearchProvider>
-                      {/* </ChatRoomProvider> */}
-                    </ProfileProvider>
                   </ProtectedRoute>),
         children:[
           {
@@ -113,8 +120,8 @@ const router = createBrowserRouter([
             element: (<UserSearch searchService={searchService} />)
           },
           {
-            path:":title",
-            element: (<ChatScreen chatService={chatService}/>)
+            path:":title/:chatRoomID",
+            element: (<ChatScreen chatService={chatService} searchService={searchService}/>)
           }
       ]
       },
@@ -150,9 +157,9 @@ const router = createBrowserRouter([
       },
       {
         path:"/forums/post/:title",
-        element: (<MyActivityProvider>
+        element: (<ActivityProvider>
                     <ViewPost postService={postService}/>
-                  </MyActivityProvider>)
+                  </ActivityProvider>)
       },
       {
         path:"/forums/search/:keyword", 
@@ -164,27 +171,27 @@ const router = createBrowserRouter([
         path:"/manage-my-activity", 
         element: (<ProtectedRoute>
                       <SelectedCardProvider>
-                          <MyActivity postService={postService}/>
+                          <ActivityLog postService={postService}/>
                       </SelectedCardProvider>
                   </ProtectedRoute>),
-        // children: [
-        //   {
-        //     path:"my-post/:title", 
-        //     element: (<ProtectedRoute>
-        //                 <MyPost postService={postService}/>
-        //               </ProtectedRoute>)
-        //   },
-        // ]
       },
       {
         path:"/manage-my-activity/my-post/:title", 
         element: (<ProtectedRoute>
                     <SelectedCardProvider>
-                      <MyActivityProvider>
-                        <MyPost postService={postService}/>
-                      </MyActivityProvider>
+                      <ActivityProvider>
+                        <ActivityPost postService={postService}/>
+                      </ActivityProvider>
                     </SelectedCardProvider>
                   </ProtectedRoute>)
+      },
+      {
+        path:"/view-user-activity/:userNickname", 
+        element: (<ProtectedRoute>
+                      <SelectedCardProvider>
+                          <UserActivityLog postService={postService}/>
+                      </SelectedCardProvider>
+                  </ProtectedRoute>),
       },
     ]
   },

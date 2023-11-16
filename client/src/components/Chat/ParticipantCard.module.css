@@ -18,4 +18,18 @@
 
 .name {
     font-weight: bold;
+    flex-grow:1
+}
+
+.kickBtn {
+    font-size:1.5rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.1rem;
+}
+
+.kickBtn:hover {
+    color: red;
 }

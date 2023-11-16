@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import styles from './Header.module.css';
 import {Link} from "react-router-dom";
 import Button from '../Button/Button';
@@ -14,7 +14,6 @@ import { useAuth } from '../../context/AuthContext';
 import Dropdown from '../Dropdown/Dropdown';
 import { useProfile } from '../../context/ProfileContext';
 import { useChatRoomID } from '../../context/ChatRoomContext';
-import { useUserSearch } from '../../context/UserSearchContext';
 import { usePostContext } from '../../context/PostContext';
 
 export default function Header({friendService}) {
@@ -24,8 +23,8 @@ export default function Header({friendService}) {
     const [myStuff, setMyStuff] = useState(false);
     const showSidebar = () => setSidebar(!sidebar);
     const showMyStuff = () => setMyStuff(!myStuff);
-    const {selectChatRoom} = useChatRoomID();
-    const {selectedPostID,selectedPage,setSelectedPage,setPostID} = usePostContext();
+    const {selectChatRoom,setSelectedChatRoom} = useChatRoomID();
+    const {setSelectedPage,setPostID} = usePostContext();
     return (
         <header id="header" className={styles.header}>
             <div className={styles.container}>
@@ -42,10 +41,10 @@ export default function Header({friendService}) {
                         <Link to="/"> 
                             <PiNotePencilBold className={styles.service} onClick={()=>{setSelectedPage(null); setPostID(null);}}/>
                         </Link>
-                        <Link to="/messages/inbox" onClick={()=>{selectChatRoom(null)}}> 
+                        <Link to="/messages/inbox" onClick={()=>{selectChatRoom(null); setSelectedChatRoom(null);}}> 
                             <AiOutlineMessage  className={styles.service}/>
                         </Link>
-                        <Link to="/find-chat-rooms"> 
+                        <Link to="/view-user-activity/TestingAccount2"> 
                             <TbMessageCircleSearch  className={styles.service}/>
                         </Link>
                         <Link to="/people"> 
@@ -54,7 +53,7 @@ export default function Header({friendService}) {
                         <div className={styles.headerUser}>
                             <button className={styles.headerUserBtn} onClick={showMyStuff}>
                                 <div>
-                                    <img src={`${imageURL ? imageURL : "defaultProfileImg.svg" }`} alt="userImg"  className={styles.userImg}/>
+                                    <img src={imageURL} alt="userImg"  className={styles.userImg}/>
                                 </div>
                                 <span className={styles.userNickname}>
                                     {nickname}

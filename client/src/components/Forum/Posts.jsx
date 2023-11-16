@@ -3,19 +3,14 @@ import styles from './Posts.module.css'
 import PostCard from './PostCard';
 import {v4 as uuidv4} from "uuid";
 import { usePostQuery, usePost  } from '../../hooks/usePost';
-import SearchBar from './SearchBar';
 import { usePostContext } from '../../context/PostContext';
-import useMyPost from '../../hooks/useMyPost';
-import {useQuery} from '@tanstack/react-query';
+import { useAuth } from '../../context/AuthContext';
 const POSTSPERPAGE = 5;
 
-function Posts({postService,keyword}) {
+function Posts({keyword}) {
+    const {user} = useAuth();
     const {selectedPostID,selectedPage,setSelectedPage,setPostID} = usePostContext();
     const [currentPage, setCurrentPage] = useState(selectedPage ? selectedPage : 1);
-
-    useEffect(()=>{
-        console.log("mount!");
-    },[])
 
     const {
         totalPage,
@@ -41,6 +36,13 @@ function Posts({postService,keyword}) {
             else setPageInfo(data.total_posts,currentPage);
         } 
     },[data])
+
+    useEffect(()=>{
+        if(!user) {
+            setSelectedPage(null);
+            setPostID(null);
+        } 
+    },[])
 
     const handleSelection = (postID) => {
         setPostID(postID);

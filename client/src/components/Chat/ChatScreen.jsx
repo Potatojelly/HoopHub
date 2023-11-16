@@ -5,34 +5,45 @@ import {ImExit} from "react-icons/im";
 import MyMessage from './MyMessage';
 import OpponentMessage from './OpponentMessage';
 import ChatParticipants from './ChatParticipants';
-import { useChatRoomMessage, useLastReadMessage, useSaveLastReadMessage, useSendImageMessage, useSendMessage, useUpdateChatRoomMessage } from '../../hooks/useChatRoomData';
-import {useQuery,useInfiniteQuery,useQueryClient} from '@tanstack/react-query';
+import {useChatName, useChatRoomMessageData, useChatRoomsData, useExitChatRoom, useInviteUsers, useKickoutUser, useSaveLastReadMessage,} from '../../hooks/useChatRoomData';
+import {useQueryClient} from '@tanstack/react-query';
 import { useProfile } from '../../context/ProfileContext';
 import {v4 as uuidv4} from "uuid";
 import SystemMessage from './SystemMessage';
 import { useChatRoomID } from '../../context/ChatRoomContext';
-import {useLocation} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import LoadingSpinner from '../Loader/LoadingSpinner';
+import { useSocket } from '../../context/SocketContext';
+import { simplifyDateForChatRoom, simplifyTimeForMsg } from '../../date';
+import {AiFillEdit} from "react-icons/ai";
 
-export default function ChatScreen({chatService}) {
+export default function ChatScreen({chatService,searchService}) {
+    const [enable,setEnable] = useState(true);
+    const [editChatName,setEditChatName] = useState(false);
+    const [chatName,setChatName] = useState("");
     const queryClient = useQueryClient();
-    const {state:chat} = useLocation();
+    const {socket} = useSocket();
+    const {chatRoomID,selectChatRoom,setSelectedChatRoom,selectedChatRoom} = useChatRoomID();
+    const navigate = useNavigate();
     const {data:messages,
             isFetching,
             hasPreviousPage,
-            fetchPreviousPage} = useChatRoomMessage(chat.id);
-    const {nickname} = useProfile();
-    const {mutate:sendMessage} = useSendMessage();
-    const {mutate:sendImageMessage} = useSendImageMessage();
+            fetchPreviousPage,} = useChatRoomMessageData(chatRoomID && selectedChatRoom.id);
+
+    const {nickname,imageURL} = useProfile();
     const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
+    const {mutate:exitChatRoom} = useExitChatRoom();
+    const {mutate:kickoutUser} = useKickoutUser();
+    const {mutate:changeChatName} = useChatName();
+    const {mutate:inviteUsers} = useInviteUsers();
     const textarea = useRef();
     const observer = useRef();
     const chatContainerRef = useRef(null);
 
     const [text,setText] = useState("");
-    const {chatRoomID,selectChatRoom} = useChatRoomID();
     const [initScrollTop,setInitScrollTop] = useState(false);
     const [imgFile,setImgFile] = useState(null);
+    const {data:chatRooms, isSuccess} = useChatRoomsData();
 
     const moveToBottom = () => {
         const chatContainer = chatContainerRef.current;
@@ -46,7 +57,7 @@ export default function ChatScreen({chatService}) {
     }
 
     const addNewMessage = (newMessage) => {
-        queryClient.setQueryData(["direct-chatroom-message",chatRoomID], (oldData)=>(
+        queryClient.setQueryData(["direct-chatroom-message",selectedChatRoom.id], (oldData)=>(
             {
                 ...oldData,
                 pages: [
@@ -56,38 +67,207 @@ export default function ChatScreen({chatService}) {
                         result: [...oldData.pages[oldData.pages.length-1].result, newMessage],
                     }
                 ],
-            }
-        ));
+            })
+        )
     }
 
-    const updateNewMessage = (newMessage) => {
-        queryClient.setQueryData(["direct-chatroom-message",chatRoomID], (oldData)=>(
-            {
+    const updateChatRoomsData = (updatedChatRooms) => {
+        saveLastReadMessage(selectedChatRoom.id);
+        queryClient.setQueryData(["direct-chatrooms"], (oldData)=>{
+            return {
                 ...oldData,
-                pages: [
-                    ...oldData.pages.slice(0,-1),
-                    {
-                        ...oldData.pages[oldData.pages.length-1],
-                        result: [...oldData.pages[oldData.pages.length-1].result.slice(0,-1), newMessage],
-                    }
-                ],
-            }
-        ));
+                chats: updatedChatRooms
+            } 
+        })
     }
 
-    const sendMsg = (e) => {
+    const handleExit = async () => {
+        const result = window.confirm("Do you want to leave the room?");
+        if(result) {
+            exitChatRoom(selectedChatRoom.id,{
+                onSuccess: (res) => {
+                    const updatedChatRoom = chatRooms.filter((chatRoom)=>chatRoom.id !== selectedChatRoom.id);
+                    const exitMessage = { chat: { id: selectedChatRoom.id, users: selectedChatRoom.users.filter((user)=>user.nickname != nickname) },
+                                        image: false,
+                                        content: `${nickname} left the room`, 
+                                        createdAt: new Date(),
+                                        sender: {
+                                            system: true,
+                                            id: null,
+                                            nickname,
+                                            imageURL,
+                                        },
+                                        id: uuidv4(),
+                                        isLoading: true,
+                                    };
+                    updateChatRoomsData(updatedChatRoom);
+                    socket.emit("exit",exitMessage);
+                    navigate("/messages/inbox");
+                }
+            });
+        }
+    }
+
+    const handleKickout = (kickedUser) => {
+        const result = window.confirm(`Do you want kick out ${kickedUser.nickname}`);
+        if(result) {
+            kickoutUser({kickedUser,chatRoomID:selectedChatRoom.id},{
+                onSuccess: (res) => {
+                    const kickoutMessage = {chat: { id: selectedChatRoom.id, users: selectedChatRoom.users},
+                                            image: false,
+                                            content: `${nickname} kicked out ${kickedUser.nickname}`, 
+                                            createdAt: new Date(),
+                                            sender: {
+                                                system: true,
+                                                id: null,
+                                                nickname,
+                                                imageURL,
+                                            },
+                                            kickedUser,
+                                            id: uuidv4(),
+                                            isLoading: false};
+                    const updatedLastestMessage = {content:kickoutMessage.content,
+                                                    createdAt:kickoutMessage.createdAt,
+                                                    id:kickoutMessage.id,
+                                                    image:kickoutMessage.image}
+
+                    const result = chatRooms.map((chatRoom)=>{
+                        if(chatRoom.id === selectedChatRoom.id) {
+                            const updatedChatRoom = {...chatRoom,
+                                                    latestMessage: updatedLastestMessage,
+                                                    users:chatRoom.users.filter((user)=>user.nickname !== kickedUser.nickname),
+                                                    leftUsers: chatRoom.leftUsers ? [...chatRoom.leftUsers, kickedUser] : [kickedUser],}
+                            setSelectedChatRoom(updatedChatRoom);
+                            return updatedChatRoom;
+                        } else {
+                            return chatRoom
+                        }
+                    });
+                    updateChatRoomsData(result);
+                    addNewMessage(kickoutMessage);
+                    socket.emit("kickout",kickoutMessage);
+                }
+            });
+        }
+    }
+
+    const handleChatName = (e) => {
+        setChatName(e.target.value);
+    }
+
+    const handleChangeChatName = () => {
+        changeChatName({chatRoomID:selectedChatRoom.id,chatName},{
+            onSuccess: (res) => {
+                if(res.success) {
+                    const chatNameMessage = {chat: { id: selectedChatRoom.id, users: selectedChatRoom.users, chatName},
+                                            image: false,
+                                            content: `${nickname} changed chat name to ${chatName}`, 
+                                            createdAt: new Date(),
+                                            sender: {
+                                                system: true,
+                                                id: null,
+                                                nickname,
+                                                imageURL,
+                                            },
+                                            id: uuidv4(),
+                                            isLoading: false};
+                    const updatedLastestMessage = {content:chatNameMessage.content,
+                                                createdAt:chatNameMessage.createdAt,
+                                                id:chatNameMessage.id,
+                                                image:chatNameMessage.image}
+                    const result = chatRooms.map((chatRoom)=>{
+                        if(chatRoom.id === selectedChatRoom.id) {
+                            const updatedChatRoom = {...chatRoom,
+                                                    latestMessage:updatedLastestMessage,
+                                                    chatName:chatName}
+                            setSelectedChatRoom({...selectedChatRoom,chatName});
+                            return updatedChatRoom;
+                        } else {
+                            return chatRoom;
+                        }
+                    })
+                    updateChatRoomsData(result);
+                    addNewMessage(chatNameMessage);
+                    socket.emit("change chat name", chatNameMessage);
+
+                    setChatName("");
+                    setEditChatName(false);
+                }
+            }
+        }) 
+    }
+
+    const handleInvitation = (invitedUsers) => {
+        inviteUsers({chatRoomID,invitedUsers},{
+            onSuccess: (res) => {
+                if(res.success) {
+                    const content = invitedUsers.reduce((prev,cur,index)=>{
+                                        if(index===invitedUsers.length-1) return prev + `${cur.nickname}.`
+                                        return prev + `${cur.nickname}, `
+                                    },`${nickname} invited `)
+                    const updatedUsers = [...selectedChatRoom.users, ...invitedUsers];
+                    const newChatRoom = {
+                        ...selectedChatRoom,
+                        users: updatedUsers,
+                        unReadMessageCount:0, 
+                        sender: {
+                            nickname,
+                            imageURL,
+                            system: true,
+                        },
+                        receiver: [...invitedUsers]
+                    };
+                    socket.emit("new chat room",newChatRoom);
+
+                    const invitationMessage = {chat: { id: selectedChatRoom.id, users: updatedUsers},
+                                            image: false,
+                                            content,
+                                            createdAt: new Date(),
+                                            sender: {
+                                                system: true,
+                                                id: null,
+                                                nickname,
+                                                imageURL,
+                                            },
+                                            id: uuidv4(),
+                                            isLoading: false};
+                    const updatedLastestMessage = {content:invitationMessage.content,
+                                                    createdAt:invitationMessage.createdAt,
+                                                    id:invitationMessage.id,
+                                                    image:invitationMessage.image}
+                    const result = chatRooms.map((chatRoom)=>{
+                        if(chatRoom.id === selectedChatRoom.id) {
+                            const updatedChatRoom = {...chatRoom,
+                                                    users:updatedUsers,
+                                                    latestMessage:updatedLastestMessage}
+                            setSelectedChatRoom(updatedChatRoom);
+                            return updatedChatRoom;
+                        } else {
+                            return chatRoom;
+                        }
+                    })
+                    updateChatRoomsData(result);
+                    addNewMessage(invitationMessage);
+                    socket.emit("invite", invitationMessage);
+                }
+            }
+        })
+    }
+
+    const sendMsg = async (e) => {
         e.preventDefault();
-        if(text.trim()==="") {
+        if (text.trim() === "") {
             setText("");
             return;
         }
-
+    
         let init = true;
-        if(messages.length > 0 && messages.pop().sender.nickname === nickname) {
+        if (messages.length > 0 && messages[messages.length - 1].sender.nickname === nickname) {
             init = false;
         }
+    
         const newMessage = {
-            chat: chat.id,
+            chat: { id: selectedChatRoom.id, users: selectedChatRoom.users },
             image: false,
             content: text,
             createdAt: new Date(),
@@ -95,14 +275,46 @@ export default function ChatScreen({chatService}) {
             isInit: init,
             sender: {
                 nickname,
-                system:false,
+                imageURL,
+                system: false,
             },
-        }
+            isLoading: true,
+        };
+    
         addNewMessage(newMessage);
-        //sendMessage({chatRoomID:chat.id,content:text,init});
+
+        chatService.sendMessage(text,chatRoomID,init)
+            .then((res)=>{
+                if(res) {
+                    newMessage.isLoading = false;
+                    const updatedLastestMessage = {
+                        content: newMessage.content,
+                        createdAt: newMessage.createdAt,
+                        id: newMessage.id,
+                        image: newMessage.image,
+                    };
+                    const updatedChatRooms = chatRooms.map((chatRoom) => {
+                        if (chatRoom.id === selectedChatRoom.id) return {
+                            ...chatRoom,
+                            latestMessage: updatedLastestMessage,
+                            unReadMessageCount: 0
+                        };
+                        else return chatRoom;
+                    });
+                    updateChatRoomsData(updatedChatRooms);    
+                    socket.emit("new message", newMessage);
+                }
+            })
+            .catch((err) => {
+                newMessage.isLoading = false;
+                newMessage.error = true;
+            })
+
         moveToBottom();
         setText("");
-    }
+    };
+
+
 
     const handleKeyDown = (e) => {
         if(e.key === "Enter" && !e.shiftKey) {
@@ -110,6 +322,14 @@ export default function ChatScreen({chatService}) {
             sendMsg(e);
         }
     }
+
+    const handleChatNameKeyDown = (e) => {
+        if(e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleChangeChatName();
+        }
+    }
+
 
     const lastElementRef = useCallback((node)=>{
         if(isFetching) return;
@@ -126,7 +346,7 @@ export default function ChatScreen({chatService}) {
     },[fetchPreviousPage,isFetching])
 
     const imageHandler = () => {
-        console.log(queryClient.getQueryData(["direct-chatroom-message",chat.id]));
+        console.log(queryClient.getQueryData(["direct-chatroom-message",selectedChatRoom.id]));
         const input = document.createElement("input");
         input.setAttribute("type","file");
         input.setAttribute("accpet","image/*");
@@ -136,41 +356,52 @@ export default function ChatScreen({chatService}) {
             console.log(input);
             if (file) {
                 if (file.type.startsWith("image/")) {
-                    const imageURL = URL.createObjectURL(file);
-                    setImgFile({ file, imageURL });
+                    const imageFileURL = URL.createObjectURL(file);
+                    setImgFile({ file, imageFileURL });
                     let init = true;
                     if(messages.length > 0 && messages.pop().sender.nickname === nickname) {
                         init = false;
                     }
                     const newMessage = {
-                        chat: chat.id,
+                        chat: {id:selectedChatRoom.id,users:selectedChatRoom.users},
                         image: true,
-                        content: imageURL,
+                        content: imageFileURL,
                         createdAt: new Date(),
                         id: uuidv4(),
                         isInit: init,
                         sender: {
                             nickname,
+                            imageURL,
                             system:false,
                         },
                         isLoading: true,
                     }
                     const formData = new FormData();
                     formData.append("image",file);
-                    formData.append("jsonFile",JSON.stringify({chatRoomID:chat.id,isInit:init}));
+                    formData.append("jsonFile",JSON.stringify({chatRoomID:selectedChatRoom.id,isInit:init}));
                     addNewMessage(newMessage);
                     moveToBottom();
-                    sendImageMessage(formData,{
-                        onSuccess:(res)=>{
+                    chatService.sendImageMessage(formData)
+                        .then((res)=>{
                             newMessage.isLoading = false;
-                            updateNewMessage(newMessage);
-                        },
-                        onError: (err) => {
+                            newMessage.content = res.result.content;
+                            const updatedLastestMessage = {content:newMessage.content,
+                                createdAt:newMessage.createdAt,
+                                id:newMessage.id,
+                                image:newMessage.image}
+                            const updatedChatRooms = chatRooms.map((chatRoom)=>{
+                                if(chatRoom.id === selectedChatRoom.id) return {...chatRoom, 
+                                                                    latestMessage:updatedLastestMessage,
+                                                                    unReadMessageCount:0}
+                                else return chatRoom;
+                            })
+                            updateChatRoomsData(updatedChatRooms);
+                            socket.emit("new message",newMessage);
+                        })
+                        .catch((err)=>{
                             newMessage.isLoading = false;
                             newMessage.error = true;
-                            updateNewMessage(newMessage);
-                        }   
-                    });
+                        })
                 } else {
                     alert("Please select an image file.");
                     input.value = "";
@@ -179,50 +410,115 @@ export default function ChatScreen({chatService}) {
         })
     }
 
+    useEffect(()=>{
+        if(chatRoomID && isSuccess) {
+            const updatedChatRooms = chatRooms.map((chatRoom)=>{
+                if(chatRoom.id === selectedChatRoom.id) return {...chatRoom, unReadMessageCount:0}
+                else return chatRoom;
+            })
+            updateChatRoomsData(updatedChatRooms);
+        }
+    },[chatRoomID,chatRooms,isSuccess,socket])
+
     useEffect(() => {
+        if(messages) localStorage.setItem('currentChatRoom', JSON.stringify(selectedChatRoom));
         if(!initScrollTop) moveToBottom();
     }, [messages]);
 
     useEffect(() => {
+        if(selectedChatRoom && selectedChatRoom.users.length === 1) setEnable(false);
+        else setEnable(true);
         setInitScrollTop(null);
-    }, [chat]);
+    }, [selectedChatRoom]);
 
     useEffect(() => {
-        const roomID = chat.id;
-        if(chatRoomID === null) selectChatRoom(roomID);
-        return () => {
-            saveLastReadMessage(roomID);
-        };
-    }, []);
+        const roomID = selectedChatRoom && selectedChatRoom.id;
+        if(socket) {
+            if(chatRoomID === null) selectChatRoom(roomID);
+        }
+
+        return (async () => {
+            console.log("unmount!");
+            if(socket) {
+                socket.off("room message received");
+            }
+        });
+    }, [socket]);
+
+    useEffect(()=>{
+        if(!chatRoomID) {
+            const currentChatRoom = JSON.parse(localStorage.getItem('currentChatRoom'));
+            selectChatRoom(currentChatRoom.id);
+            setSelectedChatRoom(currentChatRoom);
+            console.log(currentChatRoom);
+        }
+    },[])
+
 
     const messageContent = messages && messages.length > 0 &&
                             messages.map((message,index)=>{
+                                let displayTime = true;
+                                let displayDate = true;
+                                if(index !== messages.length-1 &&
+                                    message.sender.nickname === messages[index+1].sender.nickname &&
+                                    simplifyTimeForMsg(message.createdAt) === simplifyTimeForMsg(messages[index+1].createdAt)) {
+                                        displayTime = false;
+                                }
+                                if(index !== 0 &&
+                                    simplifyDateForChatRoom(message.createdAt) === simplifyDateForChatRoom(messages[index-1].createdAt)) {
+                                        displayDate = false;
+                                }
+
                                 if(index === 0) {
                                     return  message.sender.system ? <SystemMessage key={message.id} ref={lastElementRef} message={message}/> :
                                             message.sender.nickname === nickname ? <MyMessage key={message.id} 
                                                                                                 ref={lastElementRef} 
                                                                                                 message={message} 
+                                                                                                displayTime={displayTime}
+                                                                                                displayDate={displayDate}
                                                                                                 start={message.isInit}/> :
                                                                                     <OpponentMessage key={message.id} 
                                                                                                     ref={lastElementRef} 
+                                                                                                    displayTime={displayTime}
+                                                                                                    displayDate={displayDate}
                                                                                                     message={message} 
                                                                                                     start={message.isInit}/>
                                 } else {
                                     return message.sender.system ? <SystemMessage key={message.id} message={message}/> :
                                     message.sender.nickname === nickname ? <MyMessage key={message.id} 
                                                                                         message={message} 
+                                                                                        displayTime={displayTime}
+                                                                                        displayDate={displayDate}
                                                                                         start={message.isInit}/> :
                                                                             <OpponentMessage key={message.id} 
                                                                                             message={message} 
+                                                                                            displayTime={displayTime}
+                                                                                            displayDate={displayDate}
                                                                                             start={message.isInit}/>
                                 }
                             })
+
     return (
         <>
             <div className={styles.chatScreen}>
                 <div className={styles.titleContainer}>
-                    <span className={styles.chatTitle}>Title</span>
-                    <button className={styles.exitBtn}>
+                    <div className={styles.titleSubContainer}>
+                        {!editChatName && selectedChatRoom && <span className={styles.chatTitle}>{selectedChatRoom.isGroupChat ? selectedChatRoom.chatName : 
+                                            selectedChatRoom.leftUsers && selectedChatRoom.leftUsers.length > 0 ? selectedChatRoom.leftUsers[0].nickname :
+                                            selectedChatRoom.users[0].nickname}</span>}
+                        {selectedChatRoom && selectedChatRoom.isGroupChat && nickname === selectedChatRoom.groupAdmin && !editChatName &&
+                            <AiFillEdit className={styles.editIcon} onClick={()=>{setEditChatName(prev=>!prev)}}/>}
+                        {editChatName && 
+                        <>
+                            <input  className={styles.editChatNameContainer}
+                                    value={chatName}
+                                    onChange={handleChatName}
+                                    onKeyDown={handleChatNameKeyDown}/>
+                            <button onClick={handleChangeChatName} className={styles.editBtn}>Edit</button>
+                            <button onClick={()=>{setChatName("");setEditChatName(false);}} className={styles.cancelBtn}>Cancel</button>
+                        </>}
+                    </div>
+                    <button className={styles.exitBtn} onClick={handleExit}>
                         <ImExit className={styles.exitIcon}/>
                     </button>
                 </div>
@@ -240,8 +536,9 @@ export default function ChatScreen({chatService}) {
                                         ref={textarea}
                                         onKeyDown={handleKeyDown}
                                         rows={1} 
-                                        placeholder="Message" />
-                                <button className={styles.imgBtn} type="button" onClick={imageHandler}>
+                                        disabled={enable ? false : true}
+                                        placeholder={enable ? "Message" : "There is no one to talk..."} />
+                                <button className={styles.imgBtn} type="button" onClick={imageHandler} disabled={enable ? false : true}> 
                                     <AiOutlinePicture className={styles.imgIcon}/>
                                 </button>
                             </div>
@@ -249,7 +546,11 @@ export default function ChatScreen({chatService}) {
                     </form>
                 </div>
             </div>
-            <ChatParticipants users={chat.users}/>
+            {selectedChatRoom && <ChatParticipants users={selectedChatRoom.users} 
+                                                groupAdmin={selectedChatRoom.groupAdmin} 
+                                                handleKickout={handleKickout} 
+                                                handleInvitation={handleInvitation}
+                                                searchService={searchService}/>}
         </>
     );
 }

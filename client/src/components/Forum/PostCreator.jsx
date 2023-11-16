@@ -5,14 +5,14 @@ import './quill.css';
 import 'react-quill/dist/quill.snow.css';
 import styles from './PostCreator.module.css';
 import ImageResize from 'quill-image-resize';
-import simplifyDate from '../../date';
-import {BsFillEyeFill} from "react-icons/bs";
 import { usePostContext } from '../../context/PostContext';
+import Alarm from '../Alarm/Alarm';
 
 Quill.register('modules/ImageResize', ImageResize);
 
 export default function PostCreator({postService}) {
-    const {selectedPostID,setPostID} = usePostContext();
+    const {setPostID} = usePostContext();
+    const [isPosting,setIsPosting] = useState(false);
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
@@ -54,10 +54,8 @@ export default function PostCreator({postService}) {
             validFiles.forEach((element)=>{
                 if(element.type === "video") {
                     formData.append("video",element.file);
-                    console.log(element.file);
                 } else if(element.type === "image") {
                     formData.append("image",element.file);
-                    console.log(element.file);
                 }
                 
             })
@@ -74,12 +72,13 @@ export default function PostCreator({postService}) {
             formData.append("jsonFile", JSON.stringify(jsonData));
         }
 
+        setIsPosting(true);
         postService.createPost(formData)
             .then((response)=>{
                 const post = {...response}
-                console.log(response);
                 setPostID(post.id);
                 navigate(`/forums/post/${response.title}`);
+                setIsPosting(false);
             })
             .catch((error)=>{console.log(error)})
         
@@ -179,18 +178,6 @@ export default function PostCreator({postService}) {
                                     value={title}
                                     onChange={(e)=>setTitle(e.target.value)}/>
                             <div className={styles.counter}>{title.trim().length}/100</div>
-                            {/* {post &&
-                            <div className={styles.postInfo}>
-                                <img className={styles.profileImg} src={post.image_url} alt="userImg" />
-                                <div className={styles.postInfoSubContainer}>
-                                    <div className={styles.postNickname}>{post.nickname}</div>
-                                    <div className={styles.postTime}>{simplifyDate(post.created_at)}</div>
-                                </div>
-                                <div className={styles.views}>
-                                    <BsFillEyeFill/>
-                                    {post.views}
-                                </div>
-                            </div>} */}
                         </div>
                         <ReactQuill className={"editor"}
                                     ref={quillRef}
@@ -203,6 +190,7 @@ export default function PostCreator({postService}) {
                     </div>
                 </form>
             </div>
+            {isPosting && <Alarm message={"Posting..."}/>}
         </div>
     );
 }

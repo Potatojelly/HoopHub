@@ -1,21 +1,17 @@
 import {useMutation,useQueryClient} from "@tanstack/react-query";
 import {useQuery,useInfiniteQuery} from '@tanstack/react-query';
-import { useSelectedCard } from '../context/SelectedCardContext';
-import { useEffect, useState } from 'react';
-import { AuthErrorEventBus } from '../context/AuthContext';
+import { getAuthErrorEventBus } from '../context/AuthContext';
 import HttpClient from '../network/http';
 import ChatService from '../service/chat';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
-const authErrorEventBus = new AuthErrorEventBus();
+const authErrorEventBus = getAuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const chatService = new ChatService(httpClient);
-
-export function useChatRooms() {
+export function useChatRoomsData() {
     return useQuery(["direct-chatrooms"],()=>chatService.getMyChatRooms(),         
                                                     {
-                                                        cacheTime: 0,
-                                                        staleTime:1000 * 60 * 1,
+                                                        staleTime: Infinity,
                                                         select: (data) => {
                                                             data.chats.sort((a, b) => {
                                                                 if (a.latestMessage && b.latestMessage) {
@@ -31,26 +27,36 @@ export function useChatRooms() {
                                                             return data.chats;
                                                         },
                                                         refetchOnMount: true,
+                                                        onSuccess: () => {console.log("Fetched!")}
                                                     })    
 }
 
-export function useChatRoomMessage(chatRoomID) {
+export function useChatRoomMessageData(chatRoomID) {
     return useInfiniteQuery(["direct-chatroom-message",chatRoomID],({pageParam = 0})=>chatService.getMessage(chatRoomID,pageParam),         
                                                                                 {
                                                                                     getPreviousPageParam : (lastPage, allPages) => {
-                                                                                        console.log(allPages);
-                                                                                        return lastPage.result.length !== 0 ? lastPage.currentPage+1 : undefined;
+                                                                                        // console.log(lastPage);
+                                                                                        // console.log(allPages);
+                                                                                        return lastPage.result.length !== 0 ? lastPage.prevOffset + lastPage.result.length : undefined;
                                                                                     },
+                                                                                    // getNextPageParam: (lastPage,allPages) => {
+
+                                                                                    //     return 0 
+                                                                                    // },
                                                                                     cacheTime: 1000 * 60 * 5,
                                                                                     staleTime:1000 * 60 * 5,
                                                                                     select: (data) => {
-                                                                                        let newData = [];
-                                                                                        data.pages.forEach((ele)=>{newData=[...newData, ...ele.result]});
+                                                                                        const newData = data?.pages.reduce((prev,cur)=>{
+                                                                                            return [...prev,...cur.result];
+                                                                                        },[]);
+                                                                                        // let newData = [];
+                                                                                        // data.pages.forEach((ele)=>{newData=[...newData, ...ele.result]});
+                                                                                        // console.log(newData);
                                                                                         return newData;
                                                                                     },
                                                                                     refetchOnWindowFocus: false,
                                                                                     refetchOnMount: true,
-                                                                                    onSuccess:()=>{console.log("check!")}
+                                                                    
                                                                                 })    
 }
 
@@ -93,14 +99,35 @@ export function useSaveLastReadMessage() {
 
 export function useAddChatRoom() {
     const queryClient = useQueryClient();
-    return useMutation((opponentID)=>chatService.createChatRoom(opponentID),{onSuccess:()=>{queryClient.invalidateQueries(["direct-chatrooms"])}})
+    return useMutation((data)=>{const {participants,chatName} = data; return chatService.createChatRoom(participants,chatName)},{onSuccess:(res)=>{
+        console.log(res);
+        queryClient.invalidateQueries(["direct-chatrooms"])}})
 }
 
-export function useSendMessage() {
+export function useExitChatRoom() {
     const queryClient = useQueryClient();
-    return useMutation((data)=>{const {chatRoomID, content, init} = data; return chatService.sendMessage(content,chatRoomID,init)},{onSuccess:(response)=>{
-        queryClient.invalidateQueries(["direct-chatroom-message",response.result.chat])}})
+    return useMutation((chatRoomID)=>chatService.exitChatRoom(chatRoomID))
 }
+
+export function useKickoutUser() {
+    const queryClient = useQueryClient();
+    return useMutation((data)=>{const {chatRoomID,kickedUser} = data; return chatService.kickoutUser(kickedUser,chatRoomID)})
+}
+
+export function useChatName() {
+    const queryClient = useQueryClient();
+    return useMutation((data)=>{const {chatRoomID,chatName} = data; return chatService.changeChatName(chatRoomID,chatName)})
+}
+
+export function useInviteUsers() {
+    const queryClient = useQueryClient();
+    return useMutation((data)=>{const {chatRoomID,invitedUsers} = data; return chatService.inviteUsers(chatRoomID,invitedUsers)})
+}
+
+// export function useSendMessage() {
+//     const queryClient = useQueryClient();
+//     return useMutation((data)=>{const {chatRoomID, content, init} = data; return chatService.sendMessage(content,chatRoomID,init)})
+// }
 
 export function useSendImageMessage() {
     const queryClient = useQueryClient();

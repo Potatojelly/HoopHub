@@ -1,6 +1,7 @@
 export default class ChatService {
-    constructor(http) {
+    constructor(http,socket) {
         this.http = http;
+        this.socket = socket;
     }
 
     async getMyChatRooms() {
@@ -11,15 +12,27 @@ export default class ChatService {
         return data;
     }
 
-    async createChatRoom(opponentID) {
-        const data = await this.http.fetch(`/chat/create-chat-room/${opponentID}`, {
-            method: "POST"
+    async createChatRoom(participants,chatName) {
+        console.log(participants);
+        console.log(chatName);
+        if(chatName === "") chatName = null;
+        const data = await this.http.fetch(`/chat/create-chat-room`, {
+            method: "POST",
+            body: JSON.stringify({participants,chatName})
         });
         return data;
     }
 
-    async getMessage(chatRoomID,page) {
-        const data = await this.http.fetch(`/chat/get-message/${chatRoomID}/${page}`, {
+    async exitChatRoom(chatRoomID) {
+        const data = await this.http.fetch(`/chat/exit-chat-room/${chatRoomID}`, {
+            method: "PUT"
+        });
+        return data;
+    }
+
+
+    async getMessage(chatRoomID,offset) {
+        const data = await this.http.fetch(`/chat/get-message/${chatRoomID}/${offset}`, {
             method: "GET",
         });
         return data;
@@ -46,12 +59,11 @@ export default class ChatService {
         return data;
     }
 
-    async saveLastReadMessage(chatRoomID,lastReadMessage) {
+    async saveLastReadMessage(chatRoomID) {
         const data = await this.http.fetch("/chat/save-last-read-message", {
             method: "PUT",
             body: JSON.stringify({
                 chatRoomID,
-                lastReadMessage,
             })
         });
         return data;
@@ -61,6 +73,45 @@ export default class ChatService {
             method: "GET",
         });
         return data;
+    }
+
+    async inviteUsers(chatRoomID,invitedUsers) {
+        const data = await this.http.fetch(`/chat/invite`, {
+            method: "PUT",
+            body: JSON.stringify({
+                invitedUsers,
+                chatRoomID,
+            })
+        });
+        return data;
+    }
+
+    async kickoutUser(kickedUser,chatRoomID) {
+        console.log(kickedUser);
+        console.log(chatRoomID);
+        const data = await this.http.fetch(`/chat/kickout`, {
+            method: "PUT",
+            body: JSON.stringify({
+                kickedUser,
+                chatRoomID,
+            })
+        });
+        return data;
+    }
+
+    async changeChatName(chatRoomID,chatName) {
+        const data = await this.http.fetch(`/chat/chatName`, {
+            method: "PUT",
+            body: JSON.stringify({
+                chatRoomID,
+                chatName,
+            })
+        });
+        return data;
+    }
+
+    setUp(callback) {
+        return this.socket.onSync("setup",callback);
     }
 
 }

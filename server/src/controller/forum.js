@@ -2,7 +2,6 @@ import "express-async-errors";
 import * as myRepository from "../data/auth.js";
 import * as forumRepository from "../data/forum.js";
 import ffmpeg from 'fluent-ffmpeg';
-import ffprobe from "ffprobe-static";
 import fs from "fs";
 import axios from 'axios'; 
 import {config} from "../config.js";
@@ -120,15 +119,12 @@ export async function createPost(req,res) {
     let content = data.content;
     let thumbnailURL = "";
 
-    console.log(req.file);
-
     if( Object.keys(req.files).length > 0) {
         if(data.video === true) {
             const  s3VideoUrl = req.files.video[0].location
             const outputPath = `public/thumbnails/${req.files.video[0].originalname}`.replace(/\.[^.]+$/, '.jpg');
             const extension = req.files.video[0].originalname.split(".").pop();
             thumbnailURL = await getThumbnail(s3VideoUrl, outputPath, extension);
-            console.log(thumbnailURL);
         }
         else {
             thumbnailURL = req.files.image[0].location;
@@ -189,7 +185,6 @@ export async function createPost(req,res) {
             }
     
             if(req.files.image) {
-                //console.log(req.files.image);
                 const images = req.files.image.map((element)=>element.location);
                 if(images.length > 0) {
                     let currentIndex = 0;
@@ -203,23 +198,27 @@ export async function createPost(req,res) {
         // compare 
         const newUrl = []
         const newContent = content.match(/(<iframe[^>]*src="[^"]*"[^>]*>|<img[^>]*src="[^"]*"[^>]*>)/gi);
-        newContent.forEach((srcValue)=>{
-            const result = srcValue.match(/src="([^"]+)"/);
-            newUrl.push(result[1]);
-        })
+        if(newContent) {
+            newContent.forEach((srcValue)=>{
+                const result = srcValue.match(/src="([^"]+)"/);
+                newUrl.push(result[1]);
+            })
+        }
 
         const oldUrl = [] 
         const oldContent = post.body.match(/(<iframe[^>]*src="[^"]*"[^>]*>|<img[^>]*src="[^"]*"[^>]*>)/gi);
-        oldContent.forEach((srcValue)=>{
-            const result = srcValue.match(/src="([^"]+)"/);
-            oldUrl.push(result[1]);
-        })
+        if(oldContent) {
+            oldContent.forEach((srcValue)=>{
+                const result = srcValue.match(/src="([^"]+)"/);
+                oldUrl.push(result[1]);
+            })
+        }
 
         // extract thumbnail
-        if(newContent[0].startsWith("<img")) {
+        if(newContent && newContent[0].startsWith("<img")) {
             const url = newContent[0].match(/src="([^"]+)"/);
             thumbnailURL = url[1];
-        } else if(newContent[0].startsWith("<iframe")) {
+        } else if(newContent && newContent[0].startsWith("<iframe")) {
             const url = newContent[0].match(/src="([^"]+)"/);
             const s3VideoUrl = url[1];
             const outputPath = "public/thumbnails/tempThumbnail.jpg";
@@ -232,9 +231,6 @@ export async function createPost(req,res) {
 
         // delete s3
         const toBeDeleted = oldUrl.filter(item => !newUrl.includes(item));
-        console.log(oldUrl);
-        console.log(newUrl);
-        console.log(toBeDeleted);
 
         if(toBeDeleted.length > 0) {
             toBeDeleted.forEach((url)=>{
@@ -331,20 +327,22 @@ async function getThumbnail(s3VideoUrl, outputPath, extension) {
     }
 }
 
-export async function getMyPosts(req,res) {
-    const userID = req.userID;
+export async function getUserPosts(req,res) {
+    const userNickname = req.params.nickname;
     const currentPage = req.params.currentPage;
     const postsPerPage = req.params.postsPerPage;
-    const myPosts = await forumRepository.getMyPosts(userID,currentPage,postsPerPage);
+    const user =  await myRepository.findByNickname(userNickname);
+    const myPosts = await forumRepository.getUserPosts(user.id,currentPage,postsPerPage);
     if(myPosts) res.status(200).json({success:true, ...myPosts});
     else res.status(500).json({success:false, message:"Server Error"});
 }
 
-export async function getMyComments(req,res) {
-    const userID = req.userID;
+export async function getUserComments(req,res) {
+    const userNickname = req.params.nickname;
     const currentPage = req.params.currentPage;
     const commentsPerPage = req.params.commentsPerPage;
-    const myComments = await forumRepository.getMyComments(userID,currentPage,commentsPerPage);
+    const user =  await myRepository.findByNickname(userNickname);
+    const myComments = await forumRepository.getUserComments(user.id,currentPage,commentsPerPage);
     if(myComments) res.status(200).json({success:true, ...myComments});
     else res.status(500).json({success:false, message:"Server Error"});
 }

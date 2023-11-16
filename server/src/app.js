@@ -1,4 +1,4 @@
-import express, { application } from "express";
+import express from "express";
 import "express-async-errors";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -12,11 +12,12 @@ import forumRouter from "./router/forum.js";
 import chatRouter from "./router/chat.js";
 import cookieParser from 'cookie-parser';
 import {connectMongoDB, db} from "./db/database.js";
+import { initSocket } from './connection/socket.js';
 
 const app = express();
 
 const corsOption = {
-    origin:["http://localhost:3000","http://localhost:3001"],
+    origin:["http://localhost:3000","http://localhost:3001","http://localhost:3002","http://localhost:3003"],
     optionSuccessStatus: 200,
     credentials: true,
 }
@@ -58,7 +59,8 @@ connectMongoDB()
 
 let port = 8080;
 
-app.listen(port, async() => {
+const server = app.listen(port, async() => {
     console.log(`Server running at http://localhost:${port}`);
 });
+initSocket(server);
 

@@ -49,8 +49,6 @@ const validateSignup = [
     ...validateLogin,
 ]
 
-
-
 router.post("/signup", validateSignup, authController.signup);
 
 router.post("/login", validateLogin, authController.login);

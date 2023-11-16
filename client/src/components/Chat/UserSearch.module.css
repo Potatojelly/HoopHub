@@ -6,6 +6,63 @@
     align-items: center;
 }
 
+.infoContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 2rem;
+}
+
+.chatNameBar {
+    height: 2.5rem;
+    width: 450px;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-mid-grey);
+    color: var(--color-grey);
+    font-family: var(--text-main);
+    font-size: 0.9rem;
+}
+
+.participantBar {
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    width: 450px;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-mid-grey);
+    font-size: 0.9rem;
+    color: var(--color-grey);
+    font-family: var(--text-main);
+}
+
+.participantTag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2rem;
+    background-color: orange;
+    padding: 0.3rem;
+    margin:0.5rem;
+    color: white;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none
+}
+
+.defaultParticipant {
+    height: 2rem;
+    padding: 0.3rem;
+}
+
+.closeIcon {
+    cursor: pointer;
+}
+
 .searchContainer {
     display: flex;
     flex-direction: column;

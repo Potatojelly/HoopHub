@@ -1,7 +1,6 @@
 .reply {
     border-bottom: 1px solid #ddd;
     padding: 10px;
-    /* margin: 0px 0 0 55px ; */
     background-color: #f9f9f9;
     display: flex;
     margin: 0px 0 0 55px ;
@@ -21,6 +20,13 @@
 .replyAuthor {
     font-weight: bold;
     font-size: 0.9rem;
+    color: #4299e1; 
+    text-decoration: none;
+}
+
+.replyAuthor:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .replyText {
@@ -48,7 +54,6 @@
 .deletedreply {
     border-bottom: 1px solid #ddd;
     padding: 10px;
-    /* margin: 0px 0 0 55px ; */
     background-color: #f9f9f9;
     display: flex;
     align-items: center;

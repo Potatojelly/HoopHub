@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import styles from './Login.module.css'
 import InputGroup from '../components/InputGroup/InputGroup';
-import {Link} from "react-router-dom";
 import Logo from '../components/Logo/Logo';
 import { useAuth } from '../context/AuthContext';
 import {useNavigate} from "react-router-dom";

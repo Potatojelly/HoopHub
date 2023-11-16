@@ -1,12 +1,12 @@
-import {useMutation,useQueryClient} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
-import { AuthErrorEventBus, useAuth } from '../context/AuthContext';
-import { useEffect, useState } from 'react';
+import { getAuthErrorEventBus} from '../context/AuthContext';
+import { useState } from 'react';
 import HttpClient from '../network/http';
 import PostService from '../service/post';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
-const authErrorEventBus = new AuthErrorEventBus();
+const authErrorEventBus = getAuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const postService = new PostService(httpClient);
 const DISPLAYPAGENUM = 5;
@@ -47,8 +47,6 @@ export default function useComment() {
         getStartPage(currentPage);
         getEndPage(currentPage,totalComments);
     }
-
-
 
 
     const handlePrevious = (postID,setCurrentPage) => {

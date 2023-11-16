@@ -1,8 +1,6 @@
-import bcrypt from "bcrypt";
 import "express-async-errors";
 import * as myRepository from "../data/auth.js";
 import * as profileRepository from "../data/profile.js";
-import {config} from "../config.js";
 
 export async function getProfile(req,res) {
     const user = await myRepository.findById(req.userID);
@@ -16,6 +14,17 @@ export async function getProfile(req,res) {
     else res.status(500).json({sucess:false, message:"Server Error"});
 }
 
+export async function getUserProfile(req,res) {
+    const user = await myRepository.findByNickname(req.params.nickname);
+    if(user) res.status(200).json({
+                                    success:true,
+                                    nickname:user.nickname,
+                                    statusMsg:user.statusMsg, 
+                                    imageURL:user.imageURL});
+    else res.status(500).json({sucess:false, message:"Server Error"});
+}
+
+
 export async function updateStatusMsg(req,res) {
     const user = await myRepository.findById(req.userID);
     const {statusMsg} = req.body;
@@ -28,7 +37,6 @@ export async function updateStatusMsg(req,res) {
 
 export async function updateImage(req,res) {
     const user = await myRepository.findById(req.userID);
-    console.log(user.username);
     const imageURL = req.file.location;
 
     const result = await profileRepository.updateImage({username:user.username, imageURL});

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './FriendCard.module.css'
-import useFriend from '../../hooks/useFriend';
-import FriendDropdown from '../Dropdown/FriendDropdown';
 
-export default function Friend({id, nickname, imageURL, statusMsg, friendService, setPosition, selectedFriend, setSelectedFriend}) {
+export default function Friend({id, nickname, imageURL, statusMsg, setPosition, selectedFriend, setSelectedFriend}) {
     const handleClick = (e) => {
         if (selectedFriend !== id) {
             setSelectedFriend(id);

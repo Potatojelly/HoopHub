@@ -12,12 +12,14 @@ const chatRoomSchema = mongoose.Schema(
                 imageURL: {type:String},
             }
         ],
+        leftUsers: {type:Array, default: null},
         latestMessage: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Message",
             default: null,
         },
         groupAdmin: {type:String, default: null},  
+        isDeleted: {type:Boolean, default: false},
     },
     {
         timestamps: true,

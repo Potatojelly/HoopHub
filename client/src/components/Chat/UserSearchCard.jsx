@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './UserSearchCard.module.css'
 
-export default function UserSearchCard({userID,imageURL,nickname,selectedUser,setSelectedUser}) {
-    const handleCheckboxChange = () => {
-        if(selectedUser) {
-            setSelectedUser(null);
+export default function UserSearchCard({userID,imageURL,nickname,participants,setParticipants, selectedUser}) {
+
+    const handleCheckboxChange = (e) => {
+        if(e.currentTarget.checked) {
+            setParticipants([...participants,{id:userID,nickname,imageURL}])
         } else {
-            setSelectedUser({id:userID,nickname});
-        } 
-        
-    };
+            const filteredParticipants = participants.filter((participant)=>participant.id !== userID);
+            setParticipants(filteredParticipants);
+        }
+        console.log(participants);
+    }
+
 
     return (
         <li className={`${styles.userCard} ${(selectedUser && selectedUser.id !== userID) && styles.inactiveUserCard}`}>
@@ -17,9 +20,8 @@ export default function UserSearchCard({userID,imageURL,nickname,selectedUser,se
             <div className={styles.userName}>{nickname}</div>
             <input type="checkbox" 
                     value={nickname}
-                    checked={selectedUser && selectedUser.id === userID ? true : false}
+                    checked={participants.find((participant)=>participant.id === userID) ? true : false}
                     onChange={handleCheckboxChange}
-                    disabled={(selectedUser && selectedUser.id !== userID) ? true : false}
                     />
         </li>
     );

@@ -24,12 +24,6 @@ export default function Register() {
                 }
             })
             .catch((error) => {
-                // const resultObject = {};
-                // error.forEach(item=>{
-                //     const key = Object.keys(item)[0];
-                //     resultObject[key] = item[key];
-                // });
-                // setErrors(resultObject);
                 setErrors(error);
             })
     }
