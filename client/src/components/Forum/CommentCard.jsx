@@ -5,39 +5,52 @@ import {simplifyDate} from '../../date';
 import {useQueryClient} from "@tanstack/react-query";
 import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
-import { useProfile } from '../../context/ProfileContext';
 import {useNavigate} from "react-router-dom";
 import { usePostContext } from '../../context/PostContext';
 import { useActivityContext } from '../../context/ActivityContext';
+import { useDeleteComment, useUpdateComment } from '../../hooks/useCommentsData';
+import Alarm from '../Alarm/Alarm';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
 
-const CommentCard = ({index,comment,setPost,commentPage,handleReplyClick,openReplyIndex,postService,hasReply}) => {
+const CommentCard = ({index,comment,handleReplyClick,openReplyIndex,hasReply}) => {
     const queryClient = useQueryClient();
     const {selectedCommentType,setCommentID,selectedCommentID} = useActivityContext();
     const {selectedPostID} = usePostContext();
     const [targetCardEffect,setTargetCardEffect] = useState(selectedCommentType === "comment" && comment.id===selectedCommentID ? true : false);
+    const [isError,setIsError] = useState(false);
     const [isEdit,setIsEdit] = useState(false);
     const [editedComment,setEditedComment] = useState("");
-    const {nickname} = useProfile();
+    const {data:profileData} = useMyProfileData();
+    const {mutate: deleteComment} = useDeleteComment();
+    const {mutate: updateComment} = useUpdateComment();
     const navigate = useNavigate();
 
-
-    useEffect(()=>{
-        if(targetCardEffect) {
-            setTimeout(()=>{setTargetCardEffect(false);setCommentID(null)},2000);
-        }
-    },[comment])
-
-    const handleText = (e) => {
-        setEditedComment(e.target.value);
+    const submitEditedComment = (e) => {
+        e.preventDefault();
+        updateComment({selectedPostID, commentID:comment.id, editedComment},{
+            onSuccess: () => {
+                queryClient.invalidateQueries(["comments"]);
+                setIsEdit((prev)=>!prev);
+            },
+            onError: () => {
+                setIsError(true);
+                setTimeout(()=>{setIsError(false)},4000);
+            }
+        })
     }
 
     const handleDeleteConfirm = (text) => {
         const result = window.confirm(text);
         if(result) {
-            postService.deleteComment(comment.post_id, comment.id)
-                .then((result)=>{
-                    queryClient.invalidateQueries(["comments", selectedPostID, commentPage]);
-                })
+            deleteComment({selectedPostID, commentID:comment.id},{
+                onSuccess: () => {
+                    queryClient.invalidateQueries(["comments"]);
+                },
+                onError: () => {
+                    setIsError(true);
+                    setTimeout(()=>{setIsError(false)},4000);
+                }
+            })
         } 
     } 
 
@@ -53,19 +66,23 @@ const CommentCard = ({index,comment,setPost,commentPage,handleReplyClick,openRep
         setEditedComment(comment.body);
     }
 
-    const submitEditedComment = (e) => {
-        e.preventDefault();
-        postService.updateComment(comment.post_id, comment.id, editedComment)
-            .then((result)=>{
-                queryClient.invalidateQueries(["comments", selectedPostID, commentPage]);
-                setIsEdit((prev)=>!prev);
-            })
-    }
-
     const viewUserActivity = () => {
+        if(profileData?.nickname === comment.nickname) {
+            navigate(`/manage-my-activity`)
+            return
+        }
         navigate(`/view-user-activity/${comment.nickname}`)
     }
 
+    const handleText = (e) => {
+        setEditedComment(e.target.value);
+    }
+
+    useEffect(()=>{
+        if(targetCardEffect) {
+            setTimeout(()=>{setTargetCardEffect(false);setCommentID(null)},2000);
+        }
+    },[comment])
 
     return (
         <>
@@ -95,19 +112,17 @@ const CommentCard = ({index,comment,setPost,commentPage,handleReplyClick,openRep
                             <small className={styles.replyBtn} onClick={handleReplyClick}> Reply</small>
                         </div>
                     </div>
-                    {comment.nickname === nickname && !isEdit && <div className={styles.editContainer}>
+                    {comment.nickname === profileData?.nickname && !isEdit && <div className={styles.editContainer}>
                         <FiEdit className={styles.editIcon} onClick={handleEdit}/>
                         <BsTrash3 className={styles.trashIcon} onClick={()=>{handleDeleteConfirm(`Do you want to delete this comment?`)}}/>
                     </div>}
                 </div>
                 {openReplyIndex === index && 
-                <CreateReply setPost={setPost}
-                            commentPage={commentPage}
-                            commentID={comment.id} 
-                            postService={postService} 
+                <CreateReply commentID={comment.id} 
                             handleReplyClick={handleReplyClick}/> 
                 }
             </li>}
+            {isError && <Alarm message={"Something went wrong..."}/>}
         </>
     );
 }

@@ -13,6 +13,8 @@
 }
 
 .userImg {
+    width: 36px;
+    height: 36px;
     border-radius: 0.5rem;
     margin-right: 0.5rem;
 }
@@ -25,7 +27,7 @@
 .requestBtn {
     border-radius: 0.5rem;
     padding: 0.5rem;
-    background-color: var(--color-blue);
+    background-color: var(--color-royal-blue);
     color:white;
 }
 

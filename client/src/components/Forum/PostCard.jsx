@@ -7,29 +7,30 @@ import {simplifyDate} from "../../date.js";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import { usePostContext } from '../../context/PostContext';
-import {useQueryClient} from "@tanstack/react-query";
+import { useUpdatePostView } from '../../hooks/usePostsData.jsx';
 
 export default function PostCard({id, num, post, handleSelection, keyword, last}) {
-    const {selectedPostID} = usePostContext();
-    const navigate = useNavigate();
     const {user} = useAuth();
+    const {selectedPostID} = usePostContext();
     const [highlightedTitle,setHighlightedTitle] = useState("");
+    const {mutate: updatePostView} = useUpdatePostView();
+    const navigate = useNavigate();
 
     const handleClick = () => {
         if(user) {
             handleSelection(id);
             const contentElement = document.querySelector('#header');
             contentElement.scrollIntoView({ behavior: 'smooth' });
-            navigate(`/forums/post/${post.title}`,{state:true});
+            updatePostView(id);
+            navigate(`/forums/post/${post.title}/${id}`,{state:true});
         }
         else alert("You do not have permission to view articles, Please Log in");
     }
 
     useEffect(()=>{
         if(keyword) {
-            console.log("Calling");
-            const pattern = new RegExp(keyword, 'g');
-            setHighlightedTitle(post.title.replace(pattern, `<em>${keyword}</em>`));
+            const pattern = new RegExp(keyword, 'gi');
+            setHighlightedTitle(post.title.replace(pattern,(match)=>`<em>${match}</em>`));
         }
     },[keyword])
 

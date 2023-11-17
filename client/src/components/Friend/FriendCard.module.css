@@ -2,11 +2,11 @@
     display:flex;
     justify-content: left;
     align-items: center;
-    background-color: white;
-    width: 300px;
+    width: 299px;
     height: 90px;
     padding-left: 8px;
-    border-bottom: 1px solid lightgrey;
+    border-bottom: 1px solid var(--color-royal-blue);
+    background-color:white;
 }
 
 .friendContainer:hover {
@@ -25,7 +25,8 @@
 
 .friendImg {
     width: 70px;
-    border-radius: 0.5rem;
+    border-radius: 0.3rem;
+    border: 1px solid black;
 }
 
 .friendName, .friendStatus {

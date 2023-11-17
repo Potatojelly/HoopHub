@@ -7,8 +7,6 @@ const tokenRef  = createRef();
 
 export function AuthProvider({authService, authErrorEventBus, children}) {
     const [user,setUser] = useState(undefined);
-    // const [myFriendRequest,setMyFriendRequest] = useState(undefined);
-    // const [receivedFriendRequest,setReceivedFriendRequest] = useState(undefined);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -19,28 +17,28 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
     useEffect(() => {
         if(authErrorEventBus) {
             authService.me()
-            .then((user)=>{
-                setUser({token:user.token, username: user.username});
-                document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                setLoading(!loading);
-            })
-            .catch((err)=>console.log(err));
+                .then((user)=>{
+                    if(user?.token) {
+                        setUser({token:user.token, username: user.username});
+                        setLoading(!loading);
+                    }
+                })
+                .catch((err)=>console.log(err));
         }
     },[]);
- 
+
     useEffect(()=>{
-        if(authErrorEventBus) {
+        if(!user && authErrorEventBus) {
+            authErrorEventBus.listen(()=>{});  
+        } 
+        if(user && authErrorEventBus) {
             authErrorEventBus.listen((error)=>{
-                console.log(error);
                 setUser(undefined);
-                if(window.confirm(error)) {
-                    navigate("/"); 
-                } else {
-                    navigate("/"); 
-                }
+                window.confirm(error);
+                navigate("/"); 
             })
         }
-    },[authErrorEventBus,navigate]);
+    },[authErrorEventBus,navigate,user]);
 
     const signup = useCallback(
         async (email, nickname, username, password) =>
@@ -53,7 +51,6 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
             authService
                 .login(username,password)
                 .then((user)=>{
-                    console.log(user);
                     setUser({token:user.token, username: user.username});
                     setLoading(!loading);
                 })
@@ -75,52 +72,6 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .resetPassword(username,password,newPassword)
                 .then((user)=>user)
     ,[authService]);
-
-    // const getReceivedFriendRequest = useCallback(
-    //     async () => 
-    //         authService
-    //             .getReceivedFriendRequest()
-    //             .then((user)=>{
-    //                 setReceivedFriendRequest(user.receivedRequest);
-    //             })
-    // ,[authService]);
-
-    // const getMyFriendRequest = useCallback(
-    //     async () => 
-    //         authService
-    //             .getMyFriendRequest()
-    //             .then((user)=>{
-    //                 setMyFriendRequest(user.myRequest);
-    //             })
-    // ,[authService]);
-
-    // const sendFriendRequest = useCallback(
-    //     async (nickname) =>
-    //         authService
-    //             .sendFriendRequest(nickname)
-    //             .then((data)=>data)
-    // )
-
-    // const cancelMyFriendRequest = useCallback(
-    //     async (nickname) =>
-    //         authService
-    //             .cancelMyFriendRequest(nickname)
-    //             .then((data)=>data)
-    // )
-
-    // const acceptReceivedFriendRequest = useCallback(
-    //     async (nickname) =>
-    //         authService
-    //             .acceptFriendRequest(nickname)
-    //             .then((data)=>data)
-    // )
-
-    // const rejectReceivedFriendRequest = useCallback(
-    //     async (nickname) =>
-    //         authService
-    //             .rejectFriendRequest(nickname)
-    //             .then((data)=>data)
-    // )
 
     const context = useMemo(
         ()=>({
@@ -161,7 +112,6 @@ export function initAuthErrorEventBus() {
 export function getAuthErrorEventBus() {
     if(!authErrorEventBus) {
         authErrorEventBus = new AuthErrorEventBus();
-        // throw new Error("Please call init AuthErrorEventBus first");
     }
     return authErrorEventBus;
 }

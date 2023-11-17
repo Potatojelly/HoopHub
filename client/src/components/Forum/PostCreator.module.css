@@ -1,7 +1,9 @@
 .conatiner {
     display:flex;
     flex-direction: column;
-
+    justify-content: center;
+    height: 100vh;
+    background-color: var(--color-pair);
 }
 
 .editor {
@@ -9,11 +11,16 @@
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: rgba(17, 17, 26, 0.1) 0px 0px 16px;
+    margin-bottom: 3rem;
 }
 
 .titleContainer {
     position: relative;
     margin-bottom: 1rem;
+}
+
+.pageTitle {
+    color: var(--color-royal-blue);
 }
 
 .counter {
@@ -55,6 +62,8 @@
     width: 60px;
     margin: 0.5rem 0 0 0;
     border-radius: 0.5rem;
+    color: white;
+    background-color: var(--color-royal-blue);
 }
 
 .cancelBtn {
@@ -62,6 +71,8 @@
     width: 60px;
     margin: 0.5rem 0.5rem 0 0;
     border-radius: 0.5rem;
+    color: white;
+    background-color: red;
 }
 
 .postInfo {

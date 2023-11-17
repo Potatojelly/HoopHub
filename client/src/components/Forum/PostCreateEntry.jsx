@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './PostCreateEntry.module.css'
-import { useProfile } from '../../context/ProfileContext';
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 export default function PostCreateEntry() {
-    const {imageURL} = useProfile();
+    const {data: profileData} = useMyProfileData();
     const {user} = useAuth();
     const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ export default function PostCreateEntry() {
         <>
             {user && <div className={styles.container}>
                 
-                    <img src={imageURL ? imageURL : "defaultProfileImg.svg"} alt="myImg"  className={styles.myImg}/>
+                    <img src={profileData?.imageURL} alt="myImg"  className={styles.myImg}/>
                 <input className={styles.linker}
                         type="text" 
                         placeholder="Create Post"

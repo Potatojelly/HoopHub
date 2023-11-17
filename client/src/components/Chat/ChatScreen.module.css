@@ -2,6 +2,8 @@
     border-top: 2px solid var(--color-border);
     border-bottom: 2px solid var(--color-border);
     flex-grow:1;
+    height: 95vh;
+    overflow: hidden;
 }
 
 .titleContainer {
@@ -18,7 +20,7 @@
 }
 
 .mainScreen {
-    height: 90vh;
+    height: 100vh;
     display:flex;
     flex-direction: column;
 }
@@ -90,7 +92,7 @@
     width: 60px;
     padding: 12px;
     margin-left: 0.5rem;
-    background-color:orange;
+    background-color:var(--color-royal-blue);
     color:white;
     border-radius: 0.5rem;
 }
@@ -132,10 +134,14 @@
 
 .editIcon {
     margin-left: 0.5rem;
+    width: 23px;
+    height: 23px;
+    border-radius:100%;
+    padding: 2px;
 }
 
 .editIcon:hover {
-    color:var(--color-blue);
+    background-color: var(--color-grey);
 }
 
 .editChatNameContainer {
@@ -149,15 +155,16 @@
 .editBtn {
     margin-left: 0.5rem;
     background: var(--color-mid-grey);
-    color: black;
+    color: white;
     padding: 0.3rem;
     border-radius: 0.5rem;
+    background-color: var(--color-royal-blue);
 }
 
 .cancelBtn {
     margin-left: 0.5rem;
-    background: var(--color-mid-grey);
-    color: black;
+    background: red;
+    color: white;
     padding: 0.3rem;
     border-radius: 0.5rem;
 }

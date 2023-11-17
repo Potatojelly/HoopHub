@@ -6,16 +6,16 @@ import { usePostContext } from '../../context/PostContext';
 
 export default function ActivityCommentCard({comment,selectedCard,setSelectedCard,num}) {
     const navigate = useNavigate();
-    const {setSelectedPage,setPostID} = usePostContext();
+    const {setSelectedPage,setSelectedPostID} = usePostContext();
 
     const navigateToPost = () => {
         const state = {type:2, my_comments: num};
         const title = comment.post_title;
         window.history.pushState(state,title);
         setSelectedCard(num);
-        setPostID(comment.post_id);
+        setSelectedPostID(comment.post_id);
         setSelectedPage(null);
-        navigate(`/manage-my-activity/my-post/${comment.post_title}`,{state:comment});
+        navigate(`/manage-my-activity/my-post/${comment.post_title}/${comment.post_id}`,{state:comment});
     }
 
     return (

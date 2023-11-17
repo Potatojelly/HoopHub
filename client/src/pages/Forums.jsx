@@ -3,7 +3,6 @@ import styles from './Forums.module.css'
 import PostCreateEntry from '../components/Forum/PostCreateEntry';
 import { useLocation} from 'react-router-dom';
 import Posts from '../components/Forum/Posts';
-import { usePostContext } from '../context/PostContext';
 import SearchBar from '../components/Forum/SearchBar';
 
 export default function Forums({postService}) {

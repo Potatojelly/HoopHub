@@ -245,7 +245,7 @@ export default function ChatRoom({chatService}) {
             </div>
             <div className={styles.listsContainer}>
                 <ul className={styles.directMsgList}>
-                    <div className={styles.listTitle}>Direct Chats</div>
+                    {/* <div className={styles.listTitle}>Chat List</div> */}
                     {chatRooms && chatRooms.map((chatRoom)=><ChatCard key={chatRoom.id} 
                                                                     chatRoom={chatRoom} 
                                                                     chatService={chatService}/>)}

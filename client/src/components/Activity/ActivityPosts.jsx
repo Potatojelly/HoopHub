@@ -4,6 +4,8 @@ import MyPostCard from './ActivityPostCard';
 import { useUserPostQuery } from '../../hooks/useActivityPost';
 import useActivityPost from '../../hooks/useActivityPost';
 import { useProfile } from '../../context/ProfileContext';
+import Alarm from '../Alarm/Alarm';
+import LoadingSpinner from '../Loader/LoadingSpinner';
 
 const POSTSPERPAGE = 10;
 export default function ActivityPosts({userNickname}) {
@@ -26,6 +28,7 @@ export default function ActivityPosts({userNickname}) {
     const {
         data,
         isFetching,
+        isError,
     } = useUserPostQuery(userNickname ? userNickname : nickname,currentPage);
 
     useEffect(()=>{
@@ -45,6 +48,36 @@ export default function ActivityPosts({userNickname}) {
 
     const customHandlePage = (startPage,index) => {
         handlePage(startPage,index,setCurrentPage)
+    }
+
+    if(isFetching) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.infoContainer}>
+                    <span className={styles.infoNum}>No.</span>
+                    <span className={styles.infoTitle}>Title</span>
+                    <span className={styles.infoCreatedDate}>Created Date</span>
+                    <span className={styles.infoView}>Views</span>
+                </div>
+                <div className={styles.loadingSpinnerContainer}>
+                    <LoadingSpinner/>
+                </div>
+            </div>
+        )
+    }
+
+    if(isError) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.infoContainer}>
+                    <span className={styles.infoNum}>No.</span>
+                    <span className={styles.infoTitle}>Title</span>
+                    <span className={styles.infoCreatedDate}>Created Date</span>
+                    <span className={styles.infoView}>Views</span>
+                </div>
+                <Alarm message={"Something went wrong..."}/>
+            </div>
+        )
     }
 
     return (
@@ -76,7 +109,7 @@ export default function ActivityPosts({userNickname}) {
                                 <button className={styles.btn} 
                                         key={index} 
                                         onClick={()=>{customHandlePage(startPage,index)}} 
-                                        aria-current={currentPage === startPage+index ? "selected" : null}>
+                                        aria-current={currentPage === startPage+index ? "page" : null}>
                                     {(startPage+index)}
                                 </button>
                             )

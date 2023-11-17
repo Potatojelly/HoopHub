@@ -39,9 +39,10 @@
     padding: 4px;
     color:white;
     border-radius: 0.5rem;
+    background-color: var(--color-royal-blue);
 }
 
 .formBtnCancel {
-    margin-left: 8px;
-    background: #cc473d;
+    margin-right: 8px;
+    background-color: red;
 }

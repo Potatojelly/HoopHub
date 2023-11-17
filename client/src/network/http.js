@@ -12,7 +12,7 @@ export default class HttpClient {
 
     async fetch(url, options) {
         const {body, method, headers} = options;
-        console.log(body);
+        console.log(url);
         const req = {
             url,
             method,
@@ -22,17 +22,13 @@ export default class HttpClient {
 
         try {
             const res = await this.client(req);
-            // if(res.status === 401) {
-            //     console.log("hi");
-            //     this.authErrorEventBus.notify("Token has been expired!");
-            //     return;
-            // }
             return res.data;
         } catch(err) {
             if(err.response.status === 401) {
                 console.log(err);
                 console.log(err.response.data.message);
-                if(err.response.data.message === "Authentication Error") this.authErrorEventBus.notify("Token has expired!");
+                if(err.response.data.message === "Authentication Error") this.authErrorEventBus.notify(
+                    "Your login session has expired. Please log in again.");
                 throw err.response.data;
             }
             throw err.response.data;

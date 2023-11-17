@@ -1,7 +1,11 @@
 :root {
-  --color-grey: #718096; 
+  --color-royal-blue: #4169e1;
+  --color-orange: #E15841;
+  --color-base: #99AEEF;
+  --color-grey: #cccccc; 
   --color-mid-grey: #E4E4E4;
   --color-light-grey: #f7fafc; 
+  --color-recent-message: grey;
   --color-text: #22243b;
   --color-accent: RGB(242, 242, 242);
   --color-blue:  #007bff;
@@ -37,10 +41,11 @@ button {
   border: none;
   outline: none;
   padding: 0;
+  background-color: var(--color-grey);
 }
 
 button:hover {
-  filter: brightness(0.8);
+  filter: brightness(0.7);
   cursor: pointer;
 }
 

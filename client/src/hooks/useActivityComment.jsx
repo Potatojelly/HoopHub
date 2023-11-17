@@ -85,7 +85,6 @@ export function useUserCommentQuery(nickname, currentPage) {
                                                                                     onSuccess: (result) => {
                                                                                         console.log(result);
                                                                                     },
-                                                                                    keepPreviousData:true,
                                                                                     refecthOnMount: true, 
                                                                                     refetchOnWindowFocus: false
                                                                                 });

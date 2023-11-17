@@ -19,6 +19,7 @@
     font-weight: 500;
     font-family: var(--text-accent);
     align-self: flex-start;
+    color: var(--color-royal-blue);
 }
 
 .userImgContainer {
@@ -41,7 +42,7 @@
     width: 4rem;
     height: 4rem;
     background-color:white;
-    border: 1px solid orange;
+    border: 1px solid var(--color-royal-blue);
     border-radius: 50%;
     bottom: 0.1rem;
     right: -1rem;
@@ -53,7 +54,7 @@
 
 .userStatusMsgContainer {
     position:relative;
-    border:1px solid orange;
+    border:1px solid var(--color-royal-blue);
     width: 350px;
     height: 200px;
     border-radius: 0.5rem;
@@ -80,6 +81,9 @@
     background-color:white;
     bottom: 0.1rem;
     right: 0.5rem;
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
 }
 
 .editMsgIcon {

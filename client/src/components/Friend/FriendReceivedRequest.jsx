@@ -1,23 +1,32 @@
 import React, {useState } from 'react';
 import styles from './FriendReceivedRequest.module.css'
-import useFriend from '../../hooks/useFriend';
+import { useAcceptFriendRequest, useRejectFriendRequest } from '../../hooks/useFriendData';
+import Alarm from '../Alarm/Alarm';
 
-export default function FriendReceivedRequest({nickname, imageURL, friendService}) {
+export default function FriendReceivedRequest({nickname, imageURL}) {
     const [response,setResponse] = useState(undefined);
-    const {acceptRequest, rejectRequest} = useFriend(friendService)
+    const [isError,setIsError] = useState(false);
+    const {mutate: accpetFriendRequest} = useAcceptFriendRequest();
+    const {mutate: rejectFriendRequest} = useRejectFriendRequest();
     const handleResponse = (e) => {
         if(e.target.id === "accept") {
-            acceptRequest.mutate(nickname,
+            accpetFriendRequest(nickname,
                 {
                     onSuccess: () => {setResponse("Accepted");},
-                    onError: (err) => {console.log(err);}
+                    onError: (err) => {
+                        setIsError(true)
+                        setTimeout(()=>{setIsError(false)},4000)
+                    }
                 }
             )
         } else {
-            rejectRequest.mutate(nickname,
+            rejectFriendRequest(nickname,
                 {
                     onSuccess: () => {setResponse("Deleted");},
-                    onError: (err) => {console.log(err);}
+                    onError: (err) => {
+                        setIsError(true)
+                        setTimeout(()=>{setIsError(false)},4000)
+                    }
                 }
             )
         }
@@ -38,6 +47,7 @@ export default function FriendReceivedRequest({nickname, imageURL, friendService
                     {response}
                 </button>
             }
+            {isError && <Alarm message={"Something went wrong..."}/>}
         </li>
     );
 }

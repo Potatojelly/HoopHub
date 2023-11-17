@@ -1,9 +1,10 @@
-import {useQueryClient} from "@tanstack/react-query";
+import {useMutation,useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
 import { getAuthErrorEventBus } from '../context/AuthContext';
 import { useState } from 'react';
 import HttpClient from '../network/http';
 import PostService from "../service/post";
+import {useNavigate} from "react-router-dom";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = getAuthErrorEventBus();
@@ -11,7 +12,8 @@ const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const postService = new PostService(httpClient);
 const DISPLAYPAGENUM = 5;
 const POSTSPERPAGE = 5;
-export function usePost(keyword) {
+
+export function usePostPage(keyword) {
     const queryClient = useQueryClient();
     const [totalPage,setTotalPage] = useState(undefined);
     const [startPage,setStartPage] = useState(undefined);
@@ -38,7 +40,7 @@ export function usePost(keyword) {
             end_page = total_page;
         }
         setEndPage(end_page);
-        const result = (end_page == total_page) ? false : true;
+        const result = (end_page === total_page) ? false : true;
         setHasNext(result);
     }
 
@@ -48,9 +50,6 @@ export function usePost(keyword) {
         getStartPage(currentPage);
         getEndPage(currentPage,totalPosts);
     }
-
-
-
 
     const handlePrevious = (currentPage,setCurrentPage,setSelectedPage) => {
         const page = startPage-DISPLAYPAGENUM
@@ -86,15 +85,47 @@ export function usePost(keyword) {
     };
 }
 
-export function usePostQuery(currentPage,keyword) {
-    // console.log(currentPage);
+export function usePostsData(currentPage,keyword) {
     return useQuery(["posts", keyword, currentPage],()=>postService.getPosts(keyword, currentPage, POSTSPERPAGE),
                                                                     {
-                                                                        onSuccess: (result) => {
-                                                                            // console.log(result);
+                                                                        onSuccess: (res) => {
+                                                                            console.log("hi")
                                                                         },
-                                                                        keepPreviousData:true,
-                                                                        refecthOnMount: true, 
+                                                                        refetchOnMount: true, 
                                                                         refetchOnWindowFocus: false
                                                                     });
+}
+
+export function usePostData(selectedPostID) {
+    const navigate = useNavigate();
+    return useQuery(["post", selectedPostID], async ()=>postService.getPost(selectedPostID),
+                                                                    {
+                                                                        onSuccess: (res) => {
+                                                                            console.log("hey")
+                                                                            if(res.post.deleted === 1) {
+                                                                                alert(`The post "${res.post.title}" has been deleted!`);
+                                                                                navigate('/', {replace: true} );
+                                                                                return;
+                                                                            }
+                                                                        },
+                                                                        refetchOnMount: true, 
+                                                                        refetchOnWindowFocus: false
+                                                                    });
+}
+
+export function useCreatePost() {
+    return useMutation((formData)=>postService.createPost(formData));
+}
+
+export function useDeletePost() {
+    return useMutation((selectedPostID)=>postService.deletePost(selectedPostID));
+}
+
+export function useUpdatePost() {
+    return useMutation(({formData,selectedPostID})=>postService.updatePost(formData,selectedPostID));
+}
+
+export function useUpdatePostView() {
+    const queryClient = useQueryClient();
+    return useMutation((selectedPostID)=>postService.updateView(selectedPostID),{onSuccess:()=>{queryClient.invalidateQueries('posts')}});
 }

@@ -1,4 +1,4 @@
-import {useQueryClient} from "@tanstack/react-query";
+import {useMutation,useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
 import { getAuthErrorEventBus} from '../context/AuthContext';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const postService = new PostService(httpClient);
 const DISPLAYPAGENUM = 5;
 const COMMENTSPERPAGE = 5;
-export default function useComment() {
+export default function useCommentPage() {
     const queryClient = useQueryClient();
     const [totalPage,setTotalPage] = useState(undefined);
     const [startPage,setStartPage] = useState(undefined);
@@ -38,7 +38,7 @@ export default function useComment() {
             end_page = total_page;
         }
         setEndPage(end_page);
-        const result = (end_page == total_page) ? false : true;
+        const result = (end_page === total_page) ? false : true;
         setHasNext(result);
     }
 
@@ -82,7 +82,7 @@ export default function useComment() {
     };
 }
 
-export function useCommentQuery(currentPage,postID) {
+export function useCommentsData(currentPage,postID) {
     return useQuery(["comments", postID, currentPage],()=>postService.getComments(postID,currentPage,COMMENTSPERPAGE),
                                                                                         {
                                                                                             onSuccess: (result) => {
@@ -92,4 +92,28 @@ export function useCommentQuery(currentPage,postID) {
                                                                                             refecthOnMount: true, 
                                                                                             refetchOnWindowFocus: false
                                                                                         });
+}
+
+export function useCreateComment() {
+    return useMutation((data)=>{const {selectedPostID,commentText} = data; return postService.createComment(selectedPostID,commentText)});
+}
+
+export function useDeleteComment() {
+    return useMutation((data)=>{const {selectedPostID,commentID} = data; return postService.deleteComment(selectedPostID, commentID)});
+}
+
+export function useUpdateComment() {
+    return useMutation((data)=>{const {selectedPostID,commentID,editedComment} = data; return postService.updateComment(selectedPostID, commentID,editedComment)});
+}
+
+export function useCreateReply() {
+    return useMutation((data)=>{const {selectedPostID,commentID,replyText} = data; return postService.createReply(selectedPostID,commentID,replyText)});
+}
+
+export function useDeleteReply() {
+    return useMutation((data)=>{const {selectedPostID,commentID,replyID} = data; return postService.deleteReply(selectedPostID, commentID, replyID)});
+}
+
+export function useUpdateReply() {
+    return useMutation((data)=>{const {selectedPostID,commentID,replyID,editedReply} = data; return postService.updateReply(selectedPostID,commentID,replyID,editedReply)});
 }

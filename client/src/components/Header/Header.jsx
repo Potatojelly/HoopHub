@@ -12,19 +12,21 @@ import SideBar from '../SideBar/SideBar';
 import Logo from '../Logo/Logo';
 import { useAuth } from '../../context/AuthContext';
 import Dropdown from '../Dropdown/Dropdown';
-import { useProfile } from '../../context/ProfileContext';
 import { useChatRoomID } from '../../context/ChatRoomContext';
 import { usePostContext } from '../../context/PostContext';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
+import SmallLoadingSpinner from '../Loader/SmallLoadingSpinner';
 
-export default function Header({friendService}) {
+export default function Header() {
     const {user} = useAuth();
-    const {nickname, imageURL} =useProfile();
+    const {data: profileData,isFetching} = useMyProfileData();
     const [sidebar, setSidebar] = useState(false);
-    const [myStuff, setMyStuff] = useState(false);
-    const showSidebar = () => setSidebar(!sidebar);
-    const showMyStuff = () => setMyStuff(!myStuff);
+    const [subFunctions, setSubFunctions] = useState(false);
     const {selectChatRoom,setSelectedChatRoom} = useChatRoomID();
     const {setSelectedPage,setPostID} = usePostContext();
+
+    const showSidebar = () => setSidebar(prev=>!prev);
+    const showSubFunctions = () => setSubFunctions(prev=>!prev);
     return (
         <header id="header" className={styles.header}>
             <div className={styles.container}>
@@ -32,7 +34,7 @@ export default function Header({friendService}) {
                     <button className={styles.toggleBtn}>
                         <GiHamburgerMenu className={styles.toggle} onClick={showSidebar}/>
                     </button>}
-                {sidebar && <SideBar sidebar={sidebar} showSidebar={showSidebar} friendService={friendService}/>}
+                {sidebar && <SideBar sidebar={sidebar} showSidebar={showSidebar} />}
                 <Logo/>
             </div>
             <nav className={styles.nav}>   
@@ -51,16 +53,17 @@ export default function Header({friendService}) {
                             <RiUserSearchFill  className={styles.service}/>
                         </Link>
                         <div className={styles.headerUser}>
-                            <button className={styles.headerUserBtn} onClick={showMyStuff}>
+                            {isFetching && <SmallLoadingSpinner/>}
+                            {profileData && <button className={styles.headerUserBtn} onClick={showSubFunctions}>
                                 <div>
-                                    <img src={imageURL} alt="userImg"  className={styles.userImg}/>
+                                    <img src={profileData && profileData.imageURL} alt="userImg"  className={styles.userImg}/>
                                 </div>
                                 <span className={styles.userNickname}>
-                                    {nickname}
+                                    {profileData && profileData.nickname}
                                 </span>
                                 <IoIosArrowDown className={styles.arrowDown}/>
-                            </button>
-                            {myStuff && <Dropdown myStuff={myStuff} showMyStuff={showMyStuff}/>}
+                            </button>}
+                            {profileData && subFunctions && <Dropdown myStuff={subFunctions} showMyStuff={showSubFunctions}/>}
                         </div>
                     </>}
                 {!user && <Link to="/login">

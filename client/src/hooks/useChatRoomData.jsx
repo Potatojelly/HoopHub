@@ -35,23 +35,14 @@ export function useChatRoomMessageData(chatRoomID) {
     return useInfiniteQuery(["direct-chatroom-message",chatRoomID],({pageParam = 0})=>chatService.getMessage(chatRoomID,pageParam),         
                                                                                 {
                                                                                     getPreviousPageParam : (lastPage, allPages) => {
-                                                                                        // console.log(lastPage);
-                                                                                        // console.log(allPages);
                                                                                         return lastPage.result.length !== 0 ? lastPage.prevOffset + lastPage.result.length : undefined;
                                                                                     },
-                                                                                    // getNextPageParam: (lastPage,allPages) => {
-
-                                                                                    //     return 0 
-                                                                                    // },
                                                                                     cacheTime: 1000 * 60 * 5,
                                                                                     staleTime:1000 * 60 * 5,
                                                                                     select: (data) => {
                                                                                         const newData = data?.pages.reduce((prev,cur)=>{
                                                                                             return [...prev,...cur.result];
                                                                                         },[]);
-                                                                                        // let newData = [];
-                                                                                        // data.pages.forEach((ele)=>{newData=[...newData, ...ele.result]});
-                                                                                        // console.log(newData);
                                                                                         return newData;
                                                                                     },
                                                                                     refetchOnWindowFocus: false,

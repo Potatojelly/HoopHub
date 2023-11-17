@@ -3,11 +3,6 @@
     padding: 8px 16px 0 0;
     justify-content: center;
     align-items: center;
-    color: red;
-}
-
-.date {
-    diplay: flex;
-    font-size: 0.9rem;
-    color:var(--color-text);
+    color: var(--color-orange);
+    font-weight: bold;
 }

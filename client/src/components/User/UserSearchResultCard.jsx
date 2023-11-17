@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import styles from './UserSearchResultCard.module.css'
-import useFriend from '../../hooks/useFriend';
+import { useSendFriendRequest } from '../../hooks/useFriendData';
+import Alarm from '../Alarm/Alarm';
 
 const PENDING = "pending";
-export default function FriendSearchResultCard({ imageURL, nickname, friendship, friendService}) {
+export default function FriendSearchResultCard({ imageURL, nickname, friendship}) {
     const [isRequested,setIsRequested] = useState(false);
-    const {sendRequest} = useFriend(friendService);
+    const [isError,setIsError] = useState(false);
+    const {mutate: sendFriendRequest} = useSendFriendRequest();
 
-    const handleFriendRequest = (e) => {
-        sendRequest.mutate(nickname,
+    const handleFriendRequest = () => {
+        sendFriendRequest(nickname,
             {
-                onSuccess: (data) => {
+                onSuccess: () => {
                     setIsRequested(true);
                 },
-                onError: (err) => {console.log(err);},
+                onError: () => {
+                    setIsError(true)
+                    setTimeout(()=>{setIsError(false)},4000)
+                }
             }
         )
     }
@@ -29,6 +34,7 @@ export default function FriendSearchResultCard({ imageURL, nickname, friendship,
                 {!isRequested && (friendship === null ? "Request Friend" : friendship === PENDING ? "Friend Pending" : "Already Friend")}
                 {isRequested && "Sent Request"}
             </button>
+            {isError && <Alarm message={"Something went wrong..."}/>}
         </li>
     );
 }

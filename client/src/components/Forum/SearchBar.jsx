@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import { usePostContext } from '../../context/PostContext';
 
 export default function SearchBar({postService}) {
-    const {setSelectedPage,setPostID} = usePostContext();
+    const {setSelectedPage,setSelectedPostID} = usePostContext();
     const [searchTerm,setSearchTerm] = useState("");
     const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ export default function SearchBar({postService}) {
     const submitKeyword = (e) => {
         e.preventDefault();
         setSelectedPage(null);
-        setPostID(null);
+        setSelectedPostID(null);
         navigate(`/forums/search/${searchTerm}`,{state: {keyword: searchTerm}});
     }
 

@@ -22,8 +22,8 @@
     margin-right: 0.5rem;
     border-radius: 0.5rem;
     background-color: white;
-    border: 1px solid orange;
-    color: orange;
+    border: 1px solid var(--color-royal-blue);
+    color: var(--color-royal-blue);
 }
 
 .myComments {
@@ -33,12 +33,12 @@
     margin-left: 0.5rem;
     border-radius: 0.5rem;
     background-color: white;
-    border: 1px solid orange;
-    color: orange;
+    border: 1px solid var(--color-royal-blue);
+    color: var(--color-royal-blue);
 }
 
 .active {
-    background-color: orange;
+    background-color: var(--color-royal-blue);
     color:white;
     pointer-event: none;
 }

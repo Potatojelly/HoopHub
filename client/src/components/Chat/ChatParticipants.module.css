@@ -3,7 +3,8 @@
     flex-direction: column;
     width: 300px;
     border: 2px solid var(--color-border);
-    overflow-y:scroll;
+    overflow-y:auto;
+    height: 95vh;
 }
 
 .titleContainer {
@@ -11,7 +12,7 @@
     align-items: center;
     height: 60px;
     border-bottom: 2px solid var(--color-border);
-    background-color: orange;
+    background-color: var(--color-royal-blue);
     color: white;
     font-weight:bold;
     font-family: var(--text-accent);
@@ -28,13 +29,9 @@
     font-size: 2rem;
     width: 40px;
     height: 40px;
-    color: white;
+    color: black;
     margin-right: 0.5rem;
     border-radius: 100%;
-    background-color: transparent;
+    background-color: white;
     padding: 0.2rem;
-}
-
-.addUserBtn:hover {
-    color: var(--color-blue);
 }

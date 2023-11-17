@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './SideBar.module.css'
 import {AiOutlineClose} from "react-icons/ai";
-import {Link} from 'react-router-dom';
 import FriendCard from '../Friend/FriendCard';
 import MyProfile from '../MyProfile/MyProfile';
-import useFriend from '../../hooks/useFriend';
-import {v4 as uuidv4} from "uuid";
+import { useFriendData } from '../../hooks/useFriendData';
 import FriendDropdown from '../Dropdown/FriendDropdown';
 import Alarm from '../Alarm/Alarm';
+import LoadingSpinner from '../Loader/LoadingSpinner';
 
-export default function SideBar({sidebar,showSidebar, friendService}) {
-    const {myFriend} = useFriend(friendService);
+export default function SideBar({sidebar,showSidebar}) {
+    const {data: myFriend,isFetching} = useFriendData();
     const [selectedFriend, setSelectedFriend] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [deleted,setDeleted] = useState(false);
@@ -35,36 +34,34 @@ export default function SideBar({sidebar,showSidebar, friendService}) {
         <nav className={`${styles.navMenu} ${sidebar && styles.navMenuActive}`}>
             <ul className={styles.navMenuItems}>
                 <li className={styles.toggle}>
-                    <Link to="#">
-                        <AiOutlineClose className={styles.closeBtn} onClick={showSidebar} />
-                    </Link>
+                    <AiOutlineClose className={styles.closeBtn} onClick={showSidebar} />
                 </li>
                 <MyProfile/>
                 <li className={styles.label}>
                     <div className={styles.stick}></div>
-                    Friend's List
+                    Friend List
                     <div className={styles.stick}></div>
                 </li>
+                {isFetching && <div className={styles.loadingSpinner}><LoadingSpinner/></div>}
+                {myFriend && myFriend.myFriends.length > 0 && 
                 <div ref={dropdownRef}>
-                    {myFriend && myFriend.map((friend,index) => (
-                                <div key={uuidv4()}>
+                    {myFriend.myFriends.map((friend,index) => (
+                                <div key={index}>
                                     <FriendCard id = {index}
                                                 nickname={friend.nickname} 
                                                 imageURL={friend.imageURL}
                                                 statusMsg={friend.statusMsg}
-                                                friendService={friendService}
                                                 selectedFriend={selectedFriend}
                                                 setSelectedFriend={setSelectedFriend}
                                                 setPosition={setPosition}/>
                                     {selectedFriend === index && <FriendDropdown position={position} 
-                                                                                friendService={friendService} 
                                                                                 nickname={friend.nickname}
                                                                                 setDeleted={setDeleted}
                                                                                 setDeletedMsg={setDeletedMsg}/>}
                                 </div>
                             ))
                     }
-                </div>
+                </div>}
             </ul>
             {deleted && <Alarm message={deletedMsg}/>}
         </nav>

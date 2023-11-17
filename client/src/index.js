@@ -75,7 +75,7 @@ const router = createBrowserRouter([
                     </ChatRoomProvider>
                   </ProfileProvider>
                 </AuthProvider>
-                {/* <ReactQueryDevtools initialIsOpen={true}/> */}
+                <ReactQueryDevtools initialIsOpen={true}/>
               </QueryClientProvider>),
     errorElement: <NotFound/>,
     children: [
@@ -86,29 +86,23 @@ const router = createBrowserRouter([
       {
         path:"/people", 
         element: (<ProtectedRoute>
-                    {/* <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}> */}
                       <People searchService={searchService} friendService={friendService}/>
-                    {/* </AuthProvider> */}
                   </ProtectedRoute>)
       },
       {
         path:"/create-post", 
         element: (<ProtectedRoute>
-                    {/* <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}> */}
                       <PostCreate postService={postService}/>
-                    {/* </AuthProvider> */}
                   </ProtectedRoute>)
       },
       {
         path:"/messages", 
         element: (<ProtectedRoute>
-                        <UserSearchProvider>
-                          <SocketProvider>
-   
-                              <Messages chatService={chatService}/>
-
-                          </SocketProvider>
-                        </UserSearchProvider>
+                    <UserSearchProvider>
+                      <SocketProvider>
+                          <Messages chatService={chatService}/>
+                      </SocketProvider>
+                    </UserSearchProvider>
                   </ProtectedRoute>),
         children:[
           {
@@ -128,18 +122,14 @@ const router = createBrowserRouter([
       {
         path:"/find-chat-rooms", 
         element: (<ProtectedRoute>
-                  <FindChatRooms/>
+                    <FindChatRooms/>
                   </ProtectedRoute>)
       },
       {
         path:"/edit-profile", 
         element: (<ProtectedRoute>
                   <ProfileProvider profileService={profileService}>
-                    {/* <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}> */}
-                        <ProfileProvider profileService={profileService}>
-                          <EditProfile/>
-                        </ProfileProvider>
-                      {/* </AuthProvider> */}
+                      <EditProfile/>
                     </ProfileProvider>
                   </ProtectedRoute>)
       },
@@ -156,7 +146,7 @@ const router = createBrowserRouter([
                   </ProtectedRoute>),
       },
       {
-        path:"/forums/post/:title",
+        path:"/forums/post/:title/:postNum",
         element: (<ActivityProvider>
                     <ViewPost postService={postService}/>
                   </ActivityProvider>)
@@ -170,13 +160,13 @@ const router = createBrowserRouter([
       {
         path:"/manage-my-activity", 
         element: (<ProtectedRoute>
-                      <SelectedCardProvider>
-                          <ActivityLog postService={postService}/>
-                      </SelectedCardProvider>
+                    <SelectedCardProvider>
+                        <ActivityLog postService={postService}/>
+                    </SelectedCardProvider>
                   </ProtectedRoute>),
       },
       {
-        path:"/manage-my-activity/my-post/:title", 
+        path:"/manage-my-activity/my-post/:title/:postNum", 
         element: (<ProtectedRoute>
                     <SelectedCardProvider>
                       <ActivityProvider>
@@ -188,9 +178,9 @@ const router = createBrowserRouter([
       {
         path:"/view-user-activity/:userNickname", 
         element: (<ProtectedRoute>
-                      <SelectedCardProvider>
-                          <UserActivityLog postService={postService}/>
-                      </SelectedCardProvider>
+                    <SelectedCardProvider>
+                      <UserActivityLog postService={postService}/>
+                    </SelectedCardProvider>
                   </ProtectedRoute>),
       },
     ]
@@ -206,10 +196,8 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: (<AuthProvider authService={authService} >
-              <PostProvider>
                 <Register/>
-              </PostProvider>
-            </AuthProvider>) 
+              </AuthProvider>) 
   },
   {
     path: "/forgot-username",

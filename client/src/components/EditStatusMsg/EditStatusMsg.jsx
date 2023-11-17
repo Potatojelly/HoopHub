@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import styles from './EditStatusMsg.module.css'
 import { useProfile } from '../../context/ProfileContext';
+import { useEditStatusMessage, useMyProfileData } from '../../hooks/useMyProfileData';
 
 export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSuccess}) {
     const [originalMsg,setOriginalMsg] = useState(currentMsg);
     const [charCount,setCharCount] = useState(currentMsg.length);
-    const {updateMsg} = useProfile();
+    // const {updateMsg} = useProfile();
+    const {mutate: updateStatusMsg} = useEditStatusMessage();
 
     const onSubmit = (e) => {
         e.preventDefault();
-        updateMsg.mutate(currentMsg,
+        updateStatusMsg(currentMsg,
             {
                 onSuccess: (data)=>{
                     setSuccess(data.message);
@@ -51,11 +53,11 @@ export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSu
                 <div className={styles.editFormAction}>
                     <small className={styles.charCount}>{charCount} / 60</small>
                     <div className={styles.formBtnContainer}>
-                        <button type="submit" className={styles.formBtnUpdate}>
-                            Update
-                        </button>
                         <button type="submit" className={styles.formBtnCancel} onClick={onCancel}>
                             Cancel
+                        </button>
+                        <button type="submit" className={styles.formBtnUpdate}>
+                            Update
                         </button>
                     </div>
                 </div>

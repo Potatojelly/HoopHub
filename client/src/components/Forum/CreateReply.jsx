@@ -5,13 +5,39 @@ import {useQueryClient} from "@tanstack/react-query";
 
 import './quill.css';
 import { usePostContext } from '../../context/PostContext';
+import { useCreateReply } from '../../hooks/useCommentsData';
+import Alarm from '../Alarm/Alarm';
 
-const CreateReply = ({author,setPost,commentID, commentPage, postService, handleReplyClick, custom})=> {
-    const {selectedPage,selectedPostID} = usePostContext();
+const CreateReply = ({author, commentID, handleReplyClick, custom})=> {
+    const {selectedPostID} = usePostContext();
     const queryClient = useQueryClient();
+    const [isError,setIsError] = useState(false);
     const [reply,setReply] = useState(()=>author ? author : "");
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+    const {mutate:createReply} = useCreateReply();
     const quillRef = useRef();
+
+    const handleReply = (newContent) => {
+        setReply(newContent);
+        setIsSubmitDisabled(newContent === "<p><br></p>");
+    }
+
+    const submitReply = (e) => {
+        e.preventDefault();
+        createReply({selectedPostID,commentID,replyText:reply},{
+            onSuccess: () => {
+                queryClient.invalidateQueries(['post', selectedPostID]);    
+                queryClient.invalidateQueries(['posts']);
+                queryClient.invalidateQueries(["comments"]);
+                handleReplyClick();
+                setIsSubmitDisabled(true);
+            },
+            onError: () => {
+                setIsError(true);
+                setTimeout(()=>{setIsError(false)},4000);
+            }
+        })
+    }
 
     useEffect(()=>{
         console.log("chekcing");
@@ -31,28 +57,6 @@ const CreateReply = ({author,setPost,commentID, commentPage, postService, handle
         });
     },[]);
 
-
-    const handleReply = (newContent) => {
-        setReply(newContent);
-        setIsSubmitDisabled(newContent === "<p><br></p>");
-    }
-
-    const submitReply = (e) => {
-        e.preventDefault();
-        postService.createReply(selectedPostID,commentID,reply)
-            .then((data)=>{
-                if(data.success === true) {
-                    postService.getPost(selectedPostID)
-                        .then((result)=>{setPost(result.post)})
-                        .catch((err)=>console.log(err))
-                    queryClient.invalidateQueries(['posts', selectedPage]);
-                    queryClient.invalidateQueries(["comments",selectedPostID,commentPage]);
-                    handleReplyClick();
-                    setIsSubmitDisabled(true);
-                }
-            })
-    }
-
     const modules = useMemo(()=> {
         return {
             toolbar: false,
@@ -67,6 +71,7 @@ const CreateReply = ({author,setPost,commentID, commentPage, postService, handle
                         onChange={handleReply}
                         modules={modules}/>
             <button className={styles.replyBtn} disabled={isSubmitDisabled} id="submitButton" >Reply</button>
+            {isError && <Alarm message={"Something went wrong..."}/>}
         </form>
     );
 }

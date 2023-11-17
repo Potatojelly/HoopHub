@@ -4,6 +4,8 @@ import {useUserCommentQuery } from '../../hooks/useActivityComment';
 import ActivityCommentCard from './ActivityCommentCard';
 import useActivityComment from '../../hooks/useActivityComment';
 import { useProfile } from '../../context/ProfileContext';
+import LoadingSpinner from '../Loader/LoadingSpinner';
+import Alarm from '../Alarm/Alarm';
 
 const COMMENTSPERPAGE = 10;
 export default function ActivityComments({userNickname}) {
@@ -25,6 +27,7 @@ export default function ActivityComments({userNickname}) {
     const {
         data,
         isFetching,
+        isError,
     } = useUserCommentQuery(userNickname ? userNickname : nickname,currentPage);
 
     useEffect(()=>{
@@ -46,6 +49,33 @@ export default function ActivityComments({userNickname}) {
         handlePage(startPage,index,setCurrentPage)
     }
 
+    if(isFetching) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.infoContainer}>
+                    <span className={styles.infoNum}>No.</span>
+                    <span className={styles.infoComment}>Comment</span>
+                    <span className={styles.infoCreatedDate}>Created Date</span>
+                </div>
+                <div className={styles.loadingSpinnerContainer}>
+                    <LoadingSpinner/>
+                </div>
+            </div>
+        )
+    }
+
+    if(isError) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.infoContainer}>
+                    <span className={styles.infoNum}>No.</span>
+                    <span className={styles.infoComment}>Comment</span>
+                    <span className={styles.infoCreatedDate}>Created Date</span>
+                </div>
+                <Alarm message={"Something went wrong..."}/>
+            </div>
+        )
+    }
 
     return (
         <div className={styles.container}>
@@ -76,7 +106,7 @@ export default function ActivityComments({userNickname}) {
                                 <button className={styles.btn} 
                                         key={index} 
                                         onClick={()=>{customHandlePage(startPage,index)}} 
-                                        aria-current={currentPage === startPage+index ? "selected" : null}>
+                                        aria-current={currentPage === startPage+index ? "page" : null}>
                                     {(startPage+index)}
                                 </button>
                             )

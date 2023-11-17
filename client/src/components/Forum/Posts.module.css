@@ -5,6 +5,7 @@
 
 .title {
     align-self:flex-start;
+    color: var(--color-royal-blue);
 }
 
 .noContent {
@@ -18,7 +19,7 @@
     border-bottom: 1px solid #007bff;
     margin-top: 0.3rem;
     margin-bottom: 1rem;
-    width: 720px;
+    width: 750px;
 }
 
 .postsSubContainer {
@@ -39,9 +40,13 @@
     border: none;
     padding: 8px;
     background: white;
-    border: 1px solid var(--color-grey);
     color: black;
     font-size: 1rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius:100%;
 }
 
 .btn:hover {
@@ -49,9 +54,16 @@
 }
 
 [aria-current="page"] {
-    background: var(--color-blue);
+    background-color: var(--color-royal-blue);
     color: white;
     font-weight: bold;
     pointer-events: none;
     cursor: not-allowed; 
+}
+
+.loadingSpinner {
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    height: 400px;
 }

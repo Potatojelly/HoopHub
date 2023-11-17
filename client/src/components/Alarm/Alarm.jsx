@@ -6,7 +6,9 @@ export default function Alarm({message}) {
     return (
         <div className={styles.msgContainer}>
             <IoIosBasketball className={styles.logo}/>
-            <div className={styles.msg}>{message}</div>
+            <div className={styles.msg}>
+                <span>{message}</span>
+            </div>
         </div>
     );
 }

@@ -17,9 +17,9 @@
 }
 
 .profileImg {
-    max-width: 50px;
-    max-height: 50px;
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
     margin-right: 10px;
 }
 
@@ -42,7 +42,7 @@
 .commentAuthor {
     font-weight: bold;
     font-size: 0.9rem;
-    color: #4299e1; 
+    color: var(--color-orange); 
     text-decoration: none;
 }
 
@@ -135,6 +135,8 @@
     border-radius: 0.5rem;
     height: 60px;
     width: 60px;
+    color: white;
+    background-color: red;
 }
 
 .editBtn {
@@ -144,6 +146,8 @@
     border-radius: 0.5rem;
     height: 60px;
     width: 60px;
+    background-color: var(--color-royal-blue);
+    color: white;
 }
 
 .deletedCommentCard {
@@ -152,7 +156,7 @@
     padding: 10px;
     height: 80px;
     border-bottom: 1px solid #ddd;
-    color: var(--color-grey);
+    color: var(--color-base);
 }
 
 .deletedCommentCardWithReply {
@@ -160,5 +164,5 @@
 }
 
 .targetCard {
-    border: 1px ridge orange;
+    border: 1px ridge var(--color-base);
 }

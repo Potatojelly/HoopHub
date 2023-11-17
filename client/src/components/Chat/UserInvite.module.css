@@ -25,7 +25,7 @@
     justify-content: center;
     align-items: center;
     height: 2rem;
-    background-color: orange;
+    background-color: var(--color-orange);
     padding: 0.3rem;
     margin:0.5rem;
     color: white;
@@ -92,10 +92,17 @@
     font-size: 1rem;
     margin: 0.5rem;
     border-radius: 0.5rem;
+    color: white;
+    background-color:red;
+}
+
+.startBtn {
+    background-color: var(--color-royal-blue);
+    color: white;
 }
 
 .startBtn:disabled {
     pointer-event: none;
-    filter: brightness(1.0);
+    background-color: var(--color-grey);
     cursor: not-allowed;
 }

@@ -21,7 +21,7 @@
     margin-left: 1rem;
     margin-right: 1rem;
     margin-top: 0.5rem;
-    color: var(--color-grey)
+    color: black;
 }
 
 .logoContainer {
@@ -45,7 +45,7 @@
 }
 
 .service {
-    color: orange;
+    color: var(--color-orange);
     font-size: 2rem;
     margin-left: 1rem;
     margin-right: 1rem;
@@ -53,6 +53,7 @@
 
 .headerUser {
     display:flex;
+    justify-content: center;
     align-items:center;
     width: 150px;
     height: 3rem;
@@ -95,4 +96,5 @@
 .arrowDown {
     margin-left: auto;
     margin-right: 0.2rem;
+    color: black;
 }

@@ -7,15 +7,18 @@ import styles from './PostCreator.module.css';
 import ImageResize from 'quill-image-resize';
 import { usePostContext } from '../../context/PostContext';
 import Alarm from '../Alarm/Alarm';
+import { useCreatePost } from '../../hooks/usePostsData';
 
 Quill.register('modules/ImageResize', ImageResize);
 
-export default function PostCreator({postService}) {
-    const {setPostID} = usePostContext();
+export default function PostCreator() {
+    const {setSelectedPostID} = usePostContext();
     const [isPosting,setIsPosting] = useState(false);
+    const [isError,setIsError] = useState(false);
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
+    const {mutate:createPost} = useCreatePost();
     const navigate = useNavigate();
     const quillRef = useRef();
 
@@ -73,15 +76,18 @@ export default function PostCreator({postService}) {
         }
 
         setIsPosting(true);
-        postService.createPost(formData)
-            .then((response)=>{
+        createPost(formData,{
+            onSuccess: (response) => {
                 const post = {...response}
-                setPostID(post.id);
-                navigate(`/forums/post/${response.title}`);
+                setSelectedPostID(post.id);
+                navigate(`/forums/post/${response.title}/${post.id}`);
                 setIsPosting(false);
-            })
-            .catch((error)=>{console.log(error)})
-        
+            },
+            onError: () => {
+                setIsError(true);
+                setTimeout(()=>{setIsError(false)},4000);
+            }
+        })
     };
 
     const handleContent = (contents) => {
@@ -166,7 +172,7 @@ export default function PostCreator({postService}) {
     return (
 
         <div className={styles.container}>
-            <h1>Create Post</h1>
+            <h1 className={styles.pageTitle}>Create Post</h1>
             <div className={styles.editor}>
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.subForm}>
@@ -191,6 +197,7 @@ export default function PostCreator({postService}) {
                 </form>
             </div>
             {isPosting && <Alarm message={"Posting..."}/>}
+            {isError && <Alarm message={"Something went wrong..."}/>}
         </div>
     );
 }

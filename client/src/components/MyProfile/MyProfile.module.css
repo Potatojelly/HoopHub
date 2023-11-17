@@ -1,8 +1,9 @@
 .myContainer {
-    background-color: white;
-    width:300px;
+    width:299px;
     height: 200px;
-    border-bottom: 2px solid #000;
+    border-bottom: 1px solid var(--color-royal-blue);
+    border-top: 1px solid var(--color-royal-blue);
+    background-color: white;
 }
 
 .mySubContainer {

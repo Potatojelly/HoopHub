@@ -4,7 +4,7 @@ import UserSearchResultCard from "../components/User/UserSearchResultCard";
 import {v4 as uuidv4} from "uuid";
 import FriendRequest from '../components/Friend/FriendRequest';
 import FriendReceivedRequest from '../components/Friend/FriendReceivedRequest';
-import useFriend from "../hooks/useFriend";
+import useFriend from "../hooks/useFriendData";
 
 export default function People({searchService,friendService}) {    
     const [users,setUsers] = useState("");
@@ -28,6 +28,7 @@ export default function People({searchService,friendService}) {
         if (term !== "" && !isFetched) {
             searchService.searchUser(term)
                 .then((result)=>{
+                    console.log(result);
                     setUsers(result.data);
                     setError("");
                     setFetched(true);
@@ -63,7 +64,7 @@ export default function People({searchService,friendService}) {
     return (
         <div className={styles.searchFriendsContainer}>
             <div className={styles.searchFriendsSubContainer}>
-                <h1 className={styles.title}>Manage Friends Request</h1>
+                <h1 className={styles.pageName}>Manage Friends Request</h1>
                 <div className={styles.taskContainer}>
                     <button id={1} className={`${styles.taskBtn} ${selectedTask===1 && styles.selectedTask}`} onClick={handleTaskBtn}>
                         Search Users

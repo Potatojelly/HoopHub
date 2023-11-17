@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Posts.module.css'
 import PostCard from './PostCard';
-import {v4 as uuidv4} from "uuid";
-import { usePostQuery, usePost  } from '../../hooks/usePost';
+import { usePostPage, usePostsData  } from '../../hooks/usePostsData';
 import { usePostContext } from '../../context/PostContext';
 import { useAuth } from '../../context/AuthContext';
+import LoadingSpinner from '../Loader/LoadingSpinner';
 const POSTSPERPAGE = 5;
 
 function Posts({keyword}) {
     const {user} = useAuth();
-    const {selectedPostID,selectedPage,setSelectedPage,setPostID} = usePostContext();
+    const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
     const [currentPage, setCurrentPage] = useState(selectedPage ? selectedPage : 1);
 
     const {
@@ -22,12 +22,12 @@ function Posts({keyword}) {
         handleNext,
         handlePage,
         setPageInfo,
-    } = usePost();
+    } = usePostPage();
 
     const {
         data,
         isFetching,
-    } = usePostQuery(currentPage,keyword ? keyword : null);
+    } = usePostsData(currentPage,keyword ? keyword : null);
 
 
     useEffect(()=>{
@@ -40,12 +40,13 @@ function Posts({keyword}) {
     useEffect(()=>{
         if(!user) {
             setSelectedPage(null);
-            setPostID(null);
+            setSelectedPostID(null);
         } 
     },[])
 
     const handleSelection = (postID) => {
-        setPostID(postID);
+        setSelectedPostID(postID);
+        setSelectedPage(currentPage);
     }
 
     const customHandlePrevious = () => {
@@ -63,10 +64,10 @@ function Posts({keyword}) {
     return (
         <div className={styles.posts}>
             <h1 className={styles.title}>Posts</h1>
-            {data && data.posts.length > 0 &&
             <div className={styles.postsContainer}>
                 <div className={styles.postsSubContainer}>
-                    {data.posts.map((post, index)=>{
+                    {isFetching && <div className={styles.loadingSpinner}><LoadingSpinner/></div>}
+                    {!isFetching && data && data.posts.length > 0 && data.posts.map((post, index)=>{
                         if(data.posts.length === index+1) return (<PostCard key={post.id}   
                                                                         id ={post.id}
                                                                         num={(currentPage-1)*POSTSPERPAGE+(index+1)} 
@@ -84,7 +85,6 @@ function Posts({keyword}) {
                     })}
                 </div>
             </div>
-            }
             {data && data.posts.length === 0 && <div className={styles.noContent}> <span>No Posts</span> </div>}
             {data && data.posts.length > 0 && totalPage && 
             <footer>
@@ -98,7 +98,7 @@ function Posts({keyword}) {
                         .map(( _,index) => 
                             (
                                 <button className={styles.btn} 
-                                        key={uuidv4()} 
+                                        key={index} 
                                         onClick={()=>{customHandlePage(startPage,index)}} 
                                         aria-current={currentPage === startPage+index ? "page" : null}>
                                     {(startPage+index)}

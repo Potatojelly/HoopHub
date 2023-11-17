@@ -2,19 +2,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from './Comments.module.css'
 import CommentCard from './CommentCard';
 import {v4 as uuidv4} from "uuid";
-import useComment, { useCommentQuery } from '../../hooks/useComment';
+import { useCommentsData, useCreateComment } from '../../hooks/useCommentsData';
 import ReplyCard from './ReplyCard';
 import { useProfile } from '../../context/ProfileContext';
 import {useQueryClient} from "@tanstack/react-query";
 import { usePostContext } from '../../context/PostContext';
 import { useActivityContext } from '../../context/ActivityContext';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
+import useCommentPage from '../../hooks/useCommentsData';
+import LoadingSpinner from '../Loader/LoadingSpinner';
 
-export default function Comments({setPost, targetCommentID,  postService}) {
-    const {setSelectedPage,selectedPage,selectedPostID} = usePostContext();
-    const {selectedCommentID,selectedCommentPage} = useActivityContext();
+export default function Comments() {
+    const {selectedPostID} = usePostContext();
+    const {selectedCommentPage} = useActivityContext();
     const [currentPage, setCurrentPage] = useState(selectedCommentPage ? selectedCommentPage : 1);
     const queryClient = useQueryClient();
-    const {nickname} = useProfile();
+    const {data: profileData} = useMyProfileData();
+    const {mutate: createComment} = useCreateComment();
     const [commentText,setCommentText] = useState("");
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [openReplyIndex, setOpenReplyIndex] = useState(null);
@@ -29,12 +33,12 @@ export default function Comments({setPost, targetCommentID,  postService}) {
         handleNext,
         handlePage,
         setPageInfo
-    } = useComment();
+    } = useCommentPage();
 
     const {
         data,
         isFetching,
-    } = useCommentQuery(currentPage,selectedPostID);
+    } = useCommentsData(currentPage,selectedPostID);
 
     useEffect(()=>{
         if(data) {
@@ -58,18 +62,17 @@ export default function Comments({setPost, targetCommentID,  postService}) {
 
     const submitComment = (e) => {
         e.preventDefault();
-        postService.createComment(selectedPostID,commentText)
-            .then((data)=>{
-                if(data.success === true) {
-                    postService.getPost(selectedPostID)
-                        .then((result)=>{setPost(result.post)})
-                        .catch((err)=>console.log(err))
-                    queryClient.invalidateQueries(['posts', selectedPage]);
-                    queryClient.invalidateQueries(["comments", selectedPostID, 1]);
-                    setCommentText("");
-                    setIsSubmitDisabled(true);
-                }
-            });
+        createComment({selectedPostID,commentText}, {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['post', selectedPostID]);
+                queryClient.invalidateQueries(['posts']);
+                queryClient.invalidateQueries(["comments"]);
+                const contentElement = document.querySelector('#cmts');
+                contentElement.scrollIntoView({ behavior: 'smooth' });
+                setCommentText("");
+                setIsSubmitDisabled(true);
+            }
+        })
     }
 
     const customHandlePrevious = () => {
@@ -82,8 +85,6 @@ export default function Comments({setPost, targetCommentID,  postService}) {
 
     const customHandlePage = (startPage,index) => {
         handlePage(startPage,index,selectedPostID,setCurrentPage)
-        const contentElement = document.querySelector('#cmts');
-        contentElement.scrollIntoView({ behavior: 'smooth' });
     }
 
     const handleKeyPress = (e) => {
@@ -97,7 +98,7 @@ export default function Comments({setPost, targetCommentID,  postService}) {
         <div>
             <form className={styles.comment} onSubmit={submitComment}>
                 <small>{`Comment as `}    
-                    <span className={styles.commentName}> {nickname}</span>
+                    <span className={styles.commentName}> {profileData?.nickname}</span>
                 </small>
                 <textarea className={styles.commentContent} 
                         value={commentText} 
@@ -108,28 +109,23 @@ export default function Comments({setPost, targetCommentID,  postService}) {
             </form>
             <span id="cmts">Comments</span>
             <ul className={styles.commentsContainer}>
-                {data && data.comments.map((comment,index)=>{
+                {isFetching && <div className={styles.loadingSpinner}><LoadingSpinner/> </div>}
+                {!isFetching && data && data.comments.map((comment,index)=>{
                     return comment.type === "comment" ?   
                     <CommentCard key={index}
                                 index={(currentPage-1)*5+(index+1)} 
-                                setPost={setPost}
                                 comment={comment} 
-                                commentPage={currentPage}
-                                postService={postService} 
                                 hasReply={(index !== data.comments.length-1 && comment.id === data.comments[index+1].reply_parent_id) ? true : false}
                                 openReplyIndex={openReplyIndex}
                                 handleReplyClick={() => onReply((currentPage-1)*5+(index+1))}
                                 /> :
                     <ReplyCard key={index} 
                                 index={(currentPage-1)*5+(index+1)}
-                                setPost={setPost}
                                 reply={comment} 
-                                commentPage={currentPage}
                                 commentID={comment.reply_parent_id} 
                                 isFirst={(index !==0 && data.comments[index-1].type === "comment") ? true : false}
                                 openReplyIndex={openReplyIndex}
-                                handleReplyClick={() => onReply((currentPage-1)*5+(index+1))}
-                                postService={postService}/>
+                                handleReplyClick={() => onReply((currentPage-1)*5+(index+1))}/>
                 })}
             </ul>
             {data && data.comments && 

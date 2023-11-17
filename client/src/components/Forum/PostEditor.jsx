@@ -7,15 +7,19 @@ import styles from './PostEditor.module.css';
 import ImageResize from 'quill-image-resize';
 import {simplifyDate} from '../../date';
 import {BsFillEyeFill} from "react-icons/bs";
-import {useMutation,useQueryClient} from "@tanstack/react-query";
-import { usePostContext } from '../../context/PostContext';
+import {useQueryClient} from "@tanstack/react-query";
+import { useUpdatePost } from '../../hooks/usePostsData';
+import Alarm from '../Alarm/Alarm';
 
 Quill.register('modules/ImageResize', ImageResize);
 
-export default function PostEditor({postService,post,handleEdit}) {
+export default function PostEditor({post,handleEdit}) {
     const [title, setTitle] = useState("");
+    const queryClient = useQueryClient();
+    const [isError,setIsError] = useState(false);
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
+    const {mutate: updatePost} = useUpdatePost();
     const navigate = useNavigate();
     const quillRef = useRef();
 
@@ -70,15 +74,19 @@ export default function PostEditor({postService,post,handleEdit}) {
         jsonData = {title,content};
         formData.append("jsonFile", JSON.stringify(jsonData));
 
-        postService.updatePost(formData,post.id)
-            .then((response)=>{
+        updatePost({formData,selectedPostID:post.id}, {
+            onSuccess: (response) => {
                 handleEdit();
                 if(response.success === true) {
-                    navigate(`/forums/post/${response.title}`);
+                    queryClient.invalidateQueries(['post', post.id]);
+                    navigate(`/forums/post/${response.title}/${post.id}`);
                 }
-            })
-            .catch((error)=>{console.log(error)})
-        
+            },
+            onError: () => {
+                setIsError(true);
+                setTimeout(()=>{setIsError(false)},4000);
+            }
+        })
     };
 
     const handleContent = (contents) => {
@@ -197,6 +205,7 @@ export default function PostEditor({postService,post,handleEdit}) {
                     </div>
                 </form>
             </div>
+            {isError && <Alarm message={"Something went wrong..."}/>}
         </div>
     );
 }

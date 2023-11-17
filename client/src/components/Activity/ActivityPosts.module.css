@@ -47,19 +47,30 @@
     border: none;
     padding: 8px;
     background: white;
-    border: 1px solid var(--color-grey);
     color: black;
     font-size: 1rem;
+    width: 40px;
+    height: 40px;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 100%;
 }
 
 .btn:hover {
     cursor: pointer;
 }
 
-[aria-current="selected"] {
-    background: var(--color-blue);
+[aria-current="page"] {
+    background-color: var(--color-royal-blue);
     color: white;
     font-weight: bold;
     pointer-events: none;
     cursor: not-allowed; 
+}
+
+.loadingSpinnerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10rem;
 }

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import styles from './FriendRequest.module.css'
-import useFriend from '../../hooks/useFriend';
+import { useCancelFriendRequest } from '../../hooks/useFriendData';
+import Alarm from '../Alarm/Alarm';
 
-export default function FriendRequest({nickname, imageURL, friendService}) {
+export default function FriendRequest({nickname, imageURL}) {
     const [isDeleted,setDeleted] = useState(false);
-    const {cancelRequest} = useFriend(friendService);
-
+    const [isError,setIsError] = useState(false);
+    const {mutate:cancelFriendRequest} = useCancelFriendRequest();
     const handleDelete = () => {
-        cancelRequest.mutate(nickname,
+        cancelFriendRequest(nickname,
             {
                 onSuccess: () => {setDeleted(true);},
-                onError: (err) => {console.log(err);}
+                onError: (err) => {
+                    setIsError(true)
+                    setTimeout(()=>{setIsError(false)},4000)
+                }
             }
         )
     }
@@ -30,6 +34,7 @@ export default function FriendRequest({nickname, imageURL, friendService}) {
                     Deleted
                 </button>
             }
+            {isError && <Alarm message={"Something went wrong..."}/>}
         </li>
     );
 }

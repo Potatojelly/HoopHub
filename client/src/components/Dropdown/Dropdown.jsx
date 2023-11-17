@@ -7,7 +7,6 @@ import {useNavigate} from "react-router-dom";
 export default function Dropdown({myStuff,showMyStuff}) {
     const {logout} = useAuth();
     const navigate = useNavigate();
-
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -16,9 +15,7 @@ export default function Dropdown({myStuff,showMyStuff}) {
                 showMyStuff();
             }
         }
-
         document.addEventListener('mousedown', handleOutsideClick);
-
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
@@ -36,6 +33,7 @@ export default function Dropdown({myStuff,showMyStuff}) {
         showMyStuff();
         navigate("/manage-my-activity");
     }
+    
     return (
         <div className={`${styles.container} ${myStuff && styles.containerActive}`} ref={dropdownRef}>
             <UserServiceButton text={"Edit Profile"} onClick={directToEditProfile}/>

@@ -5,7 +5,7 @@
 }
 
 .logo {
-    color: orange;
+    color: var(--color-orange);
     font-size: 2rem; 
     margin-left: 1rem;
     margin-right: 0.3rem;
