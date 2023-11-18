@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import styles from './EditStatusMsg.module.css'
-import { useProfile } from '../../context/ProfileContext';
-import { useEditStatusMessage, useMyProfileData } from '../../hooks/useMyProfileData';
+import { useEditStatusMessage} from '../../hooks/useMyProfileData';
 
 export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSuccess}) {
     const [originalMsg,setOriginalMsg] = useState(currentMsg);
     const [charCount,setCharCount] = useState(currentMsg.length);
-    // const {updateMsg} = useProfile();
     const {mutate: updateStatusMsg} = useEditStatusMessage();
 
     const onSubmit = (e) => {

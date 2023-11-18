@@ -12,37 +12,26 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import HttpClient from './network/http';
 import AuthService from './service/auth';
-import { AuthProvider, AuthErrorEventBus, initAuthErrorEventBus, getAuthErrorEventBus } from './context/AuthContext';
+import { AuthProvider, initAuthErrorEventBus, getAuthErrorEventBus } from './context/AuthContext';
 import ProtectedRoute from './pages/ProtectedRoute';
 import ResetPassword from './pages/ResetPassword';
 import EditProfile from './pages/EditProfile';
 import ForgotUsername from './pages/ForgotUsername';
 import ForgotPassword from './pages/ForgotPassword';
 import RetrieveService from './service/retr';
-import SearchService from './service/search';
-import { ProfileProvider } from './context/ProfileContext';
-import ProfileService from './service/profile';
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
-import FriendService from './service/friend';
 import PostCreate from './pages/PostCreate';
 import PostService from './service/post';
-import MyActivity from './pages/ActivityLog';
-import MyPost from './pages/ActivityPost';
 import { SelectedCardProvider } from './context/SelectedCardContext';
 import { ChatRoomProvider } from './context/ChatRoomContext';
-import ChatService from './service/chat';
-import { UserSearchProvider } from './context/UserSearchContext';
 import ChatScreen from './components/Chat/ChatScreen';
 import UserSearch from './components/Chat/UserSearch';
 import ChatInbox from './components/Chat/ChatInbox';
-import Post from './components/Forum/Post';
-import Posts from './components/Forum/Posts';
 import ViewPost from './pages/ViewPost';
 import { PostProvider } from './context/PostContext';
 import { ActivityProvider } from './context/ActivityContext';
 import { SocketProvider } from './context/SocketContext';
-import { ChatRoomsProvider } from './context/ChatRoomsContext';
 import ActivityLog from './pages/ActivityLog';
 import ActivityPost from './pages/ActivityPost';
 import UserActivityLog from './pages/UserActivityLog';
@@ -51,15 +40,10 @@ const baseURL = process.env.REACT_APP_BASE_URL;
 
 initAuthErrorEventBus();
 const authErrorEventBus = getAuthErrorEventBus();
-// const authErrorEventBus = new AuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const authService = new AuthService(httpClient);
-const profileService = new ProfileService(httpClient);
 const retrieveService = new RetrieveService(httpClient);
-const searchService = new SearchService(httpClient);
-const friendService = new FriendService(httpClient);
 const postService = new PostService(httpClient);
-const chatService = new ChatService(httpClient);
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -67,13 +51,11 @@ const router = createBrowserRouter([
     path: "/",
     element: (<QueryClientProvider client={queryClient}>
                 <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
-                  <ProfileProvider profileService={profileService}>
                     <ChatRoomProvider>
                       <PostProvider>
-                        <App  friendService={friendService}/>
+                        <App/>
                       </PostProvider>
                     </ChatRoomProvider>
-                  </ProfileProvider>
                 </AuthProvider>
                 <ReactQueryDevtools initialIsOpen={true}/>
               </QueryClientProvider>),
@@ -81,28 +63,26 @@ const router = createBrowserRouter([
     children: [
       {index:true, 
         path:"/", 
-        element:(<Forums postService={postService}/>)
+        element:(<Forums />)
       },
       {
         path:"/people", 
         element: (<ProtectedRoute>
-                      <People searchService={searchService} friendService={friendService}/>
+                      <People/>
                   </ProtectedRoute>)
       },
       {
         path:"/create-post", 
         element: (<ProtectedRoute>
-                      <PostCreate postService={postService}/>
+                      <PostCreate/>
                   </ProtectedRoute>)
       },
       {
         path:"/messages", 
         element: (<ProtectedRoute>
-                    <UserSearchProvider>
                       <SocketProvider>
-                          <Messages chatService={chatService}/>
+                          <Messages/>
                       </SocketProvider>
-                    </UserSearchProvider>
                   </ProtectedRoute>),
         children:[
           {
@@ -111,11 +91,11 @@ const router = createBrowserRouter([
           },
           {
             path:"search-user",
-            element: (<UserSearch searchService={searchService} />)
+            element: (<UserSearch/>)
           },
           {
             path:":title/:chatRoomID",
-            element: (<ChatScreen chatService={chatService} searchService={searchService}/>)
+            element: (<ChatScreen/>)
           }
       ]
       },
@@ -128,9 +108,7 @@ const router = createBrowserRouter([
       {
         path:"/edit-profile", 
         element: (<ProtectedRoute>
-                  <ProfileProvider profileService={profileService}>
-                      <EditProfile/>
-                    </ProfileProvider>
+                    <EditProfile/>
                   </ProtectedRoute>)
       },
       {
@@ -142,26 +120,26 @@ const router = createBrowserRouter([
       {
         path:"/forums", 
         element: (<ProtectedRoute>
-                      <Forums postService={postService}/>
+                      <Forums/>
                   </ProtectedRoute>),
       },
       {
         path:"/forums/post/:title/:postNum",
         element: (<ActivityProvider>
-                    <ViewPost postService={postService}/>
+                    <ViewPost/>
                   </ActivityProvider>)
       },
       {
         path:"/forums/search/:keyword", 
         element: (<ProtectedRoute>
-                      <Forums postService={postService}/>
+                      <Forums />
                   </ProtectedRoute>)
       },
       {
         path:"/manage-my-activity", 
         element: (<ProtectedRoute>
                     <SelectedCardProvider>
-                        <ActivityLog postService={postService}/>
+                        <ActivityLog />
                     </SelectedCardProvider>
                   </ProtectedRoute>),
       },
@@ -179,7 +157,7 @@ const router = createBrowserRouter([
         path:"/view-user-activity/:userNickname", 
         element: (<ProtectedRoute>
                     <SelectedCardProvider>
-                      <UserActivityLog postService={postService}/>
+                      <UserActivityLog />
                     </SelectedCardProvider>
                   </ProtectedRoute>),
       },
@@ -187,7 +165,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element:(<AuthProvider authService={authService} >
+    element:(<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
               <PostProvider>
                 <Login/>
               </PostProvider>
@@ -195,7 +173,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: (<AuthProvider authService={authService} >
+    element: (<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
                 <Register/>
               </AuthProvider>) 
   },

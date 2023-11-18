@@ -4,21 +4,21 @@ import {TbMessageCirclePlus} from "react-icons/tb"
 import ChatCard from './ChatCard';
 import {useChatRoomID } from '../../context/ChatRoomContext';
 import {useChatRoomsData, useSaveLastReadMessage} from '../../hooks/useChatRoomData';
-import { useUserSearch } from '../../context/UserSearchContext';
+// import { useUserSearch } from '../../context/UserSearchContext';
 import {useNavigate} from "react-router-dom";
 import { useSocket } from '../../context/SocketContext';
 import {useQueryClient} from '@tanstack/react-query';
-import { useProfile } from '../../context/ProfileContext';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
 
-export default function ChatRoom({chatService}) {
+export default function ChatRoom() {
     const {socket} = useSocket();
     const queryClient = useQueryClient();
     const {chatRoomID,selectChatRoom,setSelectedChatRoom} = useChatRoomID();
-    const {setUserSearch} = useUserSearch();
+    // const {setUserSearch} = useUserSearch();
     const navigate = useNavigate();
     const {data:chatRooms, isSuccess} = useChatRoomsData();
+    const {data:profileData} = useMyProfileData();
     const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
-    const {nickname} = useProfile();
 
     useEffect(()=>{
         queryClient.invalidateQueries(["direct-chatrooms"]);
@@ -53,7 +53,7 @@ export default function ChatRoom({chatService}) {
                 if(chatRoom.id === newMessageReceived.chat.id) {
                     const updatedChatRoom = {...chatRoom,
                                             latestMessage:updatedLastestMessage,
-                                            unReadMessageCount:chatRoom.unReadMessageCount+1}; 
+                                            unReadMessageCount:newMessageReceived.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}; 
                     return updatedChatRoom;
                 } else {
                     return chatRoom;
@@ -90,7 +90,7 @@ export default function ChatRoom({chatService}) {
                         const updatedChatRoom = {...chatRoom,
                                                 users: invitationMessage.chat.users,
                                                 latestMessage:updatedLastestMessage,
-                                                unReadMessageCount:chatRoom.unReadMessageCount+1}; 
+                                                unReadMessageCount:invitationMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}; 
                     if(invitationMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                         return updatedChatRoom;
                     } else {
@@ -118,7 +118,7 @@ export default function ChatRoom({chatService}) {
                                         users: chatRoom.users.filter((user)=>user.nickname !== exitMessage.sender.nickname),
                                         leftUsers: chatRoom.leftUsers ? [...chatRoom.leftUsers, exitMessage.sender] : [exitMessage.sender],
                                         latestMessage:updatedLastestMessage,
-                                        unReadMessageCount:chatRoom.unReadMessageCount+1}; 
+                                        unReadMessageCount:exitMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}
             if(exitMessage.sender.system && exitMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                 return updatedChatRoom;
             } else {
@@ -136,7 +136,7 @@ export default function ChatRoom({chatService}) {
     }
 
     const kickoutMessage = (kickoutMessage) => {
-        if(kickoutMessage.kickedUser.nickname === nickname) {
+        if(kickoutMessage.kickedUser.nickname === profileData?.nickname) {
             const updatedChatRoom = chatRooms.filter((chatRoom)=>chatRoom.id !== kickoutMessage.chat.id);
             queryClient.setQueryData(["direct-chatrooms"], (oldData)=>{
                 return {
@@ -162,7 +162,7 @@ export default function ChatRoom({chatService}) {
                                         users: chatRoom.users.filter((user)=>user.nickname !== kickoutMessage.kickedUser.nickname),
                                         leftUsers: chatRoom.leftUsers ? [...chatRoom.leftUsers, kickoutMessage.kickedUser] :[kickoutMessage.kickedUser],
                                         latestMessage:updatedLastestMessage,
-                                        unReadMessageCount:chatRoom.unReadMessageCount+1}; 
+                                        unReadMessageCount:kickoutMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}; 
                     if(kickoutMessage.sender.system && kickoutMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                         return updatedChatRoom;
                     } else {
@@ -190,7 +190,7 @@ export default function ChatRoom({chatService}) {
                 const updatedChatRoom = {...chatRoom,
                                         chatName:chatNameMessage.chat.chatName,
                                         latestMessage:updatedLastestMessage,
-                                        unReadMessageCount:chatRoom.unReadMessageCount+1}; 
+                                        unReadMessageCount:chatNameMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}; 
                 if(chatNameMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                     return updatedChatRoom;
                 } else {
@@ -229,7 +229,7 @@ export default function ChatRoom({chatService}) {
     },[socket,isSuccess,chatRoomID]); 
 
     const searchUser = () => {
-        setUserSearch(true); 
+        // setUserSearch(true); 
         selectChatRoom(null);
         setSelectedChatRoom(null);
         navigate("/messages/search-user", {state : chatRooms});
@@ -247,8 +247,7 @@ export default function ChatRoom({chatService}) {
                 <ul className={styles.directMsgList}>
                     {/* <div className={styles.listTitle}>Chat List</div> */}
                     {chatRooms && chatRooms.map((chatRoom)=><ChatCard key={chatRoom.id} 
-                                                                    chatRoom={chatRoom} 
-                                                                    chatService={chatService}/>)}
+                                                                    chatRoom={chatRoom}/>)}
                 </ul>
             </div>
         </div>

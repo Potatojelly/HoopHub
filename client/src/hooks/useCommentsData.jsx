@@ -62,9 +62,7 @@ export default function useCommentPage() {
     }
 
     const handlePage = (startPage,index,postID,setCurrentPage) => {
-        console.log(startPage,index);
         const page = startPage + index;
-        console.log(page);
         setCurrentPage(page)
         queryClient.invalidateQueries(['comments', postID, page]);
     }

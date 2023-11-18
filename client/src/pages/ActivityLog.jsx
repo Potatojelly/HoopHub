@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from './ActivityLog.module.css';
 import ActivityPosts from '../components/Activity/ActivityPosts';
 import ActivityComments from '../components/Activity/ActivityComments';
-export default function ActivityLog({postService,userNickname}) {
+export default function ActivityLog({userNickname}) {
     const [activeBtn,setActiveBtn] = useState(window.history.state.type ? window.history.state.type : 1);
     const handleButtonClick = (buttonNumber) => {
         setActiveBtn(buttonNumber);
@@ -21,8 +21,8 @@ export default function ActivityLog({postService,userNickname}) {
                         Comments
                     </button>
                 </div>
-                {activeBtn===1 && <ActivityPosts userNickname={userNickname && userNickname} postService={postService}/>}
-                {activeBtn===2 && <ActivityComments userNickname={userNickname && userNickname} postService={postService}/>}
+                {activeBtn===1 && <ActivityPosts userNickname={userNickname && userNickname}/>}
+                {activeBtn===2 && <ActivityComments userNickname={userNickname && userNickname}/>}
             </div>
         </div>
     );

@@ -32,7 +32,7 @@ export default function PostCard({id, num, post, handleSelection, keyword, last}
             const pattern = new RegExp(keyword, 'gi');
             setHighlightedTitle(post.title.replace(pattern,(match)=>`<em>${match}</em>`));
         }
-    },[keyword])
+    },[keyword,post.title])
 
     return (
         <>

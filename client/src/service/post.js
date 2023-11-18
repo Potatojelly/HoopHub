@@ -113,20 +113,6 @@ export default class PostService {
         return data; 
     }
 
-    // async getMyPosts(currentPage,postsPerPage) {
-    //     const data = await this.http.fetch(`/forum/get-my-posts/${currentPage}/${postsPerPage}`, {
-    //         method: "GET",
-    //     });
-    //     return data; 
-    // }
-
-    // async getMyComments(currentPage,commentsPerPage) {
-    //     const data = await this.http.fetch(`/forum/get-my-comments/${currentPage}/${commentsPerPage}`, {
-    //         method: "GET",
-    //     });
-    //     return data; 
-    // }
-
     async getUserPosts(nickname,currentPage,postsPerPage) {
         const data = await this.http.fetch(`/forum/get-user-posts/${nickname}/${currentPage}/${postsPerPage}`, {
             method: "GET",

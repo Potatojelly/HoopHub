@@ -23,7 +23,7 @@ export default function Header() {
     const [sidebar, setSidebar] = useState(false);
     const [subFunctions, setSubFunctions] = useState(false);
     const {selectChatRoom,setSelectedChatRoom} = useChatRoomID();
-    const {setSelectedPage,setPostID} = usePostContext();
+    const {setSelectedPage,setSelectedPostID} = usePostContext();
 
     const showSidebar = () => setSidebar(prev=>!prev);
     const showSubFunctions = () => setSubFunctions(prev=>!prev);
@@ -41,7 +41,7 @@ export default function Header() {
                 {user &&
                     <>
                         <Link to="/"> 
-                            <PiNotePencilBold className={styles.service} onClick={()=>{setSelectedPage(null); setPostID(null);}}/>
+                            <PiNotePencilBold className={styles.service} onClick={()=>{setSelectedPage(null); setSelectedPostID(null);}}/>
                         </Link>
                         <Link to="/messages/inbox" onClick={()=>{selectChatRoom(null); setSelectedChatRoom(null);}}> 
                             <AiOutlineMessage  className={styles.service}/>

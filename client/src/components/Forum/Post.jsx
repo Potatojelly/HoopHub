@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styles from './Post.module.css'
 import Comments from './Comments';
 import {simplifyDate} from '../../date';
-import { useProfile } from '../../context/ProfileContext';
 import {FaRegCommentAlt} from "react-icons/fa";
 import {useQueryClient} from "@tanstack/react-query";
 import {BsFillEyeFill} from "react-icons/bs";
@@ -16,7 +15,7 @@ import { useMyProfileData } from '../../hooks/useMyProfileData';
 import LoadingSpinner from '../Loader/LoadingSpinner';
 
 
-export default function Post({postService}) {
+export default function Post() {
     const {postNum} = useParams();
     const {setSelectedPage,setSelectedPostID,selectedPage,selectedPostID} = usePostContext();
     const [isEdit,setIsEdit] = useState(false);
@@ -107,12 +106,12 @@ export default function Post({postService}) {
                         </span>
                     </div>
                 </div>
-                {selectedPostID && <Comments postService={postService}/>}
+                {selectedPostID && <Comments/>}
                 {/* <Comments setPost={setPost} postService={postService}/> */}
             </div>
         }
             {isEdit &&
-                <PostEditor postService={postService} post={postData.post} handleEdit={handleEdit}/>
+                <PostEditor post={postData.post} handleEdit={handleEdit}/>
             }
         </>
     );

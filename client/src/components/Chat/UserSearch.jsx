@@ -8,22 +8,22 @@ import {useChatRoomID } from '../../context/ChatRoomContext';
 import { useAddChatRoom } from '../../hooks/useChatRoomData';
 import {IoMdClose} from "react-icons/io";
 import { useSocket } from '../../context/SocketContext';
-import { useProfile } from '../../context/ProfileContext';
 import { useAuth } from '../../context/AuthContext';
+import { useUserSearchData } from '../../hooks/useUserSearchData';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
 
-export default function UserSearch({searchService, chatService}) {
+export default function UserSearch() {
     const {state:chatRooms} = useLocation();
     const {user} = useAuth();
-    const {nickname,imageURL} = useProfile();
-    const [users,setUsers] = useState("");
+    const {data:profileData} = useMyProfileData();
     const [searchTerm, setSearchTerm] = useState("");
+    const {data: users, error} = useUserSearchData(searchTerm);
     const [chatName,setChatName] = useState("");
     const [participants,setParticipants] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
 
-    const [error,setError] = useState("");
+    // const [error,setError] = useState("");
     const [chatNameError,setChatNameError] = useState("");
-    const [isFetched,setFetched] = useState(false);
 
     const [selectedUser,setSelectedUser] = useState(false);
 
@@ -37,17 +37,22 @@ export default function UserSearch({searchService, chatService}) {
     async function handleSearch(e) {
         const term = e.target.value;
         setSearchTerm(term);
-
-        if (term !== "" && !isFetched) {
-            searchService.searchUser(term)
-                .then((result)=>{
-                    setUsers(result.data);
-                    setError("");
-                    setFetched(true);
-                })
-                .catch((error)=>{setError(error)})
-        }
     }
+
+    // async function handleSearch(e) {
+    //     const term = e.target.value;
+    //     setSearchTerm(term);
+
+    //     if (term !== "" && !isFetched) {
+    //         searchService.searchUser(term)
+    //             .then((result)=>{
+    //                 setUsers(result.data);
+    //                 setError("");
+    //                 setFetched(true);
+    //             })
+    //             .catch((error)=>{setError(error)})
+    //     }
+    // }
 
     const handleChatName = (e) => {
         setChatName(e.target.value);
@@ -55,15 +60,13 @@ export default function UserSearch({searchService, chatService}) {
 
     useEffect(() => {
         if (users && searchTerm !== "") {
-            const filteredResults = users.filter((user) =>
+            const filteredResults = users.data.filter((user) =>
                 user.nickname.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setSearchResults(filteredResults);
         } else {
             setSearchResults([]);
-            setUsers(""); 
             setSelectedUser(null);
-            setFetched(false);
         }
     }, [users,searchTerm]);
 
@@ -99,7 +102,7 @@ export default function UserSearch({searchService, chatService}) {
                     const text = participants.reduce((prev,cur,index)=>{
                         if(index===participants.length-1) return prev + `${cur.nickname}.`
                         return prev + `${cur.nickname}, `
-                    },`${nickname} invited `)
+                    },`${profileData?.nickname} invited `)
                     const newChatRoom = {
                         chatName: result.chat.chatName,
                         groupAdmin: result.chat.groupAdmin,
@@ -111,8 +114,8 @@ export default function UserSearch({searchService, chatService}) {
                         unReadMessageCount:0, 
                         sender: {
                             id: user.id,
-                            nickname,
-                            imageURL,
+                            nickname: profileData?.nickname,
+                            imageURL: profileData?.imageURL,
                             system: true,
                         },
                         receiver: [...participants],

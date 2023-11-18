@@ -13,14 +13,14 @@ const MyMessage = ({message, displayTime, displayDate, start},ref) => {
                 <div className={styles.initialSpeechBubble}>
                     {message.image && message.isLoading ? <ChatLoadingSpinner className={styles.uploadingSpinner}/>:""}
                     {message.image ? 
-                        <img className={styles.imageFile} src={message.content}/> :
+                        <img className={styles.imageFile} src={message.content} alt="imageFile"/> :
                         <div>{message.content}</div>}
                 </div>}
                 {!start &&
                 <div className={styles.speechBubble}>
                     {message.image && message.isLoading ? <ChatLoadingSpinner className={styles.uploadingSpinner}/>:""}
                     {message.image ? 
-                        <img className={styles.imageFile} src={message.content}/> :
+                        <img className={styles.imageFile} src={message.content} alt="imageFile"/> :
                         <div>{message.content}</div>}
                 </div>}
                 <div className={styles.info}>

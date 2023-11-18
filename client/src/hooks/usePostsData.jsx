@@ -51,14 +51,14 @@ export function usePostPage(keyword) {
         getEndPage(currentPage,totalPosts);
     }
 
-    const handlePrevious = (currentPage,setCurrentPage,setSelectedPage) => {
+    const handlePrevious = (setCurrentPage,setSelectedPage) => {
         const page = startPage-DISPLAYPAGENUM
         setCurrentPage(page)
         setSelectedPage(page)
         queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
-    const handleNext = (currentPage,setCurrentPage,setSelectedPage) => {
+    const handleNext = (setCurrentPage,setSelectedPage) => {
         const page = startPage+DISPLAYPAGENUM
         setCurrentPage(page)
         setSelectedPage(page)

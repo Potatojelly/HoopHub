@@ -3,37 +3,23 @@ import styles from './UserInvite.module.css'
 import UserSearchCard from './UserSearchCard';
 import {IoMdClose} from "react-icons/io";
 import {v4 as uuidv4} from "uuid";
+import { useUserSearchData } from '../../hooks/useUserSearchData';
 
-export default function UserInvite({searchService,setInvitation,participants,handleInvitation}) {
-    const [users,setUsers] = useState("");
+export default function UserInvite({setInvitation,participants,handleInvitation}) {
     const [invitedUsers,setInvitedUsers] = useState([]);
     const [selectedUser,setSelectedUser] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [isFetched,setFetched] = useState(false);
-    const [error,setError] = useState("");
+    const {data: users, error} = useUserSearchData(searchTerm);
 
     function handleSearch(e) {
         const term = e.target.value;
         setSearchTerm(term);
-
-        if (term !== "" && !isFetched) {
-            searchService.searchUser(term)
-                .then((result)=>{
-                    const valuesToFilter = participants.map((user)=>user.nickname);
-                    const combinedUsers = [...result.data,...participants];
-                    const filteredUsers = combinedUsers.filter((user)=>!valuesToFilter.includes(user.nickname))
-                    setUsers(filteredUsers);
-                    setError("");
-                    setFetched(true);
-                })
-                .catch((error)=>{setError(error)})
-        }
     }
+
     const inviteUsers = () => {
         handleInvitation(invitedUsers);
         setInvitedUsers([]);
-        setUsers([]);
         setSearchTerm("");
         setSearchResults([]);
         setInvitation(false);
@@ -41,15 +27,16 @@ export default function UserInvite({searchService,setInvitation,participants,han
 
     useEffect(() => {
         if (users && searchTerm !== "") {
-            const filteredResults = users.filter((user) =>
+            const valuesToFilter = participants.map((user)=>user.nickname);
+            const combinedUsers = [...users.data,...participants];
+            const filteredUsers = combinedUsers.filter((user)=>!valuesToFilter.includes(user.nickname))
+            const filteredResults = filteredUsers.filter((user) =>
                 user.nickname.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setSearchResults(filteredResults);
         } else {
             setSearchResults([]);
-            setUsers(""); 
             setSelectedUser(null);
-            setFetched(false);
         }
     }, [users,searchTerm]);
 

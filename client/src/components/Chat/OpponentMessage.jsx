@@ -29,7 +29,7 @@ const OpponentMessage = ({message, displayTime, displayDate, start},ref) => {
                 <>
                     <div className={styles.speechBubble}>
                     {message.image ? 
-                        <img className={styles.imageFile} src={message.content}/> : 
+                        <img className={styles.imageFile} src={message.content} alt="imageFile"/> : 
                         <div>{message.content}</div>}
                     </div>
                     <div className={styles.info}>

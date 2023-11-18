@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './MyProfile.module.css'
-import { useProfile } from '../../context/ProfileContext';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
+import LoadingSpinner from '../Loader/LoadingSpinner';
 
 export default function MyProfile() {
-    const {nickname, imageURL, statusMsg} = useProfile();
-    const {data: profileData,isFetching,isError} = useMyProfileData();
+    const {data: profileData,isFetching} = useMyProfileData();
     return (
         <>
             {profileData && 
@@ -15,6 +14,7 @@ export default function MyProfile() {
                     <span className={styles.myName}>{profileData.nickname}</span>
                 </div>
                 <p className={styles.myStatus}>{profileData.statusMsg}</p>
+                {isFetching && <div className={styles.loadingSpinner}><LoadingSpinner/></div>}
             </li>}
         </>
     );

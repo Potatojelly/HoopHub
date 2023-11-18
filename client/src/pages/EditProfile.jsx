@@ -3,13 +3,14 @@ import {PiCameraPlus} from "react-icons/pi";
 import {BsPencilSquare} from "react-icons/bs";
 import styles from './EditProfile.module.css';
 import EditStatusMsg from '../components/EditStatusMsg/EditStatusMsg';
-import { useProfile } from '../context/ProfileContext';
+import { useEditProfileImage, useMyProfileData } from '../hooks/useMyProfileData';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export default function EditProfile() {
     const [msg,setMsg] = useState("");
-    const {imageURL, statusMsg, updateImg, updateMsg} = useProfile();
+    const {data:profileData} = useMyProfileData();
+    const {mutate:updateImg} = useEditProfileImage();
     const [editing,setEditing] = useState(false);
     const [errors, setErrors] = useState("");
     const [success,setSuccess] = useState("");
@@ -30,7 +31,7 @@ export default function EditProfile() {
         }
         const formData = new FormData();
         formData.append("image",file);
-        updateImg.mutate(formData,
+        updateImg(formData,
             {
                 onSuccess: (data)=>{
                     setSuccess(data.message);
@@ -45,15 +46,15 @@ export default function EditProfile() {
     }
 
     useEffect(() => {
-        if(statusMsg) setMsg(statusMsg);
-    },[statusMsg])
+        if(profileData?.statusMsg) setMsg(profileData.statusMsg);
+    },[profileData?.statusMsg])
 
     return (
         <div className={styles.editContainer}>
             <div className={styles.editSubContainer}>
                 <h1 className={styles.title}>Edit Profile</h1>
                 <div className={styles.userImgContainer}>
-                    <img src={imageURL ? imageURL : "defaultProfileImg.svg"} alt="userImg"  className={`${styles.userImg} ${errors.imageURL && styles.imageURLError}`}/>
+                    <img src={profileData?.imageURL} alt="userImg"  className={`${styles.userImg} ${errors.imageURL && styles.imageURLError}`}/>
                     <input type="file" accept="image/jpeg, image/png, image.jpg" style={{display:"none"}} onChange={uploadImg} ref={imgInputRef}/>
                     <button className={styles.editImgBtn} onClick={()=>imgInputRef.current.click()}>
                         <PiCameraPlus className={styles.editImgIcon}/>
@@ -61,7 +62,7 @@ export default function EditProfile() {
                 </div>
                 {!editing && 
                 <div className={`${styles.userStatusMsgContainer} ${errors.statusMsg && styles.statusMsgError}`}>
-                    <p className={styles.statusMsg}>{statusMsg}</p>
+                    <p className={styles.statusMsg}>{profileData?.statusMsg}</p>
                     <button className={styles.editMsgBtn} onClick={handleMsgEdit}>
                         <BsPencilSquare className={styles.editMsgIcon}/>
                     </button>

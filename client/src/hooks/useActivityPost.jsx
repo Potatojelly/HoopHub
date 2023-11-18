@@ -11,7 +11,7 @@ const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const postService = new PostService(httpClient);
 const DISPLAYPAGENUM = 5;
 const POSTSPERPAGE = 10;
-export default function useActivityPost() {
+export default function useActivityPostPage() {
     const queryClient = useQueryClient();
     const [totalPage,setTotalPage] = useState(undefined);
     const [startPage,setStartPage] = useState(undefined);
@@ -80,7 +80,7 @@ export default function useActivityPost() {
     };
 }
 
-export function useUserPostQuery(nickname,currentPage) {
+export function useUserPostsData(nickname,currentPage) {
     return useQuery(["user-posts",nickname,currentPage],()=>postService.getUserPosts(nickname,currentPage,POSTSPERPAGE),
                                                                     {
                                                                         onSuccess: (result) => {

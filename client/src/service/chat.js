@@ -39,6 +39,7 @@ export default class ChatService {
     }
 
     async sendMessage(content,chatRoomID,init) {
+        console.log(content,chatRoomID,init);
         const data = await this.http.fetch("/chat/send-message", {
             method: "POST",
             body: JSON.stringify({

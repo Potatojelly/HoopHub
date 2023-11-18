@@ -1,61 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import styles from './People.module.css'
 import UserSearchResultCard from "../components/User/UserSearchResultCard";
+import {useQueryClient} from "@tanstack/react-query";
 import {v4 as uuidv4} from "uuid";
 import FriendRequest from '../components/Friend/FriendRequest';
 import FriendReceivedRequest from '../components/Friend/FriendReceivedRequest';
-import useFriend from "../hooks/useFriendData";
+import { useFriendRequestData, useFriendRequestReceivedData } from "../hooks/useFriendData";
+import { useUserSearchData } from '../hooks/useUserSearchData';
 
-export default function People({searchService,friendService}) {    
-    const [users,setUsers] = useState("");
+export default function People() {    
+    const queryClient = useQueryClient();
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
-
-    const [error,setError] = useState("");
-    const [isFetched,setFetched] = useState(false);
     const [selectedTask,setSelectedTask] = useState(1);
 
-
-    const {myFriendRequest,
-        receivedFriendRequest, 
-        refetchMyFriendRequest,
-        refetchReceivedRequest} = useFriend(friendService);
+    const {data: users, error} = useUserSearchData(searchTerm);
+    const {data: myFriendRequest} = useFriendRequestData();
+    const {data: receivedFriendRequest} = useFriendRequestReceivedData();
 
     async function handleSearch(e) {
         const term = e.target.value;
         setSearchTerm(term);
-
-        if (term !== "" && !isFetched) {
-            searchService.searchUser(term)
-                .then((result)=>{
-                    console.log(result);
-                    setUsers(result.data);
-                    setError("");
-                    setFetched(true);
-                })
-                .catch((error)=>{setError(error)})
-        }
     }
 
     useEffect(() => {
         if (users && searchTerm !== "") {
-            const filteredResults = users.filter((user) =>
+            const filteredResults = users.data.filter((user) =>
                 user.nickname.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setSearchResults(filteredResults);
         } else {
             setSearchResults([]);
-            setUsers(""); 
-            setFetched(false);
         }
     }, [users,searchTerm]);
     
     const handleTaskBtn = (e) => {
         setSelectedTask(parseInt(e.target.id));
         if(parseInt(e.target.id) === 2) {
-            refetchMyFriendRequest();    
+            queryClient.refetchQueries("myRequest");
         } else if (parseInt(e.target.id) === 3) {
-            refetchReceivedRequest();
+            queryClient.refetchQueries("receivedRequest");
         }
         setSearchResults([]);
         setSearchTerm("");
@@ -92,8 +76,7 @@ export default function People({searchService,friendService}) {
                             <UserSearchResultCard key={uuidv4()} 
                                                 imageURL={user.imageURL} 
                                                 nickname={user.nickname} 
-                                                friendship={user.status}
-                                                friendService={friendService}/>
+                                                friendship={user.status}/>
                         ))}
                     </ul>
                 </>}
@@ -102,11 +85,10 @@ export default function People({searchService,friendService}) {
                     <ul className={styles.searchResultsContainer}>
                         <div className={styles.searchResultsTitle}>My Requests List</div>
                         {!myFriendRequest && <div className={styles.noContent}>No Requests</div>}
-                        {myFriendRequest && myFriendRequest.map((myRequest) => (
+                        {myFriendRequest && myFriendRequest.myRequest.map((myRequest) => (
                             <FriendRequest key={uuidv4()} 
                                         nickname={myRequest.nickname} 
-                                        imageURL={myRequest.imageURL}
-                                        friendService={friendService}/>
+                                        imageURL={myRequest.imageURL}/>
                         ))}
                     </ul>
                 </>}
@@ -115,11 +97,10 @@ export default function People({searchService,friendService}) {
                     <ul className={styles.searchResultsContainer}>
                         <div className={styles.searchResultsTitle}>Received Requests List</div>
                         {!receivedFriendRequest && <div className={styles.noContent}>No Received Requests</div>}
-                        {receivedFriendRequest && receivedFriendRequest.map((request) => (
+                        {receivedFriendRequest && receivedFriendRequest.receivedRequest.map((request) => (
                             <FriendReceivedRequest key={uuidv4()} 
                                                 nickname={request.nickname} 
-                                                imageURL={request.imageURL}
-                                                friendService={friendService}/>
+                                                imageURL={request.imageURL}/>
                         ))}
                     </ul>
                 </>}

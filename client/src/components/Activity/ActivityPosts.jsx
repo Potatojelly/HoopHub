@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ActivityPosts.module.css';
 import MyPostCard from './ActivityPostCard';
-import { useUserPostQuery } from '../../hooks/useActivityPost';
-import useActivityPost from '../../hooks/useActivityPost';
-import { useProfile } from '../../context/ProfileContext';
+import useActivityPostPage, { useUserPostsData } from '../../hooks/useActivityPost';
 import Alarm from '../Alarm/Alarm';
 import LoadingSpinner from '../Loader/LoadingSpinner';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 const POSTSPERPAGE = 10;
 export default function ActivityPosts({userNickname}) {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_posts ? window.history.state.my_posts : null);
     const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/POSTSPERPAGE) : 1);
-    const {nickname} = useProfile();
+    const {data:profileData} = useMyProfileData();
     window.history.state.my_posts && console.log(window.history.state)
     const {
         totalPage,
@@ -23,20 +22,20 @@ export default function ActivityPosts({userNickname}) {
         handleNext,
         handlePage,
         setPageInfo,
-    } = useActivityPost();
+    } = useActivityPostPage();
 
     const {
         data,
         isFetching,
         isError,
-    } = useUserPostQuery(userNickname ? userNickname : nickname,currentPage);
+    } = useUserPostsData(userNickname ? userNickname : profileData?.nickname, currentPage);
 
     useEffect(()=>{
         if(data) {
             if(selectedCard) setPageInfo(data.total_posts,Math.ceil(selectedCard/POSTSPERPAGE));
             else setPageInfo(data.total_posts,currentPage);
         } 
-    },[data])
+    },[data,currentPage,selectedCard,setPageInfo])
 
         const customHandlePrevious = () => {
         handlePrevious(setCurrentPage);

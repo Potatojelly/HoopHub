@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styles from './ChatCard.module.css'
 import { useChatRoomID } from '../../context/ChatRoomContext';
 import {useNavigate} from "react-router-dom";
-import { useProfile } from '../../context/ProfileContext';
 import {simplifyDate} from '../../date';
 import { useSaveLastReadMessage} from '../../hooks/useChatRoomData';
 import {FcPicture} from "react-icons/fc";
+import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 export default function ChatCard({chatRoom}) {
-    const {nickname} = useProfile();
+    const {data: profileData} = useMyProfileData();
     const [title,setTitle] = useState(null);
     const [opponent,setOpponent] = useState([]);
     const {chatRoomID,selectChatRoom,setSelectedChatRoom} = useChatRoomID();
@@ -18,7 +18,7 @@ export default function ChatCard({chatRoom}) {
         if(chatRoom.chatName === null) {
             if(chatRoom.users.length > 1) {
                 chatRoom.users.forEach((user)=>{
-                    if(user.nickname !== nickname) {
+                    if(user.nickname !== profileData?.nickname) {
                         setTitle(user.nickname);
                         setOpponent([{...user}])
                     }
@@ -31,13 +31,13 @@ export default function ChatCard({chatRoom}) {
             setTitle(chatRoom.chatName);
             let opponents = []
             chatRoom.users.forEach((user)=>{
-                if(user.nickname !== nickname) {
+                if(user.nickname !== profileData?.nickname) {
                     opponents = [...opponents,{...user}];
                 }
                 setOpponent([...opponents]);
             });
         }
-    },[chatRoom])
+    },[chatRoom,profileData?.nickname])
 
     const enterChatRoom = () => {
         if(chatRoomID) {

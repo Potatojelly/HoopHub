@@ -4,7 +4,6 @@ import CommentCard from './CommentCard';
 import {v4 as uuidv4} from "uuid";
 import { useCommentsData, useCreateComment } from '../../hooks/useCommentsData';
 import ReplyCard from './ReplyCard';
-import { useProfile } from '../../context/ProfileContext';
 import {useQueryClient} from "@tanstack/react-query";
 import { usePostContext } from '../../context/PostContext';
 import { useActivityContext } from '../../context/ActivityContext';

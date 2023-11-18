@@ -4,18 +4,18 @@ import styles from './Messages.module.css'
 import { Outlet } from 'react-router-dom';
 import { getSocketIO, initSocket } from '../network/socket';
 import {useSocket} from "../context/SocketContext"
-import { useProfile } from '../context/ProfileContext';
+import { useMyProfileData } from '../hooks/useMyProfileData';
 
 
 export default function Messages({chatService}) {
     let chatSocket;
     const {setSocket} = useSocket();
-    const {nickname} = useProfile();
+    const {data:profileData} = useMyProfileData();
     useEffect(()=>{
-        if(nickname) {
+        if(profileData?.nickname) {
             initSocket();
             chatSocket = getSocketIO();
-            chatSocket.emit("setup",nickname);
+            chatSocket.emit("setup",profileData?.nickname);
             chatSocket.on("connected",()=>{
                 setSocket(chatSocket);
             })
@@ -25,7 +25,7 @@ export default function Messages({chatService}) {
                 setSocket(null);
             }
         }
-    },[nickname])
+    },[profileData?.nickname])
 
     return (
         <div className={styles.container}>

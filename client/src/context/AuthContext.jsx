@@ -25,7 +25,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 })
                 .catch((err)=>console.log(err));
         }
-    },[]);
+    },[authErrorEventBus,authService, loading]);
 
     useEffect(()=>{
         if(!user && authErrorEventBus) {
@@ -115,8 +115,6 @@ export function getAuthErrorEventBus() {
     }
     return authErrorEventBus;
 }
-
-
 
 export const fetchToken = () => tokenRef.current;
 

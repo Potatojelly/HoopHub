@@ -4,7 +4,7 @@ import {FiSearch} from "react-icons/fi";
 import {useNavigate} from "react-router-dom";
 import { usePostContext } from '../../context/PostContext';
 
-export default function SearchBar({postService}) {
+export default function SearchBar() {
     const {setSelectedPage,setSelectedPostID} = usePostContext();
     const [searchTerm,setSearchTerm] = useState("");
     const navigate = useNavigate();

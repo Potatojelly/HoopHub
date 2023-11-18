@@ -11,7 +11,7 @@ const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const postService = new PostService(httpClient);
 const DISPLAYPAGENUM = 5;
 const COMMENTSPERPAGE = 10;
-export default function useActivityComment() {
+export default function useActivityCommentPage() {
     const queryClient = useQueryClient();
     const [totalPage,setTotalPage] = useState(undefined);
     const [startPage,setStartPage] = useState(undefined);
@@ -38,7 +38,7 @@ export default function useActivityComment() {
             end_page = total_page;
         }
         setEndPage(end_page);
-        const result = (end_page == total_page) ? false : true;
+        const result = (end_page === total_page) ? false : true;
         setHasNext(result);
     }
 
@@ -79,7 +79,7 @@ export default function useActivityComment() {
     };
 }
 
-export function useUserCommentQuery(nickname, currentPage) {
+export function useUserCommentsData(nickname, currentPage) {
     return useQuery(["user-comments", nickname, currentPage],()=>postService.getUserComments(nickname,currentPage,COMMENTSPERPAGE),
                                                                                 {
                                                                                     onSuccess: (result) => {

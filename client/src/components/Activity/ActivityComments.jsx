@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ActivityComments.module.css';
-import {useUserCommentQuery } from '../../hooks/useActivityComment';
+import useActivityCommentPage, {useUserCommentsData } from '../../hooks/useActivityComment';
 import ActivityCommentCard from './ActivityCommentCard';
-import useActivityComment from '../../hooks/useActivityComment';
-import { useProfile } from '../../context/ProfileContext';
 import LoadingSpinner from '../Loader/LoadingSpinner';
 import Alarm from '../Alarm/Alarm';
+import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 const COMMENTSPERPAGE = 10;
 export default function ActivityComments({userNickname}) {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_comments ? window.history.state.my_comments : null);
     const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/COMMENTSPERPAGE) : 1);
-    const {nickname} = useProfile();
+    const {data:profileData} = useMyProfileData();
     const {
         totalPage,
         startPage,
@@ -22,20 +21,20 @@ export default function ActivityComments({userNickname}) {
         handleNext,
         handlePage,
         setPageInfo
-    } = useActivityComment();
+    } = useActivityCommentPage();
 
     const {
         data,
         isFetching,
         isError,
-    } = useUserCommentQuery(userNickname ? userNickname : nickname,currentPage);
+    } = useUserCommentsData(userNickname ? userNickname : profileData?.nickname,currentPage);
 
     useEffect(()=>{
         if(data) {
             if(selectedCard) setPageInfo(data.total_comments,Math.ceil(selectedCard/COMMENTSPERPAGE));
             else setPageInfo(data.total_comments,currentPage);
         } 
-    },[data])
+    },[data,currentPage,selectedCard,setPageInfo])
 
     const customHandlePrevious = () => {
         handlePrevious(setCurrentPage);

@@ -3,7 +3,7 @@ import {Outlet} from "react-router-dom";
 function App({friendService}) {
   return (
     <div>
-      <Header friendService={friendService}/>
+      <Header/>
       <Outlet/>
     </div>
   );

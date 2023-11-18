@@ -83,7 +83,6 @@ export function useUnreadMessageNumber(chatRoomID) {
 
 
 export function useSaveLastReadMessage() {
-    const queryClient = useQueryClient();
     return useMutation((chatRoomID)=>chatService.saveLastReadMessage(chatRoomID),
                                 {onSuccess:(result)=>{}})
 }
@@ -96,33 +95,25 @@ export function useAddChatRoom() {
 }
 
 export function useExitChatRoom() {
-    const queryClient = useQueryClient();
     return useMutation((chatRoomID)=>chatService.exitChatRoom(chatRoomID))
 }
 
 export function useKickoutUser() {
-    const queryClient = useQueryClient();
     return useMutation((data)=>{const {chatRoomID,kickedUser} = data; return chatService.kickoutUser(kickedUser,chatRoomID)})
 }
 
 export function useChatName() {
-    const queryClient = useQueryClient();
     return useMutation((data)=>{const {chatRoomID,chatName} = data; return chatService.changeChatName(chatRoomID,chatName)})
 }
 
 export function useInviteUsers() {
-    const queryClient = useQueryClient();
     return useMutation((data)=>{const {chatRoomID,invitedUsers} = data; return chatService.inviteUsers(chatRoomID,invitedUsers)})
 }
 
-// export function useSendMessage() {
-//     const queryClient = useQueryClient();
-//     return useMutation((data)=>{const {chatRoomID, content, init} = data; return chatService.sendMessage(content,chatRoomID,init)})
-// }
+export function useSendMessage() {
+    return useMutation((data)=>{const {chatRoomID, content, init} = data; return chatService.sendMessage(content,chatRoomID,init)})
+}
 
 export function useSendImageMessage() {
-    const queryClient = useQueryClient();
-    return useMutation((formData)=>chatService.sendImageMessage(formData),{onSuccess:(response)=>{
-        // queryClient.invalidateQueries(["direct-chatroom-message",response.result.chat])
-    }})
+    return useMutation((formData)=>chatService.sendImageMessage(formData));
 }
