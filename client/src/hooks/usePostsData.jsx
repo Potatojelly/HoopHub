@@ -1,6 +1,6 @@
 import {useMutation,useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
-import { getAuthErrorEventBus } from '../context/AuthContext';
+import { getAuthErrorEventBus, useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import HttpClient from '../network/http';
 import PostService from "../service/post";
@@ -91,6 +91,7 @@ export function usePostsData(currentPage,keyword) {
                                                                         onSuccess: (res) => {
                                                                             console.log("hi")
                                                                         },
+                                                                        staleTime:Infinity,
                                                                         refetchOnMount: true, 
                                                                         refetchOnWindowFocus: false
                                                                     });
@@ -98,16 +99,20 @@ export function usePostsData(currentPage,keyword) {
 
 export function usePostData(selectedPostID) {
     const navigate = useNavigate();
-    return useQuery(["post", selectedPostID], async ()=>postService.getPost(selectedPostID),
+    const {user} = useAuth();
+    return useQuery(["post", selectedPostID],()=>postService.getPost(selectedPostID),
                                                                     {
                                                                         onSuccess: (res) => {
                                                                             console.log("hey")
                                                                             if(res.post.deleted === 1) {
                                                                                 alert(`The post "${res.post.title}" has been deleted!`);
                                                                                 navigate('/', {replace: true} );
-                                                                                return;
                                                                             }
                                                                         },
+                                                                        enable: !!user,
+                                                                        cacheTime:Infinity,
+                                                                        staleTime:Infinity,
+                                                                        retry:false,
                                                                         refetchOnMount: true, 
                                                                         refetchOnWindowFocus: false
                                                                     });

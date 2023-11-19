@@ -124,7 +124,7 @@ const router = createBrowserRouter([
                   </ProtectedRoute>),
       },
       {
-        path:"/forums/post/:title/:postNum",
+        path:"/forums/post/:title/",
         element: (<ActivityProvider>
                     <ViewPost/>
                   </ActivityProvider>)
@@ -144,7 +144,7 @@ const router = createBrowserRouter([
                   </ProtectedRoute>),
       },
       {
-        path:"/manage-my-activity/my-post/:title/:postNum", 
+        path:"/manage-my-activity/my-post/:title/", 
         element: (<ProtectedRoute>
                     <SelectedCardProvider>
                       <ActivityProvider>

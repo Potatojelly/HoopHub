@@ -35,7 +35,7 @@ export default function ActivityPosts({userNickname}) {
             if(selectedCard) setPageInfo(data.total_posts,Math.ceil(selectedCard/POSTSPERPAGE));
             else setPageInfo(data.total_posts,currentPage);
         } 
-    },[data,currentPage,selectedCard,setPageInfo])
+    },[data])
 
         const customHandlePrevious = () => {
         handlePrevious(setCurrentPage);

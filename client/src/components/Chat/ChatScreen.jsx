@@ -43,7 +43,7 @@ export default function ChatScreen() {
 
     const [text,setText] = useState("");
     const [initScrollTop,setInitScrollTop] = useState(false);
-    const [imgFile,setImgFile] = useState(null);
+    // const [imgFile,setImgFile] = useState(null);
     const {data:chatRooms, isSuccess} = useChatRoomsData();
 
     const moveToBottom = () => {
@@ -354,7 +354,7 @@ export default function ChatScreen() {
             if (file) {
                 if (file.type.startsWith("image/")) {
                     const imageFileURL = URL.createObjectURL(file);
-                    setImgFile({ file, imageFileURL });
+                    // setImgFile({ file, imageFileURL });
                     let init = true;
                     if(messages.length > 0 && messages.pop().sender.nickname === profileData?.nickname) {
                         init = false;

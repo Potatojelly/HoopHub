@@ -114,28 +114,16 @@ export async function deletePost(req,res) {
 export async function createPost(req,res) {
     const user = await myRepository.findById(req.userID);
     const data = JSON.parse(req.body.jsonFile)
-    console.log(data);
     const title = data.title;
     let content = data.content;
     let thumbnailURL = "";
 
     if( Object.keys(req.files).length > 0) {
-        if(data.video === true) {
-            const  s3VideoUrl = req.files.video[0].location
-            const outputPath = `public/thumbnails/${req.files.video[0].originalname}`.replace(/\.[^.]+$/, '.jpg');
-            const extension = req.files.video[0].originalname.split(".").pop();
-            thumbnailURL = await getThumbnail(s3VideoUrl, outputPath, extension);
-        }
-        else {
-            thumbnailURL = req.files.image[0].location;
-        }
-
         if(req.files.video) {
             const videos = req.files.video.map((element)=>element.location);
-
             if(videos.length > 0) {
                 let currentIndex = 0;
-                content = content.replace(/<iframe[^>]*src="[^"]*"[^>]*>/gi, (match) => {
+                content = content.replace(/<iframe[^>]*src="blob[^"]*"[^>]*>/gi, (match) => {
                     return match.replace(/src="([^"]*)"/i, `src="${videos[currentIndex++]}"`);
                 });
             }
@@ -145,11 +133,22 @@ export async function createPost(req,res) {
             const images = req.files.image.map((element)=>element.location);
             if(images.length > 0) {
                 let currentIndex = 0;
-                content = content.replace(/<img[^>]*?src="[^"]*"[^>]*>/gi, (match) => {
+                content = content.replace(/<img[^>]*?src="blob[^"]*"[^>]*>/gi, (match) => {
                     return match.replace(/src="([^"]*)"/i, `src="${images[currentIndex++]}"`);
                 });
             }
         }
+    } 
+
+    if(content && content[0].startsWith("<img")) {
+        const url = content[0].match(/src="([^"]+)"/);
+        thumbnailURL = url[1];
+    } else if(content && content[0].startsWith("<iframe")) {
+        const url = content[0].match(/src="([^"]+)"/);
+        const s3VideoUrl = url[1];
+        const outputPath = "public/thumbnails/tempThumbnail.jpg";
+        const extension = s3VideoUrl.split(".").pop();
+        thumbnailURL = await getThumbnail(s3VideoUrl, outputPath, extension);
     }
     
     const result = await forumRepository.createPost({userID: user.id, title, body: content, thumbnailURL });
@@ -162,105 +161,104 @@ export async function createPost(req,res) {
     else res.status(500).json({success:false, imageURL:"Server Error"});
 }
 
-    export async function updatePost(req,res) {
+export async function updatePost(req,res) {
+    const user = await myRepository.findById(req.userID);
+    const postID = req.params.postID;
+    const post = await forumRepository.getPost(postID);
+    const data = JSON.parse(req.body.jsonFile);
+    const title = data.title;
+    let changeThumbnail = false;
+    let content = data.content;
+    let thumbnailURL = "";
 
-        const user = await myRepository.findById(req.userID);
-        const postID = req.params.postID;
-        const post = await forumRepository.getPost(postID);
-        const data = JSON.parse(req.body.jsonFile);
-        const title = data.title;
-        let changeThumbnail = false;
-        let content = data.content;
-        let thumbnailURL = "";
-    
-        if( Object.keys(req.files).length > 0) {
-            if(req.files.video) {
-                const videos = req.files.video.map((element)=>element.location);
-                if(videos.length > 0) {
-                    let currentIndex = 0;
-                    content = content.replace(/<iframe[^>]*src="blob[^"]*"[^>]*>/gi, (match) => {
-                        return match.replace(/src="([^"]*)"/i, `src="${videos[currentIndex++]}"`);
-                    });
-                }
+    if( Object.keys(req.files).length > 0) {
+        if(req.files.video) {
+            const videos = req.files.video.map((element)=>element.location);
+            if(videos.length > 0) {
+                let currentIndex = 0;
+                content = content.replace(/<iframe[^>]*src="blob[^"]*"[^>]*>/gi, (match) => {
+                    return match.replace(/src="([^"]*)"/i, `src="${videos[currentIndex++]}"`);
+                });
             }
-    
-            if(req.files.image) {
-                const images = req.files.image.map((element)=>element.location);
-                if(images.length > 0) {
-                    let currentIndex = 0;
-                    content = content.replace(/<img[^>]*?src="blob[^"]*"[^>]*>/gi, (match) => {
-                        return match.replace(/src="([^"]*)"/i, `src="${images[currentIndex++]}"`);
-                    });
-                }
+        }
+
+        if(req.files.image) {
+            const images = req.files.image.map((element)=>element.location);
+            if(images.length > 0) {
+                let currentIndex = 0;
+                content = content.replace(/<img[^>]*?src="blob[^"]*"[^>]*>/gi, (match) => {
+                    return match.replace(/src="([^"]*)"/i, `src="${images[currentIndex++]}"`);
+                });
             }
-        } 
-
-        // compare 
-        const newUrl = []
-        const newContent = content.match(/(<iframe[^>]*src="[^"]*"[^>]*>|<img[^>]*src="[^"]*"[^>]*>)/gi);
-        if(newContent) {
-            newContent.forEach((srcValue)=>{
-                const result = srcValue.match(/src="([^"]+)"/);
-                newUrl.push(result[1]);
-            })
         }
+    } 
 
-        const oldUrl = [] 
-        const oldContent = post.body.match(/(<iframe[^>]*src="[^"]*"[^>]*>|<img[^>]*src="[^"]*"[^>]*>)/gi);
-        if(oldContent) {
-            oldContent.forEach((srcValue)=>{
-                const result = srcValue.match(/src="([^"]+)"/);
-                oldUrl.push(result[1]);
-            })
-        }
-
-        // extract thumbnail
-        if(newContent && newContent[0].startsWith("<img")) {
-            const url = newContent[0].match(/src="([^"]+)"/);
-            thumbnailURL = url[1];
-        } else if(newContent && newContent[0].startsWith("<iframe")) {
-            const url = newContent[0].match(/src="([^"]+)"/);
-            const s3VideoUrl = url[1];
-            const outputPath = "public/thumbnails/tempThumbnail.jpg";
-            const extension = s3VideoUrl.split(".").pop();
-            thumbnailURL = await getThumbnail(s3VideoUrl, outputPath, extension);
-        }
-
-        
-        const result = await forumRepository.updatePost({postID, title, body: content, thumbnailURL });
-
-        // delete s3
-        const toBeDeleted = oldUrl.filter(item => !newUrl.includes(item));
-
-        if(toBeDeleted.length > 0) {
-            toBeDeleted.forEach((url)=>{
-                s3.deleteObject({Bucket: config.bucket.forum, Key: url},(err,data)=>{
-                    if (err) {
-                        console.error('Failed to delete the file:', err);
-                    } else {
-                        console.log('The file has been deleted.');
-                    }
-                })
-            })
-        }
-
-        if(post.thumbnail_url) {
-            s3.deleteObject({Bucket: config.bucket.forum, Key: post.thumbnail_url},(err,data)=>{
-                if (err) {
-                    console.error('Failed to delete the thumbnail:', err);
-                } else {
-                    console.log('The thumbnail has been deleted.');
-                }
-            })
-        }
-
-        if(result) res.status(200).json({success:true, 
-                                        ...result,
-                                        nickname: user.nickname,
-                                        image_url: user.imageURL,
-                                        total_comments:post.total_comments});
-        else res.status(500).json({success:false, imageURL:"Server Error"});
+    // compare 
+    const newUrl = []
+    const newContent = content.match(/(<iframe[^>]*src="[^"]*"[^>]*>|<img[^>]*src="[^"]*"[^>]*>)/gi);
+    if(newContent) {
+        newContent.forEach((srcValue)=>{
+            const result = srcValue.match(/src="([^"]+)"/);
+            newUrl.push(result[1]);
+        })
     }
+
+    const oldUrl = [] 
+    const oldContent = post.body.match(/(<iframe[^>]*src="[^"]*"[^>]*>|<img[^>]*src="[^"]*"[^>]*>)/gi);
+    if(oldContent) {
+        oldContent.forEach((srcValue)=>{
+            const result = srcValue.match(/src="([^"]+)"/);
+            oldUrl.push(result[1]);
+        })
+    }
+
+    // extract thumbnail
+    if(newContent && newContent[0].startsWith("<img")) {
+        const url = newContent[0].match(/src="([^"]+)"/);
+        thumbnailURL = url[1];
+    } else if(newContent && newContent[0].startsWith("<iframe")) {
+        const url = newContent[0].match(/src="([^"]+)"/);
+        const s3VideoUrl = url[1];
+        const outputPath = "public/thumbnails/tempThumbnail.jpg";
+        const extension = s3VideoUrl.split(".").pop();
+        thumbnailURL = await getThumbnail(s3VideoUrl, outputPath, extension);
+    }
+
+    
+    const result = await forumRepository.updatePost({postID, title, body: content, thumbnailURL });
+
+    // delete s3
+    const toBeDeleted = oldUrl.filter(item => !newUrl.includes(item));
+
+    if(toBeDeleted.length > 0) {
+        toBeDeleted.forEach((url)=>{
+            s3.deleteObject({Bucket: config.bucket.forum, Key: url},(err,data)=>{
+                if (err) {
+                    console.error('Failed to delete the file:', err);
+                } else {
+                    console.log('The file has been deleted.');
+                }
+            })
+        })
+    }
+
+    if(post.thumbnail_url) {
+        s3.deleteObject({Bucket: config.bucket.forum, Key: post.thumbnail_url},(err,data)=>{
+            if (err) {
+                console.error('Failed to delete the thumbnail:', err);
+            } else {
+                console.log('The thumbnail has been deleted.');
+            }
+        })
+    }
+
+    if(result) res.status(200).json({success:true, 
+                                    ...result,
+                                    nickname: user.nickname,
+                                    image_url: user.imageURL,
+                                    total_comments:post.total_comments});
+    else res.status(500).json({success:false, imageURL:"Server Error"});
+}
 
 async function getThumbnail(s3VideoUrl, outputPath, extension) {
     try {

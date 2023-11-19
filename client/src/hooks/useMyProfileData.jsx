@@ -12,7 +12,9 @@ const profileService = new ProfileService(httpClient);
 export function useMyProfileData() {
     const {user} = useAuth();
     return useQuery(["profile",user],()=>profileService.getProfile(),{
-                                                                    staleTime:Infinity, 
+                                                                    onSuccess:()=>{},
+                                                                    staleTime:Infinity,
+                                                                    cacheTime:Infinity,
                                                                     refetchOnWindowFocus: false,
                                                                     refetchOnMount: false,
                                                                     enabled: !!user});

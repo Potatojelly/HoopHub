@@ -13,9 +13,9 @@ export default function ActivityCommentCard({comment,selectedCard,setSelectedCar
         const title = comment.post_title;
         window.history.pushState(state,title);
         setSelectedCard(num);
-        setSelectedPostID(comment.post_id);
-        setSelectedPage(null);
-        navigate(`/manage-my-activity/my-post/${comment.post_title}/${comment.post_id}`,{state:comment});
+        // setSelectedPostID(comment.post_id);
+        // setSelectedPage(null);
+        navigate(`/manage-my-activity/my-post/${comment.post_title}/?postNum=${comment.post_id}`,{state:comment});
     }
 
     return (

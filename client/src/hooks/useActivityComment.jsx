@@ -1,6 +1,6 @@
 import {useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
-import { getAuthErrorEventBus } from '../context/AuthContext';
+import { getAuthErrorEventBus, useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import HttpClient from '../network/http';
 import PostService from '../service/post';
@@ -80,12 +80,14 @@ export default function useActivityCommentPage() {
 }
 
 export function useUserCommentsData(nickname, currentPage) {
+    const {user} = useAuth();
     return useQuery(["user-comments", nickname, currentPage],()=>postService.getUserComments(nickname,currentPage,COMMENTSPERPAGE),
                                                                                 {
                                                                                     onSuccess: (result) => {
-                                                                                        console.log(result);
+                                                                                        // console.log(result);
                                                                                     },
                                                                                     refecthOnMount: true, 
-                                                                                    refetchOnWindowFocus: false
+                                                                                    refetchOnWindowFocus: false,
+                                                                                    enable:!!user
                                                                                 });
 }

@@ -24,14 +24,11 @@ export default function PostCreator() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         const tempElement = document.createElement('div');
         tempElement.innerHTML = content;
 
         const elementsWithSrc = tempElement.querySelectorAll('[src]');
         const srcAttributes = [];
-
-        console.log(elementsWithSrc.length);
 
         const formData = new FormData();
         let jsonData = {};
@@ -53,7 +50,6 @@ export default function PostCreator() {
                 } 
             })
 
-
             validFiles.forEach((element)=>{
                 if(element.type === "video") {
                     formData.append("video",element.file);
@@ -62,25 +58,17 @@ export default function PostCreator() {
                 }
                 
             })
+        }
 
-            if(validFiles[0].type === "video") {
-                jsonData = {title,content,video:true};
-            } else {
-                jsonData = {title,content,video:false};
-            }
-            formData.append("jsonFile", JSON.stringify(jsonData));
-        }
-        else {
-            jsonData = {title,content,video:false};
-            formData.append("jsonFile", JSON.stringify(jsonData));
-        }
+        jsonData = {title,content};
+        formData.append("jsonFile", JSON.stringify(jsonData));
 
         setIsPosting(true);
         createPost(formData,{
             onSuccess: (response) => {
                 const post = {...response}
                 setSelectedPostID(post.id);
-                navigate(`/forums/post/${response.title}/${post.id}`);
+                navigate(`/forums/post/${response.title}/?postNum=${post.id}&page=1`);
                 setIsPosting(false);
             },
             onError: () => {

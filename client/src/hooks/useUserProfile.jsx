@@ -10,7 +10,8 @@ const profileService = new ProfileService(httpClient);
 export function useUserProfile(nickname) {
     return useQuery(["user-profile",nickname],()=>profileService.getUserProfile(nickname),         
                                                     {
-                                                        staleTime: Infinity,
+                                                        staleTime: 0,
+                                                        refetchOnWindowFocus: false,
                                                         refetchOnMount: true,
                                                         onSuccess: () => {console.log("Fetched!")}
                                                     })    

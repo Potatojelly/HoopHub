@@ -7,15 +7,20 @@ import { useActivityContext } from '../context/ActivityContext';
 
 const COMMENTSPERPAGE = 5;
 export default function ActivityPost({postService}) {
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const postNum = parseInt(searchParams.get("postNum"));
     const {state:comment} = useLocation();
-    const {selectedPostID} = usePostContext();
+    // const {selectedPostID} = usePostContext();
     const {setCommentType,setCommentID,setCommentPage} = useActivityContext();
     useEffect(()=> {
         if(comment) {
             setCommentType(comment.type);
             setCommentID(comment.id);
-            postService.getTargetCommentNumber(selectedPostID,comment.id)
-            .then((res)=>setCommentPage(Math.ceil(res.comment_number/COMMENTSPERPAGE)));
+            postService.getTargetCommentNumber(postNum,comment.id)
+            .then((res)=>{
+                console.log(Math.ceil(res.comment_number/COMMENTSPERPAGE));
+                setCommentPage(Math.ceil(res.comment_number/COMMENTSPERPAGE))});
         }
     },[])
 

@@ -34,7 +34,7 @@ export default function ActivityComments({userNickname}) {
             if(selectedCard) setPageInfo(data.total_comments,Math.ceil(selectedCard/COMMENTSPERPAGE));
             else setPageInfo(data.total_comments,currentPage);
         } 
-    },[data,currentPage,selectedCard,setPageInfo])
+    },[data])
 
     const customHandlePrevious = () => {
         handlePrevious(setCurrentPage);

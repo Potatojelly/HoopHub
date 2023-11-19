@@ -21,8 +21,6 @@ export default function UserSearch() {
     const [chatName,setChatName] = useState("");
     const [participants,setParticipants] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
-
-    // const [error,setError] = useState("");
     const [chatNameError,setChatNameError] = useState("");
 
     const [selectedUser,setSelectedUser] = useState(false);
@@ -38,21 +36,6 @@ export default function UserSearch() {
         const term = e.target.value;
         setSearchTerm(term);
     }
-
-    // async function handleSearch(e) {
-    //     const term = e.target.value;
-    //     setSearchTerm(term);
-
-    //     if (term !== "" && !isFetched) {
-    //         searchService.searchUser(term)
-    //             .then((result)=>{
-    //                 setUsers(result.data);
-    //                 setError("");
-    //                 setFetched(true);
-    //             })
-    //             .catch((error)=>{setError(error)})
-    //     }
-    // }
 
     const handleChatName = (e) => {
         setChatName(e.target.value);
@@ -81,7 +64,7 @@ export default function UserSearch() {
 
         if(participants.length === 1) {
             const checkChatRoom = chatRooms.find((chatRoom)=>{
-                if(chatRoom.isGroupChat) return;
+                if(chatRoom.isGroupChat) return false;
                 return chatRoom.users.find((user)=>user.nickname === participants[0].nickname)
             })
             if(checkChatRoom) {

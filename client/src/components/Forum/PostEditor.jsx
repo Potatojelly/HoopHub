@@ -13,7 +13,7 @@ import Alarm from '../Alarm/Alarm';
 
 Quill.register('modules/ImageResize', ImageResize);
 
-export default function PostEditor({post,handleEdit}) {
+export default function PostEditor({post,page,handleEdit}) {
     const [title, setTitle] = useState("");
     const queryClient = useQueryClient();
     const [isError,setIsError] = useState(false);
@@ -79,7 +79,8 @@ export default function PostEditor({post,handleEdit}) {
                 handleEdit();
                 if(response.success === true) {
                     queryClient.invalidateQueries(['post', post.id]);
-                    navigate(`/forums/post/${response.title}/${post.id}`);
+                    queryClient.invalidateQueries(['posts']);
+                    navigate(`/forums/post/${response.title}/?postNum=${post.id}&page=${page}`);
                 }
             },
             onError: () => {

@@ -14,6 +14,7 @@ export default function ChatCard({chatRoom}) {
     const {chatRoomID,selectChatRoom,setSelectedChatRoom} = useChatRoomID();
     const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
     const navigate = useNavigate();
+    
     useEffect(()=>{
         if(chatRoom.chatName === null) {
             if(chatRoom.users.length > 1) {
@@ -37,7 +38,7 @@ export default function ChatCard({chatRoom}) {
                 setOpponent([...opponents]);
             });
         }
-    },[chatRoom,profileData?.nickname])
+    },[chatRoom])
 
     const enterChatRoom = () => {
         if(chatRoomID) {

@@ -47,7 +47,7 @@ export default function EditProfile() {
 
     useEffect(() => {
         if(profileData?.statusMsg) setMsg(profileData.statusMsg);
-    },[profileData?.statusMsg])
+    },[profileData])
 
     return (
         <div className={styles.editContainer}>

@@ -11,10 +11,10 @@ import { useMyProfileData } from '../../hooks/useMyProfileData';
 import useCommentPage from '../../hooks/useCommentsData';
 import LoadingSpinner from '../Loader/LoadingSpinner';
 
-export default function Comments() {
-    const {selectedPostID} = usePostContext();
+export default function Comments({selectedPostID}) {
+    // const {selectedPostID} = usePostContext();
     const {selectedCommentPage} = useActivityContext();
-    const [currentPage, setCurrentPage] = useState(selectedCommentPage ? selectedCommentPage : 1);
+    const [currentPage, setCurrentPage] = useState(1);
     const queryClient = useQueryClient();
     const {data: profileData} = useMyProfileData();
     const {mutate: createComment} = useCreateComment();
@@ -44,6 +44,10 @@ export default function Comments() {
             setPageInfo(data.total_comments,currentPage);
         } 
     },[data])
+
+    useEffect(() => {
+        if(selectedCommentPage) setCurrentPage(selectedCommentPage);
+    }, [selectedCommentPage]);
 
     const onReply = (index) => {
         if (openReplyIndex === index) {

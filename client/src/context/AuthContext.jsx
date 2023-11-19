@@ -25,7 +25,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 })
                 .catch((err)=>console.log(err));
         }
-    },[authErrorEventBus,authService, loading]);
+    },[authErrorEventBus,authService]);
 
     useEffect(()=>{
         if(!user && authErrorEventBus) {
@@ -38,7 +38,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 navigate("/"); 
             })
         }
-    },[authErrorEventBus,navigate,user]);
+    },[authErrorEventBus]);
 
     const signup = useCallback(
         async (email, nickname, username, password) =>

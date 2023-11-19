@@ -4,7 +4,6 @@ import {TbMessageCirclePlus} from "react-icons/tb"
 import ChatCard from './ChatCard';
 import {useChatRoomID } from '../../context/ChatRoomContext';
 import {useChatRoomsData, useSaveLastReadMessage} from '../../hooks/useChatRoomData';
-// import { useUserSearch } from '../../context/UserSearchContext';
 import {useNavigate} from "react-router-dom";
 import { useSocket } from '../../context/SocketContext';
 import {useQueryClient} from '@tanstack/react-query';
@@ -14,7 +13,6 @@ export default function ChatRoom() {
     const {socket} = useSocket();
     const queryClient = useQueryClient();
     const {chatRoomID,selectChatRoom,setSelectedChatRoom} = useChatRoomID();
-    // const {setUserSearch} = useUserSearch();
     const navigate = useNavigate();
     const {data:chatRooms, isSuccess} = useChatRoomsData();
     const {data:profileData} = useMyProfileData();

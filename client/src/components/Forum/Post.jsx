@@ -7,38 +7,33 @@ import {useQueryClient} from "@tanstack/react-query";
 import {BsFillEyeFill} from "react-icons/bs";
 import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
-import {useNavigate, useParams } from "react-router-dom";
+import {useNavigate,useLocation  } from "react-router-dom";
 import PostEditor from './PostEditor';
-import { usePostContext } from '../../context/PostContext';
-import { useDeletePost, usePostData } from '../../hooks/usePostsData';
+import { useDeletePost, usePostData, useUpdatePostView } from '../../hooks/usePostsData';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import LoadingSpinner from '../Loader/LoadingSpinner';
+import { usePostContext } from '../../context/PostContext';
 
 
 export default function Post() {
-    const {postNum} = useParams();
-    const {setSelectedPage,setSelectedPostID,selectedPage,selectedPostID} = usePostContext();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const postNum = parseInt(searchParams.get("postNum"));
+    const page = parseInt(searchParams.get("page"));
+    const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
     const [isEdit,setIsEdit] = useState(false);
     const {data: profileData} = useMyProfileData();
-    const {data: postData,isFetching} = usePostData(parseInt(postNum));
+    const {data: postData, isFetching} = usePostData(postNum);
     const {mutate: deletePost} = useDeletePost();
+    const {mutate: updatePostView} = useUpdatePostView();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    console.log(postData);
 
     useEffect(()=>{
-        if(selectedPostID && selectedPage) {
-            console.log("?")
-            const postInfo = { selectedPage, selectedPostID};
-            localStorage.setItem('postInfo', JSON.stringify(postInfo));
-        } else {
-            const storedPostInfo = JSON.parse(localStorage.getItem('postInfo'));
-            console.log(storedPostInfo.selectedPage);
-            console.log(storedPostInfo.selectedPostID);
-            setSelectedPage(1);
-            setSelectedPostID(39);
+        if(postNum) {
+            updatePostView(postNum);
         }
-    },[])
+    },[postNum])
 
     const handleConfirm = (text) => {
         const result = window.confirm(text);
@@ -106,13 +101,13 @@ export default function Post() {
                         </span>
                     </div>
                 </div>
-                {selectedPostID && <Comments/>}
-                {/* <Comments setPost={setPost} postService={postService}/> */}
+                {postNum && <Comments selectedPostID={postNum}/>}
             </div>
         }
             {isEdit &&
-                <PostEditor post={postData.post} handleEdit={handleEdit}/>
+                <PostEditor post={postData.post} page={page} handleEdit={handleEdit}/>
             }
+
         </>
     );
 }

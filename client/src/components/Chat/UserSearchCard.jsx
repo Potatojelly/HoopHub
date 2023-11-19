@@ -10,7 +10,6 @@ export default function UserSearchCard({userID,imageURL,nickname,participants,se
             const filteredParticipants = participants.filter((participant)=>participant.id !== userID);
             setParticipants(filteredParticipants);
         }
-        console.log(participants);
     }
 
 

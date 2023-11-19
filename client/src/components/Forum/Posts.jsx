@@ -5,13 +5,16 @@ import { usePostPage, usePostsData  } from '../../hooks/usePostsData';
 import { usePostContext } from '../../context/PostContext';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../Loader/LoadingSpinner';
+import {useLocation  } from "react-router-dom";
 const POSTSPERPAGE = 5;
 
 function Posts({keyword}) {
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const page = parseInt(searchParams.get("page"));
     const {user} = useAuth();
     const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
-    const [currentPage, setCurrentPage] = useState(selectedPage ? selectedPage : 1);
-
+    const [currentPage, setCurrentPage] = useState(page ? page : 1);
     const {
         totalPage,
         startPage,
@@ -41,7 +44,7 @@ function Posts({keyword}) {
         if(!user) {
             setSelectedPage(null);
             setSelectedPostID(null);
-        } 
+        }
     },[])
 
     const handleSelection = (postID) => {
@@ -71,6 +74,7 @@ function Posts({keyword}) {
                         if(data.posts.length === index+1) return (<PostCard key={post.id}   
                                                                         id ={post.id}
                                                                         num={(currentPage-1)*POSTSPERPAGE+(index+1)} 
+                                                                        currentPage={currentPage}
                                                                         post={post} 
                                                                         handleSelection={handleSelection}
                                                                         keyword={keyword}
@@ -78,6 +82,7 @@ function Posts({keyword}) {
                         else return (<PostCard  key={post.id}
                                             id={post.id} 
                                             num={(currentPage-1)*5+(index+1)} 
+                                            currentPage={currentPage}
                                             handleSelection={handleSelection}
                                             post={post}
                                             keyword={keyword}
