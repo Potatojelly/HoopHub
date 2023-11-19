@@ -12,7 +12,7 @@ import { useCreatePost } from '../../hooks/usePostsData';
 Quill.register('modules/ImageResize', ImageResize);
 
 export default function PostCreator() {
-    const {setSelectedPostID} = usePostContext();
+    // const {setSelectedPostID} = usePostContext();
     const [isPosting,setIsPosting] = useState(false);
     const [isError,setIsError] = useState(false);
     const [title, setTitle] = useState("");
@@ -67,7 +67,7 @@ export default function PostCreator() {
         createPost(formData,{
             onSuccess: (response) => {
                 const post = {...response}
-                setSelectedPostID(post.id);
+                // setSelectedPostID(post.id);
                 navigate(`/forums/post/${response.title}/?postNum=${post.id}&page=1`);
                 setIsPosting(false);
             },

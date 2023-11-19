@@ -118,6 +118,7 @@ export default function Comments({selectedPostID}) {
                     <CommentCard key={index}
                                 index={(currentPage-1)*5+(index+1)} 
                                 comment={comment} 
+                                selectedPostID={selectedPostID}
                                 hasReply={(index !== data.comments.length-1 && comment.id === data.comments[index+1].reply_parent_id) ? true : false}
                                 openReplyIndex={openReplyIndex}
                                 handleReplyClick={() => onReply((currentPage-1)*5+(index+1))}
@@ -126,6 +127,7 @@ export default function Comments({selectedPostID}) {
                                 index={(currentPage-1)*5+(index+1)}
                                 reply={comment} 
                                 commentID={comment.reply_parent_id} 
+                                selectedPostID={selectedPostID}
                                 isFirst={(index !==0 && data.comments[index-1].type === "comment") ? true : false}
                                 openReplyIndex={openReplyIndex}
                                 handleReplyClick={() => onReply((currentPage-1)*5+(index+1))}/>

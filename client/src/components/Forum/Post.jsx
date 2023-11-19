@@ -20,7 +20,7 @@ export default function Post() {
     const searchParams = new URLSearchParams(location.search);
     const postNum = parseInt(searchParams.get("postNum"));
     const page = parseInt(searchParams.get("page"));
-    const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
+    // const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
     const [isEdit,setIsEdit] = useState(false);
     const {data: profileData} = useMyProfileData();
     const {data: postData, isFetching} = usePostData(postNum);
@@ -38,9 +38,9 @@ export default function Post() {
     const handleConfirm = (text) => {
         const result = window.confirm(text);
         if(result) {
-            deletePost(selectedPostID,{
+            deletePost(postNum,{
                 onSuccess: () => {
-                    queryClient.invalidateQueries(['posts', selectedPage]);
+                    queryClient.invalidateQueries(['posts', page]);
                     navigate('/', {replace: true} );
                 }
             })

@@ -164,5 +164,6 @@
 }
 
 .targetCard {
-    border: 1px ridge var(--color-base);
+    background-color: var(--color-base);
+    filter: brightness(1.2);
 }

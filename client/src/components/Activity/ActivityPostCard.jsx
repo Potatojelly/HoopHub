@@ -6,7 +6,7 @@ import { usePostContext } from '../../context/PostContext';
 
 export default function ActivityPostCard({post,num,selectedCard,setSelectedCard}) {
     const navigate = useNavigate();
-    const {setSelectedPage,setSelectedPostID} =usePostContext();
+    // const {setSelectedPage,setSelectedPostID} =usePostContext();
     const navigateToPost = () => {
         const state = {type:1, my_posts: num};
         const title = post.title;

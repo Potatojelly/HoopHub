@@ -16,7 +16,7 @@ export default function PostCard({id, num, post, currentPage, handleSelection, k
     const postNum = parseInt(searchParams.get("postNum"));
     const page = parseInt(searchParams.get("page"));
     const {user} = useAuth();
-    const {selectedPage,selectedPostID} = usePostContext();
+    // const {selectedPage,selectedPostID} = usePostContext();
     const [highlightedTitle,setHighlightedTitle] = useState("");
     // const {mutate: updatePostView} = useUpdatePostView();
     const navigate = useNavigate();

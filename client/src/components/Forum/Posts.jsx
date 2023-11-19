@@ -11,9 +11,10 @@ const POSTSPERPAGE = 5;
 function Posts({keyword}) {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
+    const postNum = parseInt(searchParams.get("postNum"));
     const page = parseInt(searchParams.get("page"));
     const {user} = useAuth();
-    const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
+    // const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
     const [currentPage, setCurrentPage] = useState(page ? page : 1);
     const {
         totalPage,
@@ -35,34 +36,35 @@ function Posts({keyword}) {
 
     useEffect(()=>{
         if(data) {
-            if(selectedPostID) setPageInfo(data.total_posts,selectedPage);
-            else setPageInfo(data.total_posts,currentPage);
+            // if(postNum) setPageInfo(data.total_posts,page);
+            // else setPageInfo(data.total_posts,currentPage);
+            setPageInfo(data.total_posts,currentPage);
         } 
     },[data])
 
     useEffect(()=>{
         if(!user) {
-            setSelectedPage(null);
-            setSelectedPostID(null);
+            // setSelectedPage(null);
+            // setSelectedPostID(null);
         }
     },[])
 
     const handleSelection = (postID) => {
-        setSelectedPostID(postID);
-        setSelectedPage(currentPage);
+        // setSelectedPostID(postID);
+        // setSelectedPage(currentPage);
     }
 
     const customHandlePrevious = () => {
-        handlePrevious(setCurrentPage,setSelectedPage);
+        handlePrevious(setCurrentPage);
     }
 
     const customHandleNext = () => {
-        handleNext(setCurrentPage,setSelectedPage);
+        handleNext(setCurrentPage);
 
     }
 
     const customHandlePage = (startPage,index) => {
-        handlePage(startPage,index,setCurrentPage,setSelectedPage)
+        handlePage(startPage,index,setCurrentPage)
     }
     return (
         <div className={styles.posts}>

@@ -7,8 +7,8 @@ import { usePostContext } from '../../context/PostContext';
 import { useCreateReply } from '../../hooks/useCommentsData';
 import Alarm from '../Alarm/Alarm';
 
-const CreateReply = ({author, commentID, handleReplyClick, custom})=> {
-    const {selectedPostID} = usePostContext();
+const CreateReply = ({author, commentID, selectedPostID, handleReplyClick, custom})=> {
+    // const {selectedPostID} = usePostContext();
     const queryClient = useQueryClient();
     const [isError,setIsError] = useState(false);
     const [reply,setReply] = useState(()=>author ? author : "");

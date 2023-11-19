@@ -54,21 +54,21 @@ export function usePostPage(keyword) {
     const handlePrevious = (setCurrentPage,setSelectedPage) => {
         const page = startPage-DISPLAYPAGENUM
         setCurrentPage(page)
-        setSelectedPage(page)
+        // setSelectedPage(page)
         queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
     const handleNext = (setCurrentPage,setSelectedPage) => {
         const page = startPage+DISPLAYPAGENUM
         setCurrentPage(page)
-        setSelectedPage(page)
+        // setSelectedPage(page)
         queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
     const handlePage = (startPage,index,setCurrentPage,setSelectedPage) => {
         const page = startPage + index;
         setCurrentPage(page);
-        setSelectedPage(page);
+        // setSelectedPage(page);
         queryClient.invalidateQueries(['posts', keyword, page]);
     }
 

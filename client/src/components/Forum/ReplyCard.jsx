@@ -15,9 +15,9 @@ import { useDeleteReply, useUpdateReply } from '../../hooks/useCommentsData';
 import Alarm from '../Alarm/Alarm';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
-export default function ReplyCard ({index,reply,handleReplyClick,openReplyIndex,commentID,isFirst})  {
+export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,openReplyIndex,commentID,isFirst})  {
     const queryClient = useQueryClient();
-    const {selectedPostID} = usePostContext();
+    // const {selectedPostID} = usePostContext();
     const {selectedCommentType,setCommentID, selectedCommentID} = useActivityContext();
     const [isEdit,setIsEdit] = useState(false);
     const [isError,setIsError] = useState(false);

@@ -26,7 +26,7 @@ export default function ActivityPost({postService}) {
 
     return (
         <div className={styles.background}>
-            <Post postService={postService}/>
+            <Post />
         </div>
     );
 }

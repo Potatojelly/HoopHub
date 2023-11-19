@@ -12,10 +12,10 @@ import { useDeleteComment, useUpdateComment } from '../../hooks/useCommentsData'
 import Alarm from '../Alarm/Alarm';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
-const CommentCard = ({index,comment,handleReplyClick,openReplyIndex,hasReply}) => {
+const CommentCard = ({index,comment,selectedPostID,handleReplyClick,openReplyIndex,hasReply}) => {
     const queryClient = useQueryClient();
     const {selectedCommentType,setCommentID,selectedCommentID} = useActivityContext();
-    const {selectedPostID} = usePostContext();
+    // const {selectedPostID} = usePostContext();
     const [targetCardEffect,setTargetCardEffect] = useState(selectedCommentType === "comment" && comment.id===selectedCommentID ? true : false);
     const [isError,setIsError] = useState(false);
     const [isEdit,setIsEdit] = useState(false);
@@ -119,6 +119,7 @@ const CommentCard = ({index,comment,handleReplyClick,openReplyIndex,hasReply}) =
                 </div>
                 {openReplyIndex === index && 
                 <CreateReply commentID={comment.id} 
+                            selectedPostID={selectedPostID}
                             handleReplyClick={handleReplyClick}/> 
                 }
             </li>}
