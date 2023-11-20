@@ -7,7 +7,7 @@ const tokenRef  = createRef();
 
 export function AuthProvider({authService, authErrorEventBus, children}) {
     const [user,setUser] = useState(undefined);
-    const [loading, setLoading] = useState(true);
+    const [isLoading,setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(()=>{
@@ -20,12 +20,13 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .then((user)=>{
                     if(user?.token) {
                         setUser({token:user.token, username: user.username});
-                        setLoading(!loading);
+                        setIsLoading(false);
                     }
                 })
                 .catch((err)=>console.log(err));
         }
-    },[authErrorEventBus,authService]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[authErrorEventBus]);
 
     useEffect(()=>{
         if(!user && authErrorEventBus) {
@@ -38,6 +39,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 navigate("/"); 
             })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[authErrorEventBus]);
 
     const signup = useCallback(
@@ -52,8 +54,9 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .login(username,password)
                 .then((user)=>{
                     setUser({token:user.token, username: user.username});
-                    setLoading(!loading);
+                    setIsLoading(false);
                 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     ,[authService]);
 
     const logout = useCallback(
@@ -62,8 +65,9 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .logout()
                 .then(()=>{
                     setUser(undefined);
-                    setLoading(!loading);
+                    setIsLoading(true);
                 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     ,[authService]);
 
     const resetPassword = useCallback(
@@ -76,13 +80,13 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
     const context = useMemo(
         ()=>({
             user,
-            loading,
+            isLoading,
             signup,
             login,
             logout,
             resetPassword,
             setUser
-        }),[user,loading,signup,login,logout,resetPassword])
+        }),[user,isLoading,signup,login,logout,resetPassword])
 
     return (
         <AuthContext.Provider value={context}>

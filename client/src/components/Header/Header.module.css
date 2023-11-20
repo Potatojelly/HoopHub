@@ -51,6 +51,10 @@
     margin-right: 1rem;
 }
 
+.service:hover {
+    color: var(--color-royal-blue);
+}
+
 .headerUser {
     display:flex;
     justify-content: center;

@@ -7,7 +7,6 @@ import NotFound from './pages/NotFound';
 import Forums from './pages/Forums';
 import People from './pages/People';
 import Messages from './pages/Messages';
-import FindChatRooms from './pages/FindChatRooms';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import HttpClient from './network/http';
@@ -23,18 +22,17 @@ import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import PostCreate from './pages/PostCreate';
 import PostService from './service/post';
-import { SelectedCardProvider } from './context/SelectedCardContext';
 import { ChatRoomProvider } from './context/ChatRoomContext';
 import ChatScreen from './components/Chat/ChatScreen';
 import UserSearch from './components/Chat/UserSearch';
 import ChatInbox from './components/Chat/ChatInbox';
 import ViewPost from './pages/ViewPost';
-import { PostProvider } from './context/PostContext';
 import { ActivityProvider } from './context/ActivityContext';
 import { SocketProvider } from './context/SocketContext';
 import ActivityLog from './pages/ActivityLog';
 import ActivityPost from './pages/ActivityPost';
 import UserActivityLog from './pages/UserActivityLog';
+import ChatService from './service/chat';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -44,6 +42,7 @@ const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const authService = new AuthService(httpClient);
 const retrieveService = new RetrieveService(httpClient);
 const postService = new PostService(httpClient);
+const chatService = new ChatService(httpClient);
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -52,9 +51,7 @@ const router = createBrowserRouter([
     element: (<QueryClientProvider client={queryClient}>
                 <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
                     <ChatRoomProvider>
-                      <PostProvider>
                         <App/>
-                      </PostProvider>
                     </ChatRoomProvider>
                 </AuthProvider>
                 <ReactQueryDevtools initialIsOpen={true}/>
@@ -95,15 +92,9 @@ const router = createBrowserRouter([
           },
           {
             path:":title/:chatRoomID",
-            element: (<ChatScreen/>)
+            element: (<ChatScreen chatService={chatService}/>)
           }
       ]
-      },
-      {
-        path:"/find-chat-rooms", 
-        element: (<ProtectedRoute>
-                    <FindChatRooms/>
-                  </ProtectedRoute>)
       },
       {
         path:"/edit-profile", 
@@ -138,27 +129,21 @@ const router = createBrowserRouter([
       {
         path:"/manage-my-activity", 
         element: (<ProtectedRoute>
-                    <SelectedCardProvider>
-                        <ActivityLog />
-                    </SelectedCardProvider>
+                    <ActivityLog />
                   </ProtectedRoute>),
       },
       {
         path:"/manage-my-activity/my-post/:title/", 
         element: (<ProtectedRoute>
-                    <SelectedCardProvider>
                       <ActivityProvider>
                         <ActivityPost postService={postService}/>
                       </ActivityProvider>
-                    </SelectedCardProvider>
                   </ProtectedRoute>)
       },
       {
         path:"/view-user-activity/:userNickname", 
         element: (<ProtectedRoute>
-                    <SelectedCardProvider>
                       <UserActivityLog />
-                    </SelectedCardProvider>
                   </ProtectedRoute>),
       },
     ]
@@ -166,9 +151,7 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element:(<AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
-              <PostProvider>
                 <Login/>
-              </PostProvider>
             </AuthProvider>)
   },
   {
@@ -179,15 +162,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/forgot-username",
-    element: (<PostProvider>
-                <ForgotUsername retrieveService={retrieveService}/>
-              </PostProvider>)
+    element: <ForgotUsername retrieveService={retrieveService}/>
+
   },
   {
     path: "/forgot-password",
-    element:(<PostProvider>
-              <ForgotPassword retrieveService={retrieveService}/>
-            </PostProvider>)
+    element:<ForgotPassword retrieveService={retrieveService}/>
   }
 ])
 

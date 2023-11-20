@@ -17,13 +17,14 @@ import { simplifyDateForChatRoom, simplifyTimeForMsg } from '../../date';
 import {AiFillEdit} from "react-icons/ai";
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
-export default function ChatScreen() {
+export default function ChatScreen({chatService}) {
     const [enable,setEnable] = useState(true);
     const [editChatName,setEditChatName] = useState(false);
     const [chatName,setChatName] = useState("");
     const queryClient = useQueryClient();
     const {socket} = useSocket();
     const {chatRoomID,selectChatRoom,setSelectedChatRoom,selectedChatRoom} = useChatRoomID();
+
     const navigate = useNavigate();
     const {data:messages,
             isFetching,
@@ -35,7 +36,7 @@ export default function ChatScreen() {
     const {mutate:kickoutUser} = useKickoutUser();
     const {mutate:changeChatName} = useChatName();
     const {mutate:inviteUsers} = useInviteUsers();
-    const {mutate:sendMessage} = useSendMessage();
+    const {mutateAsync:sendMessage} = useSendMessage();
     const {mutate:sendImageMessage} = useSendImageMessage();
     const textarea = useRef();
     const observer = useRef();
@@ -282,31 +283,65 @@ export default function ChatScreen() {
     
         addNewMessage(newMessage);
 
-        sendMessage({content:text,chatRoomID,init}, {
-            onSuccess: (res) => {
-                newMessage.isLoading = false;
-                const updatedLastestMessage = {
-                    content: newMessage.content,
-                    createdAt: newMessage.createdAt,
-                    id: newMessage.id,
-                    image: newMessage.image,
-                };
-                const updatedChatRooms = chatRooms.map((chatRoom) => {
-                    if (chatRoom.id === selectedChatRoom.id) return {
-                        ...chatRoom,
-                        latestMessage: updatedLastestMessage,
-                        unReadMessageCount: 0
+        chatService.sendMessage(text,chatRoomID,init)
+            .then((res)=>{
+                if(res){
+                    console.log(res);
+                    console.log("start");
+                    newMessage.isLoading = false;
+                    const updatedLastestMessage = {
+                        content: newMessage.content,
+                        createdAt: newMessage.createdAt,
+                        id: newMessage.id,
+                        image: newMessage.image,
                     };
-                    else return chatRoom;
-                });
-                updateChatRoomsData(updatedChatRooms);    
-                socket.emit("new message", newMessage);
-            },
-            onError: () => {
+                    const updatedChatRooms = chatRooms.map((chatRoom) => {
+                        if (chatRoom.id === selectedChatRoom.id) return {
+                            ...chatRoom,
+                            latestMessage: updatedLastestMessage,
+                            unReadMessageCount: 0
+                        };
+                        else return chatRoom;
+                    });
+                    updateChatRoomsData(updatedChatRooms);    
+                    socket.emit("new message", newMessage);
+                    console.log("end");
+                }
+            }).catch( (err) => {
                 newMessage.isLoading = false;
                 newMessage.error = true;
-            }
-        })
+            })
+
+        // await sendMessage({content:text,chatRoomID,init}, {
+        //     onSuccess: (res) => {
+        //         if(res){
+        //             console.log(res);
+        //             console.log("start");
+        //             newMessage.isLoading = false;
+        //             const updatedLastestMessage = {
+        //                 content: newMessage.content,
+        //                 createdAt: newMessage.createdAt,
+        //                 id: newMessage.id,
+        //                 image: newMessage.image,
+        //             };
+        //             const updatedChatRooms = chatRooms.map((chatRoom) => {
+        //                 if (chatRoom.id === selectedChatRoom.id) return {
+        //                     ...chatRoom,
+        //                     latestMessage: updatedLastestMessage,
+        //                     unReadMessageCount: 0
+        //                 };
+        //                 else return chatRoom;
+        //             });
+        //             updateChatRoomsData(updatedChatRooms);    
+        //             socket.emit("new message", newMessage);
+        //             console.log("end");
+        //         }
+        //     },
+        //     onError: () => {
+        //         newMessage.isLoading = false;
+        //         newMessage.error = true;
+        //     }
+        // })
         moveToBottom();
         setText("");
     };
@@ -327,7 +362,6 @@ export default function ChatScreen() {
         }
     }
 
-
     const lastElementRef = useCallback((node)=>{
         if(isFetching) return;
         if(observer.current) observer.current.disconnect();
@@ -340,7 +374,7 @@ export default function ChatScreen() {
             threshold: 0.5,
         });
         if(node) observer.current.observe(node);
-    },[fetchPreviousPage,isFetching])
+    },[fetchPreviousPage,isFetching,initScrollTop,hasPreviousPage])
 
     const imageHandler = () => {
         console.log(queryClient.getQueryData(["direct-chatroom-message",selectedChatRoom.id]));
@@ -417,17 +451,19 @@ export default function ChatScreen() {
             })
             updateChatRoomsData(updatedChatRooms);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[chatRoomID,isSuccess,socket])
 
     useEffect(() => {
         if(messages) localStorage.setItem('currentChatRoom', JSON.stringify(selectedChatRoom));
         if(!initScrollTop) moveToBottom();
-    }, [messages]);
+    }, [messages,selectedChatRoom,initScrollTop]);
 
     useEffect(() => {
         if(selectedChatRoom && selectedChatRoom.users.length === 1) setEnable(false);
         else setEnable(true);
         setInitScrollTop(null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedChatRoom]);
 
     useEffect(() => {
@@ -442,6 +478,7 @@ export default function ChatScreen() {
                 socket.off("room message received");
             }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket]);
 
     useEffect(()=>{
@@ -449,8 +486,8 @@ export default function ChatScreen() {
             const currentChatRoom = JSON.parse(localStorage.getItem('currentChatRoom'));
             selectChatRoom(currentChatRoom.id);
             setSelectedChatRoom(currentChatRoom);
-            console.log(currentChatRoom);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
 

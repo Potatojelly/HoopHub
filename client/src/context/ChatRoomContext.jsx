@@ -10,7 +10,6 @@ export const ChatRoomProvider = ({children}) => {
         setChatRoomID(chatRoomID);
     };
 
-
     const context = useMemo(()=>{
         return {chatRoomID,selectChatRoom,selectedChatRoom,setSelectedChatRoom};
     },[chatRoomID,selectedChatRoom])

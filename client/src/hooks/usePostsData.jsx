@@ -88,9 +88,6 @@ export function usePostPage(keyword) {
 export function usePostsData(currentPage,keyword) {
     return useQuery(["posts", keyword, currentPage],()=>postService.getPosts(keyword, currentPage, POSTSPERPAGE),
                                                                     {
-                                                                        onSuccess: (res) => {
-                                                                            console.log("hi")
-                                                                        },
                                                                         staleTime:Infinity,
                                                                         refetchOnMount: true, 
                                                                         refetchOnWindowFocus: false

@@ -83,10 +83,6 @@ export default function useCommentPage() {
 export function useCommentsData(currentPage,postID) {
     return useQuery(["comments", postID, currentPage],()=>postService.getComments(postID,currentPage,COMMENTSPERPAGE),
                                                                                         {
-                                                                                            onSuccess: (result) => {
-                                                                                                console.log(result);
-                                                                                            },
-                                                                                            keepPreviousData:true,
                                                                                             refecthOnMount: true, 
                                                                                             refetchOnWindowFocus: false
                                                                                         });

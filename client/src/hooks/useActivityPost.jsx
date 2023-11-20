@@ -1,6 +1,6 @@
 import {useQueryClient} from "@tanstack/react-query";
 import {useQuery} from '@tanstack/react-query';
-import { getAuthErrorEventBus} from '../context/AuthContext';
+import { getAuthErrorEventBus, useAuth} from '../context/AuthContext';
 import { useState } from 'react';
 import HttpClient from '../network/http';
 import PostService from '../service/post';
@@ -81,13 +81,11 @@ export default function useActivityPostPage() {
 }
 
 export function useUserPostsData(nickname,currentPage) {
+    const {user} = useAuth();
     return useQuery(["user-posts",nickname,currentPage],()=>postService.getUserPosts(nickname,currentPage,POSTSPERPAGE),
                                                                     {
-                                                                        onSuccess: (result) => {
-                                                                            console.log(result);
-                                                                        },
-                                                                        keepPreviousData:true,
                                                                         refecthOnMount: true, 
-                                                                        refetchOnWindowFocus: false
+                                                                        refetchOnWindowFocus: false,
+                                                                        enabled: !!user && !!nickname,
                                                                     });
 }

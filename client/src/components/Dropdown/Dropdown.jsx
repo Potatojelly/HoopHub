@@ -19,7 +19,7 @@ export default function Dropdown({myStuff,showMyStuff}) {
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
-    }, []);
+    }, [showMyStuff]);
 
     const directToEditProfile = () =>{
         showMyStuff();

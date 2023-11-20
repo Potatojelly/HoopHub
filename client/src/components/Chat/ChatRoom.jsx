@@ -8,21 +8,22 @@ import {useNavigate} from "react-router-dom";
 import { useSocket } from '../../context/SocketContext';
 import {useQueryClient} from '@tanstack/react-query';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
+import LoadingSpinner from '../Loader/LoadingSpinner';
 
 export default function ChatRoom() {
     const {socket} = useSocket();
     const queryClient = useQueryClient();
     const {chatRoomID,selectChatRoom,setSelectedChatRoom} = useChatRoomID();
     const navigate = useNavigate();
-    const {data:chatRooms, isSuccess} = useChatRoomsData();
+    const {data:chatRooms, isFetching, isSuccess} = useChatRoomsData();
     const {data:profileData} = useMyProfileData();
     const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
+    console.log("testing!");
+    // useEffect(()=>{
+    //     queryClient.invalidateQueries(["direct-chatrooms"]);
+    // },[])
 
-    useEffect(()=>{
-        queryClient.invalidateQueries(["direct-chatrooms"]);
-    },[])
-
-    const updateSelectedChatRoom = (newMessageReceived) => {
+    async function updateSelectedChatRoom (newMessageReceived) {
         if(queryClient.getQueryData(["direct-chatroom-message",newMessageReceived.chat.id])) {
             if(newMessageReceived.chat.id === chatRoomID) saveLastReadMessage(chatRoomID);
             queryClient.setQueryData(["direct-chatroom-message",newMessageReceived.chat.id], (oldData)=>{
@@ -40,7 +41,8 @@ export default function ChatRoom() {
         }        
     }
 
-    const newMessage = (newMessageReceived) => {
+    async function newMessage (newMessageReceived) {
+        console.log(newMessageReceived.content);
         const updatedLastestMessage = {content:newMessageReceived.content,
                                         createdAt:newMessageReceived.createdAt,
                                         id:newMessageReceived.id,
@@ -206,7 +208,8 @@ export default function ChatRoom() {
 
     useEffect(()=>{
         if(socket && isSuccess) {
-            socket.on("new message received",(message)=>{newMessage(message)});
+            console.log("chatRoom!");
+            socket.on("new message received",async (message)=>{console.log(message);newMessage(message)});
             socket.on("new chat message received",(message)=>{newChatRoomMessage(message)});
             socket.on("exit message received",(message)=>{exitMessage(message)});
             socket.on("kickout message received",(message)=>{kickoutMessage(message)});
@@ -224,10 +227,10 @@ export default function ChatRoom() {
                 socket.off("change chat name message received")
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[socket,isSuccess,chatRoomID]); 
 
     const searchUser = () => {
-        // setUserSearch(true); 
         selectChatRoom(null);
         setSelectedChatRoom(null);
         navigate("/messages/search-user", {state : chatRooms});
@@ -242,8 +245,8 @@ export default function ChatRoom() {
                 </button>
             </div>
             <div className={styles.listsContainer}>
+                {isFetching && <div className={styles.loadingSpinner}><LoadingSpinner/></div>}
                 <ul className={styles.directMsgList}>
-                    {/* <div className={styles.listTitle}>Chat List</div> */}
                     {chatRooms && chatRooms.map((chatRoom)=><ChatCard key={chatRoom.id} 
                                                                     chatRoom={chatRoom}/>)}
                 </ul>

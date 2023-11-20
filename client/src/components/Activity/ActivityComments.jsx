@@ -7,34 +7,30 @@ import Alarm from '../Alarm/Alarm';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 const COMMENTSPERPAGE = 10;
+
 export default function ActivityComments({userNickname}) {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_comments ? window.history.state.my_comments : null);
     const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/COMMENTSPERPAGE) : 1);
     const {data:profileData} = useMyProfileData();
-    const {
-        totalPage,
-        startPage,
-        endPage,
-        hasPrev,
-        hasNext,
-        handlePrevious,
-        handleNext,
-        handlePage,
-        setPageInfo
-    } = useActivityCommentPage();
-
-    const {
-        data,
-        isFetching,
-        isError,
-    } = useUserCommentsData(userNickname ? userNickname : profileData?.nickname,currentPage);
+    const {totalPage,
+            startPage,
+            endPage,
+            hasPrev,
+            hasNext,
+            handlePrevious,
+            handleNext,
+            handlePage,
+            setPageInfo} = useActivityCommentPage();
+    const {data,
+            isFetching,
+            isError} = useUserCommentsData(userNickname ? userNickname : profileData?.nickname, currentPage);
 
     useEffect(()=>{
         if(data) {
             if(selectedCard) setPageInfo(data.total_comments,Math.ceil(selectedCard/COMMENTSPERPAGE));
             else setPageInfo(data.total_comments,currentPage);
         } 
-    },[data])
+    },[data, currentPage, selectedCard, setPageInfo])
 
     const customHandlePrevious = () => {
         handlePrevious(setCurrentPage);

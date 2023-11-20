@@ -38,7 +38,7 @@ export default function UserInvite({setInvitation,participants,handleInvitation}
             setSearchResults([]);
             setSelectedUser(null);
         }
-    }, [users,searchTerm]);
+    }, [users,searchTerm,participants]);
 
     return (
         <div className={styles.userInvitationContainer}>

@@ -4,7 +4,7 @@
     width: 300px;
     border: 2px solid var(--color-border);
     overflow-y:auto;
-    height: 95vh;
+    height: 100%;
 }
 
 .titleContainer {

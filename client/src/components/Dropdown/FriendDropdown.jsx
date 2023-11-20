@@ -5,7 +5,7 @@ import { useDeleteFriend} from '../../hooks/useFriendData';
 export default function FriendDropdown({position,nickname,setDeleted,setDeletedMsg}) {
     const {mutate: deleteFriend} = useDeleteFriend()
 
-    const handleDelete = (e) => {
+    const handleDelete = () => {
         deleteFriend(nickname,
             {
                 onSuccess: () => {

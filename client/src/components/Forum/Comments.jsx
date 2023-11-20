@@ -1,53 +1,42 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Comments.module.css'
 import CommentCard from './CommentCard';
 import {v4 as uuidv4} from "uuid";
 import { useCommentsData, useCreateComment } from '../../hooks/useCommentsData';
 import ReplyCard from './ReplyCard';
 import {useQueryClient} from "@tanstack/react-query";
-import { usePostContext } from '../../context/PostContext';
 import { useActivityContext } from '../../context/ActivityContext';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import useCommentPage from '../../hooks/useCommentsData';
 import LoadingSpinner from '../Loader/LoadingSpinner';
 
 export default function Comments({selectedPostID}) {
-    // const {selectedPostID} = usePostContext();
-    const {selectedCommentPage} = useActivityContext();
-    const [currentPage, setCurrentPage] = useState(1);
     const queryClient = useQueryClient();
-    const {data: profileData} = useMyProfileData();
-    const {mutate: createComment} = useCreateComment();
+    const {selectedCommentPage} = useActivityContext();
+    const [currentPage, setCurrentPage] = useState(selectedCommentPage ? selectedCommentPage : 1);
     const [commentText,setCommentText] = useState("");
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [openReplyIndex, setOpenReplyIndex] = useState(null);
-
-    const {
-        totalPage,
-        startPage,
-        endPage,
-        hasPrev,
-        hasNext,
-        handlePrevious,
-        handleNext,
-        handlePage,
-        setPageInfo
-    } = useCommentPage();
-
-    const {
-        data,
-        isFetching,
-    } = useCommentsData(currentPage,selectedPostID);
+    const {data: profileData} = useMyProfileData();
+    const {mutate: createComment} = useCreateComment();
+    const {totalPage,
+            startPage,
+            endPage,
+            hasPrev,
+            hasNext,
+            handlePrevious,
+            handleNext,
+            handlePage,
+            setPageInfo} = useCommentPage();
+    const {data,
+            isFetching,} = useCommentsData(currentPage,selectedPostID);
 
     useEffect(()=>{
         if(data) {
             setPageInfo(data.total_comments,currentPage);
         } 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[data])
-
-    useEffect(() => {
-        if(selectedCommentPage) setCurrentPage(selectedCommentPage);
-    }, [selectedCommentPage]);
 
     const onReply = (index) => {
         if (openReplyIndex === index) {

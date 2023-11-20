@@ -7,10 +7,10 @@ import {useSocket} from "../context/SocketContext"
 import { useMyProfileData } from '../hooks/useMyProfileData';
 
 
-export default function Messages({chatService}) {
-    let chatSocket;
+export default function Messages() {
     const {setSocket} = useSocket();
     const {data:profileData} = useMyProfileData();
+    let chatSocket;
     useEffect(()=>{
         if(profileData?.nickname) {
             initSocket();
@@ -29,7 +29,7 @@ export default function Messages({chatService}) {
 
     return (
         <div className={styles.container}>
-            <ChatRoom chatService={chatService}/>
+            <ChatRoom/>
             <Outlet/>
         </div>
     );

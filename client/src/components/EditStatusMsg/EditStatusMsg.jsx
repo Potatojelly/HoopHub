@@ -3,7 +3,6 @@ import styles from './EditStatusMsg.module.css'
 import { useEditStatusMessage} from '../../hooks/useMyProfileData';
 
 export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSuccess}) {
-    // const [originalMsg,setOriginalMsg] = useState(currentMsg);
     const [charCount,setCharCount] = useState(currentMsg.length);
     const {mutate: updateStatusMsg} = useEditStatusMessage();
 
@@ -21,7 +20,7 @@ export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSu
                 }
             }
         )
-        onClose();
+        onClose(e);
     }
 
     const onChange = (e) => {
@@ -32,9 +31,8 @@ export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSu
         }
     }
 
-    const onCancel = () => {
-        onClose();
-        // setMsg(originalMsg);
+    const onCancel = (e) => {
+        onClose(e);
     }
 
     return (

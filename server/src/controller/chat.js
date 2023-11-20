@@ -30,7 +30,6 @@ export async function getMessage(req,res) {
 }
 
 export async function sendMessage(req,res) {
-    console.log(req.body);
     const user = await myRepository.findById(req.userID);
     if(!user) {
         return res.status(401).json({message:"User not found"});

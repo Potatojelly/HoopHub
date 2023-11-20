@@ -7,35 +7,30 @@ import LoadingSpinner from '../Loader/LoadingSpinner';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 const POSTSPERPAGE = 10;
+
 export default function ActivityPosts({userNickname}) {
     const [selectedCard,setSelectedCard] = useState(window.history.state.my_posts ? window.history.state.my_posts : null);
     const [currentPage, setCurrentPage] = useState(selectedCard ? Math.ceil(selectedCard/POSTSPERPAGE) : 1);
     const {data:profileData} = useMyProfileData();
-    window.history.state.my_posts && console.log(window.history.state)
-    const {
-        totalPage,
-        startPage,
-        endPage,
-        hasPrev,
-        hasNext,
-        handlePrevious,
-        handleNext,
-        handlePage,
-        setPageInfo,
-    } = useActivityPostPage();
-
-    const {
-        data,
-        isFetching,
-        isError,
-    } = useUserPostsData(userNickname ? userNickname : profileData?.nickname, currentPage);
+    const {totalPage,
+            startPage,
+            endPage,
+            hasPrev,
+            hasNext,
+            handlePrevious,
+            handleNext,
+            handlePage,
+            setPageInfo} = useActivityPostPage();
+    const {data,
+            isFetching,
+            isError} = useUserPostsData(userNickname ? userNickname : profileData?.nickname, currentPage);
 
     useEffect(()=>{
         if(data) {
             if(selectedCard) setPageInfo(data.total_posts,Math.ceil(selectedCard/POSTSPERPAGE));
             else setPageInfo(data.total_posts,currentPage);
         } 
-    },[data])
+    },[data, currentPage, selectedCard, setPageInfo])
 
         const customHandlePrevious = () => {
         handlePrevious(setCurrentPage);

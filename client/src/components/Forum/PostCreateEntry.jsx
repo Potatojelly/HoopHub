@@ -5,9 +5,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 export default function PostCreateEntry() {
-    const {data: profileData} = useMyProfileData();
-    const {user} = useAuth();
     const navigate = useNavigate();
+    const {user} = useAuth();
+    const {data: profileData} = useMyProfileData();
 
     return (
         <>

@@ -13,7 +13,6 @@ import Logo from '../Logo/Logo';
 import { useAuth } from '../../context/AuthContext';
 import Dropdown from '../Dropdown/Dropdown';
 import { useChatRoomID } from '../../context/ChatRoomContext';
-import { usePostContext } from '../../context/PostContext';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import SmallLoadingSpinner from '../Loader/SmallLoadingSpinner';
 
@@ -23,10 +22,10 @@ export default function Header() {
     const [sidebar, setSidebar] = useState(false);
     const [subFunctions, setSubFunctions] = useState(false);
     const {selectChatRoom,setSelectedChatRoom} = useChatRoomID();
-    const {setSelectedPage,setSelectedPostID} = usePostContext();
 
     const showSidebar = () => setSidebar(prev=>!prev);
     const showSubFunctions = () => setSubFunctions(prev=>!prev);
+
     return (
         <header id="header" className={styles.header}>
             <div className={styles.container}>
@@ -41,7 +40,7 @@ export default function Header() {
                 {user &&
                     <>
                         <Link to="/"> 
-                            <PiNotePencilBold className={styles.service} onClick={()=>{setSelectedPage(null); setSelectedPostID(null);}}/>
+                            <PiNotePencilBold className={styles.service}/>
                         </Link>
                         <Link to="/messages/inbox" onClick={()=>{selectChatRoom(null); setSelectedChatRoom(null);}}> 
                             <AiOutlineMessage  className={styles.service}/>

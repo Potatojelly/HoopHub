@@ -56,12 +56,14 @@ class Socket {
                 })
             })
 
-            socket.on("new message", (newMessageRecevied)=>{
+            socket.on("new message",(newMessageRecevied)=>{
+                console.log(newMessageRecevied.content);
                 const chat = newMessageRecevied.chat;
                 chat.users.forEach((user)=>{
                     if(user.nickname === newMessageRecevied.sender.nickname)  return;
                     socket.in(user.nickname).emit("new message received",newMessageRecevied);
                 })
+                console.log("end");
             });
 
             socket.on("exit", (exitMessageRecevied)=>{

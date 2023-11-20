@@ -9,12 +9,12 @@ import Alarm from '../Alarm/Alarm';
 import LoadingSpinner from '../Loader/LoadingSpinner';
 
 export default function SideBar({sidebar,showSidebar}) {
+    const dropdownRef = useRef(null);
     const {data: myFriend,isFetching} = useFriendData();
     const [selectedFriend, setSelectedFriend] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [deleted,setDeleted] = useState(false);
     const [deletedMsg,setDeletedMsg] = useState("");
-    const dropdownRef = useRef(null);
 
     useEffect(() => {
         function handleOutsideClick(event) {

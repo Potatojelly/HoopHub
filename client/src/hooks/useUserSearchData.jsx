@@ -17,5 +17,6 @@ export function useUserSearchData(term) {
                                                                         refetchOnMount: true,
                                                                         enabled: !!user,
                                                                         retry: false,
+                                                                        enabled: !!term,
                                                                         });
 }

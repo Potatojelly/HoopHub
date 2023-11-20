@@ -16,7 +16,8 @@ export default function EditProfile() {
     const [success,setSuccess] = useState("");
     const imgInputRef = useRef(null);
 
-    const handleMsgEdit = () => {
+    const handleMsgEdit = (e) => {
+        e.preventDefault();
         setErrors("");
         setEditing(!editing);
     }

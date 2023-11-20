@@ -8,15 +8,15 @@ import {FcPicture} from "react-icons/fc";
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 export default function ChatCard({chatRoom}) {
-    const {data: profileData} = useMyProfileData();
+    const navigate = useNavigate();
     const [title,setTitle] = useState(null);
     const [opponent,setOpponent] = useState([]);
     const {chatRoomID,selectChatRoom,setSelectedChatRoom} = useChatRoomID();
+    const {data: profileData} = useMyProfileData();
     const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
-    const navigate = useNavigate();
-    
+
     useEffect(()=>{
-        if(chatRoom.chatName === null) {
+        if(chatRoom?.chatName === null) {
             if(chatRoom.users.length > 1) {
                 chatRoom.users.forEach((user)=>{
                     if(user.nickname !== profileData?.nickname) {
@@ -38,16 +38,16 @@ export default function ChatCard({chatRoom}) {
                 setOpponent([...opponents]);
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[chatRoom])
 
     const enterChatRoom = () => {
-        if(chatRoomID) {
-            saveLastReadMessage(chatRoomID);
-        }
+        // if(chatRoomID) saveLastReadMessage(chatRoomID);
         selectChatRoom(chatRoom.id); 
         setSelectedChatRoom(chatRoom);
         navigate(`/messages/${title}/${chatRoom.id}`);
     }
+
     return (
         <div className={`${styles.chatCard} ${(chatRoomID && chatRoomID === chatRoom.id) && styles.selectedChatCard}`} 
             onClick={enterChatRoom}>

@@ -6,7 +6,6 @@ import {useQueryClient} from "@tanstack/react-query";
 import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
 import {useNavigate} from "react-router-dom";
-import { usePostContext } from '../../context/PostContext';
 import { useActivityContext } from '../../context/ActivityContext';
 import { useDeleteComment, useUpdateComment } from '../../hooks/useCommentsData';
 import Alarm from '../Alarm/Alarm';
@@ -14,8 +13,8 @@ import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 const CommentCard = ({index,comment,selectedPostID,handleReplyClick,openReplyIndex,hasReply}) => {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const {selectedCommentType,setCommentID,selectedCommentID} = useActivityContext();
-    // const {selectedPostID} = usePostContext();
     const [targetCardEffect,setTargetCardEffect] = useState(selectedCommentType === "comment" && comment.id===selectedCommentID ? true : false);
     const [isError,setIsError] = useState(false);
     const [isEdit,setIsEdit] = useState(false);
@@ -23,7 +22,12 @@ const CommentCard = ({index,comment,selectedPostID,handleReplyClick,openReplyInd
     const {data:profileData} = useMyProfileData();
     const {mutate: deleteComment} = useDeleteComment();
     const {mutate: updateComment} = useUpdateComment();
-    const navigate = useNavigate();
+
+    useEffect(()=>{
+        if(targetCardEffect) {
+            setTimeout(()=>{setTargetCardEffect(false);setCommentID(null)},2000);
+        }
+    },[targetCardEffect,setCommentID])
 
     const submitEditedComment = (e) => {
         e.preventDefault();
@@ -77,12 +81,6 @@ const CommentCard = ({index,comment,selectedPostID,handleReplyClick,openReplyInd
     const handleText = (e) => {
         setEditedComment(e.target.value);
     }
-
-    useEffect(()=>{
-        if(targetCardEffect) {
-            setTimeout(()=>{setTargetCardEffect(false);setCommentID(null)},2000);
-        }
-    },[comment])
 
     return (
         <>

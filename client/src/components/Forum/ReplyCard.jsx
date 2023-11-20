@@ -10,14 +10,14 @@ import {useNavigate} from "react-router-dom";
 import ReactQuill from 'react-quill';
 import './quill.css';
 import { useActivityContext } from '../../context/ActivityContext';
-import { usePostContext } from '../../context/PostContext';
 import { useDeleteReply, useUpdateReply } from '../../hooks/useCommentsData';
 import Alarm from '../Alarm/Alarm';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
 export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,openReplyIndex,commentID,isFirst})  {
     const queryClient = useQueryClient();
-    // const {selectedPostID} = usePostContext();
+    const quillRef = useRef();
+    const navigate = useNavigate();
     const {selectedCommentType,setCommentID, selectedCommentID} = useActivityContext();
     const [isEdit,setIsEdit] = useState(false);
     const [isError,setIsError] = useState(false);
@@ -26,14 +26,34 @@ export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,
     const {data:profileData} = useMyProfileData();
     const {mutate: deleteReply} = useDeleteReply();
     const {mutate: updateReply} = useUpdateReply();
-    const quillRef = useRef();
-    const navigate = useNavigate();
 
     useEffect(()=>{
         if(targetCardEffect) {
             setTimeout(()=>{setTargetCardEffect(false); setCommentID(null)},2000);
         }
-    },[reply])
+    },[targetCardEffect,setCommentID])
+
+    useEffect(()=>{
+        if(isEdit) {
+            setEditedReply(reply.body);
+            const editor = quillRef.current.getEditor(); 
+            const delta = editor.clipboard.convert(reply.body);
+            editor.keyboard.bindings[13].unshift({
+                key: 13,
+                handler: (range, context) => {
+                    document.getElementById('submitButton').click();
+                    return false;
+                }
+            });
+            editor.setContents(delta);
+        }
+    },[isEdit,reply.body])
+
+    const modules = useMemo(()=> {
+        return {
+            toolbar: false,
+        }
+    },[]);
 
     const handleText = (contents) => {
         setEditedReply(contents);
@@ -78,30 +98,6 @@ export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,
         }
         navigate(`/view-user-activity/${reply.nickname}`)
     }
-
-    useEffect(()=>{
-        if(isEdit) {
-            setEditedReply(reply.body);
-            const editor = quillRef.current.getEditor(); 
-            const delta = editor.clipboard.convert(reply.body);
-            editor.keyboard.bindings[13].unshift({
-                key: 13,
-                handler: (range, context) => {
-                    document.getElementById('submitButton').click();
-                    return false;
-                }
-            });
-            editor.setContents(delta);
-        }
-    },[isEdit])
-
-
-    const modules = useMemo(()=> {
-        return {
-            toolbar: false,
-        }
-    },[]);
-
 
     return (
         <>

@@ -6,37 +6,32 @@ import {BsFillEyeFill} from "react-icons/bs";
 import {simplifyDate} from "../../date.js";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
-import { usePostContext } from '../../context/PostContext';
-import { useUpdatePostView } from '../../hooks/usePostsData.jsx';
 import {useLocation  } from "react-router-dom";
 
-export default function PostCard({id, num, post, currentPage, handleSelection, keyword, last}) {
+export default function PostCard({id, num, post, currentPage, keyword, last}) {
+    const navigate = useNavigate();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const postNum = parseInt(searchParams.get("postNum"));
     const page = parseInt(searchParams.get("page"));
     const {user} = useAuth();
-    // const {selectedPage,selectedPostID} = usePostContext();
     const [highlightedTitle,setHighlightedTitle] = useState("");
-    // const {mutate: updatePostView} = useUpdatePostView();
-    const navigate = useNavigate();
-    const handleClick = () => {
-        if(user) {
-            // handleSelection(id);
-            const contentElement = document.querySelector('#header');
-            contentElement.scrollIntoView({ behavior: 'smooth' });
-            // updatePostView(id);
-            navigate(`/forums/post/${post.title}/?postNum=${id}&page=${currentPage}`,{state:true});
-        }
-        else alert("You do not have permission to view articles, Please Log in");
-    }
 
     useEffect(()=>{
         if(keyword) {
             const pattern = new RegExp(keyword, 'gi');
             setHighlightedTitle(post.title.replace(pattern,(match)=>`<em>${match}</em>`));
         }
-    },[keyword])
+    },[keyword,post.title])
+
+    const handleClick = () => {
+        if(user) {
+            const contentElement = document.querySelector('#header');
+            contentElement.scrollIntoView({ behavior: 'smooth' });
+            navigate(`/forums/post/${post.title}/?postNum=${id}&page=${currentPage}`,{state:true});
+        }
+        else alert("You do not have permission to view articles, Please Log in");
+    }
 
     return (
         <>

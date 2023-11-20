@@ -12,28 +12,26 @@ import PostEditor from './PostEditor';
 import { useDeletePost, usePostData, useUpdatePostView } from '../../hooks/usePostsData';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import LoadingSpinner from '../Loader/LoadingSpinner';
-import { usePostContext } from '../../context/PostContext';
 
 
 export default function Post() {
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const postNum = parseInt(searchParams.get("postNum"));
     const page = parseInt(searchParams.get("page"));
-    // const {selectedPostID,selectedPage,setSelectedPage,setSelectedPostID} = usePostContext();
     const [isEdit,setIsEdit] = useState(false);
     const {data: profileData} = useMyProfileData();
     const {data: postData, isFetching} = usePostData(postNum);
     const {mutate: deletePost} = useDeletePost();
     const {mutate: updatePostView} = useUpdatePostView();
-    const queryClient = useQueryClient();
-    const navigate = useNavigate();
 
     useEffect(()=>{
         if(postNum) {
             updatePostView(postNum);
         }
-    },[postNum])
+    },[postNum,updatePostView])
 
     const handleConfirm = (text) => {
         const result = window.confirm(text);

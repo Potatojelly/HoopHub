@@ -2,19 +2,15 @@ import React from 'react';
 import styles from './ActivityCommentCard.module.css';
 import {simplifyDate} from '../../date';
 import {useNavigate} from "react-router-dom";
-import { usePostContext } from '../../context/PostContext';
 
 export default function ActivityCommentCard({comment,selectedCard,setSelectedCard,num}) {
     const navigate = useNavigate();
-    const {setSelectedPage,setSelectedPostID} = usePostContext();
 
     const navigateToPost = () => {
         const state = {type:2, my_comments: num};
         const title = comment.post_title;
         window.history.pushState(state,title);
         setSelectedCard(num);
-        // setSelectedPostID(comment.post_id);
-        // setSelectedPage(null);
         navigate(`/manage-my-activity/my-post/${comment.post_title}/?postNum=${comment.post_id}`,{state:comment});
     }
 

@@ -171,7 +171,7 @@ export default function UserSearch() {
                     ))}
                 </ul>
                 <div className={styles.btnContainer}>
-                    <button className={styles.cancelBtn} onClick={()=>{navigate("/messages")}}>Cancel</button>
+                    <button className={styles.cancelBtn} onClick={()=>{navigate("/messages/inbox")}}>Cancel</button>
                     <button className={styles.startBtn} 
                             onClick={()=>{startChat()}}
                             disabled={participants.length > 0 ? false : true}>
