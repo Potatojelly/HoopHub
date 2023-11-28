@@ -88,7 +88,6 @@ export function usePostPage(keyword) {
 export function usePostsData(currentPage,keyword) {
     return useQuery(["posts", keyword, currentPage],()=>postService.getPosts(keyword, currentPage, POSTSPERPAGE),
                                                                     {
-                                                                        staleTime:Infinity,
                                                                         refetchOnMount: true, 
                                                                         refetchOnWindowFocus: false
                                                                     });
@@ -100,14 +99,12 @@ export function usePostData(selectedPostID) {
     return useQuery(["post", selectedPostID],()=>postService.getPost(selectedPostID),
                                                                     {
                                                                         onSuccess: (res) => {
-                                                                            console.log("hey")
                                                                             if(res.post.deleted === 1) {
                                                                                 alert(`The post "${res.post.title}" has been deleted!`);
                                                                                 navigate('/', {replace: true} );
                                                                             }
                                                                         },
-                                                                        enable: !!user,
-                                                                        cacheTime:Infinity,
+                                                                        enabled: !!user,
                                                                         staleTime:Infinity,
                                                                         retry:false,
                                                                         refetchOnMount: true, 
@@ -116,7 +113,7 @@ export function usePostData(selectedPostID) {
 }
 
 export function useCreatePost() {
-    return useMutation((formData)=>postService.createPost(formData));
+    return useMutation((data)=>{const {formData,signal,callback} = data; return postService.createPost(formData,signal,callback)},{retry:false});
 }
 
 export function useDeletePost() {
@@ -124,10 +121,10 @@ export function useDeletePost() {
 }
 
 export function useUpdatePost() {
-    return useMutation(({formData,selectedPostID})=>postService.updatePost(formData,selectedPostID));
+    return useMutation((data)=>{const {formData,selectedPostID,signal,callback} = data; return postService.updatePost(formData,selectedPostID,signal,callback)},{retry:false});
 }
 
 export function useUpdatePostView() {
     const queryClient = useQueryClient();
-    return useMutation((selectedPostID)=>postService.updateView(selectedPostID),{onSuccess:()=>{queryClient.invalidateQueries('posts')}});
+    return useMutation((selectedPostID)=>postService.updateView(selectedPostID),{onSuccess:()=>{queryClient.invalidateQueries(['posts'])}});
 }

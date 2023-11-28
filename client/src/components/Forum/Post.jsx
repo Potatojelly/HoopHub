@@ -25,13 +25,6 @@ export default function Post() {
     const {data: profileData} = useMyProfileData();
     const {data: postData, isFetching} = usePostData(postNum);
     const {mutate: deletePost} = useDeletePost();
-    const {mutate: updatePostView} = useUpdatePostView();
-
-    useEffect(()=>{
-        if(postNum) {
-            updatePostView(postNum);
-        }
-    },[postNum,updatePostView])
 
     const handleConfirm = (text) => {
         const result = window.confirm(text);

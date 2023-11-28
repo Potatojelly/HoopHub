@@ -5,51 +5,51 @@ import {ImExit} from "react-icons/im";
 import MyMessage from './MyMessage';
 import OpponentMessage from './OpponentMessage';
 import ChatParticipants from './ChatParticipants';
-import {useChatName, useChatRoomMessageData, useChatRoomsData, useExitChatRoom, useInviteUsers, useKickoutUser, useSaveLastReadMessage, useSendImageMessage, useSendMessage,} from '../../hooks/useChatRoomData';
+import {useChatName, useChatRoomMessageData, useExitChatRoom, useInviteUsers, useKickoutUser, useSaveLastReadMessage, useSendImageMessage} from '../../hooks/useChatRoomData';
 import {useQueryClient} from '@tanstack/react-query';
 import {v4 as uuidv4} from "uuid";
 import SystemMessage from './SystemMessage';
-import { useChatRoomID } from '../../context/ChatRoomContext';
 import {useNavigate} from "react-router-dom";
 import LoadingSpinner from '../Loader/LoadingSpinner';
-import { useSocket } from '../../context/SocketContext';
 import { simplifyDateForChatRoom, simplifyTimeForMsg } from '../../date';
 import {AiFillEdit} from "react-icons/ai";
 import { useMyProfileData } from '../../hooks/useMyProfileData';
+import { useParams,useOutletContext } from 'react-router-dom';
 
 export default function ChatScreen({chatService}) {
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
+    const myParam = useParams();
+    const chatRoomID = myParam.chatRoomID;
+    const textarea = useRef();
+    const observer = useRef();
+    const chatContainerRef = useRef(null);
+    const messageEndRef = useRef(null);
+    const bottomObserver = useRef();
+    const [isInit,setIsInit] = useState(true);
+    const [isScrollBottom,setIsScrollBottom] = useState(false);
+    const [text,setText] = useState("");
     const [enable,setEnable] = useState(true);
     const [editChatName,setEditChatName] = useState(false);
     const [chatName,setChatName] = useState("");
-    const queryClient = useQueryClient();
-    const {socket} = useSocket();
-    const {chatRoomID,selectChatRoom,setSelectedChatRoom,selectedChatRoom} = useChatRoomID();
-
-    const navigate = useNavigate();
+    const [chatRooms,socket] = useOutletContext();
     const {data:messages,
             isFetching,
             hasPreviousPage,
-            fetchPreviousPage,} = useChatRoomMessageData(chatRoomID && selectedChatRoom.id);
+            fetchPreviousPage,} = useChatRoomMessageData(chatRoomID);
     const {data:profileData} = useMyProfileData();
     const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
     const {mutate:exitChatRoom} = useExitChatRoom();
     const {mutate:kickoutUser} = useKickoutUser();
     const {mutate:changeChatName} = useChatName();
     const {mutate:inviteUsers} = useInviteUsers();
-    const {mutateAsync:sendMessage} = useSendMessage();
     const {mutate:sendImageMessage} = useSendImageMessage();
-    const textarea = useRef();
-    const observer = useRef();
-    const chatContainerRef = useRef(null);
+    const [selectedChatRoom,setSelectedChatRoom] = useState(chatRooms.find((chatRoom)=>chatRoom.id===chatRoomID));
 
-    const [text,setText] = useState("");
-    const [initScrollTop,setInitScrollTop] = useState(false);
-    // const [imgFile,setImgFile] = useState(null);
-    const {data:chatRooms, isSuccess} = useChatRoomsData();
+    useEffect(()=>{setSelectedChatRoom(chatRooms.find((chatRoom)=>chatRoom.id===chatRoomID))},[chatRoomID,chatRooms])
 
-    const moveToBottom = () => {
-        const chatContainer = chatContainerRef.current;
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+    const moveScrollToBottom = () => {
+        messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
 
     const handleResizeHeight = (e) => {
@@ -59,8 +59,9 @@ export default function ChatScreen({chatService}) {
     }
 
     const addNewMessage = (newMessage) => {
-        queryClient.setQueryData(["direct-chatroom-message",selectedChatRoom.id], (oldData)=>(
-            {
+        queryClient.setQueryData(["direct-chatroom-message",chatRoomID], (oldData)=>{
+        
+            return {
                 ...oldData,
                 pages: [
                     ...oldData.pages.slice(0,-1),
@@ -69,12 +70,13 @@ export default function ChatScreen({chatService}) {
                         result: [...oldData.pages[oldData.pages.length-1].result, newMessage],
                     }
                 ],
-            })
-        )
+            }
+    
+        })
     }
 
     const updateChatRoomsData = (updatedChatRooms) => {
-        saveLastReadMessage(selectedChatRoom.id);
+        saveLastReadMessage(chatRoomID);
         queryClient.setQueryData(["direct-chatrooms"], (oldData)=>{
             return {
                 ...oldData,
@@ -86,10 +88,10 @@ export default function ChatScreen({chatService}) {
     const handleExit = async () => {
         const result = window.confirm("Do you want to leave the room?");
         if(result) {
-            exitChatRoom(selectedChatRoom.id,{
+            exitChatRoom(chatRoomID,{
                 onSuccess: (res) => {
-                    const updatedChatRoom = chatRooms.filter((chatRoom)=>chatRoom.id !== selectedChatRoom.id);
-                    const exitMessage = { chat: { id: selectedChatRoom.id, users: selectedChatRoom.users.filter((user)=>user.nickname !== profileData?.nickname) },
+                    const updatedChatRoom = chatRooms.filter((chatRoom)=>chatRoom.id !== chatRoomID);
+                    const exitMessage = { chat: { id: chatRoomID, users: selectedChatRoom.users.filter((user)=>user.nickname !== profileData?.nickname) },
                                         image: false,
                                         content: `${profileData?.nickname} left the room`, 
                                         createdAt: new Date(),
@@ -101,6 +103,7 @@ export default function ChatScreen({chatService}) {
                                         },
                                         id: uuidv4(),
                                         isLoading: true,
+                                        realTime: true
                                     };
                     updateChatRoomsData(updatedChatRoom);
                     socket.emit("exit",exitMessage);
@@ -113,9 +116,9 @@ export default function ChatScreen({chatService}) {
     const handleKickout = (kickedUser) => {
         const result = window.confirm(`Do you want kick out ${kickedUser.nickname}`);
         if(result) {
-            kickoutUser({kickedUser,chatRoomID:selectedChatRoom.id},{
+            kickoutUser({kickedUser,chatRoomID},{
                 onSuccess: (res) => {
-                    const kickoutMessage = {chat: { id: selectedChatRoom.id, users: selectedChatRoom.users},
+                    const kickoutMessage = {chat: { id: chatRoomID, users: selectedChatRoom.users},
                                             image: false,
                                             content: `${profileData?.nickname} kicked out ${kickedUser.nickname}`, 
                                             createdAt: new Date(),
@@ -127,14 +130,15 @@ export default function ChatScreen({chatService}) {
                                             },
                                             kickedUser,
                                             id: uuidv4(),
-                                            isLoading: false};
+                                            isLoading: false,
+                                            realTime: true};
                     const updatedLastestMessage = {content:kickoutMessage.content,
                                                     createdAt:kickoutMessage.createdAt,
                                                     id:kickoutMessage.id,
                                                     image:kickoutMessage.image}
 
                     const result = chatRooms.map((chatRoom)=>{
-                        if(chatRoom.id === selectedChatRoom.id) {
+                        if(chatRoom.id === chatRoomID) {
                             const updatedChatRoom = {...chatRoom,
                                                     latestMessage: updatedLastestMessage,
                                                     users:chatRoom.users.filter((user)=>user.nickname !== kickedUser.nickname),
@@ -158,10 +162,10 @@ export default function ChatScreen({chatService}) {
     }
 
     const handleChangeChatName = () => {
-        changeChatName({chatRoomID:selectedChatRoom.id,chatName},{
+        changeChatName({chatRoomID,chatName},{
             onSuccess: (res) => {
                 if(res.success) {
-                    const chatNameMessage = {chat: { id: selectedChatRoom.id, users: selectedChatRoom.users, chatName},
+                    const chatNameMessage = {chat: { id: chatRoomID, users: selectedChatRoom.users, chatName},
                                             image: false,
                                             content: `${profileData?.nickname} changed chat name to ${chatName}`, 
                                             createdAt: new Date(),
@@ -172,13 +176,14 @@ export default function ChatScreen({chatService}) {
                                                 imageURL:profileData?.imageURL,
                                             },
                                             id: uuidv4(),
-                                            isLoading: false};
+                                            isLoading: false,
+                                            realTime: true};
                     const updatedLastestMessage = {content:chatNameMessage.content,
                                                 createdAt:chatNameMessage.createdAt,
                                                 id:chatNameMessage.id,
                                                 image:chatNameMessage.image}
                     const result = chatRooms.map((chatRoom)=>{
-                        if(chatRoom.id === selectedChatRoom.id) {
+                        if(chatRoom.id === chatRoomID) {
                             const updatedChatRoom = {...chatRoom,
                                                     latestMessage:updatedLastestMessage,
                                                     chatName:chatName}
@@ -220,7 +225,7 @@ export default function ChatScreen({chatService}) {
                 };
                 socket.emit("new chat room",newChatRoom);
 
-                const invitationMessage = {chat: { id: selectedChatRoom.id, users: updatedUsers},
+                const invitationMessage = {chat: { id: chatRoomID, users: updatedUsers},
                                         image: false,
                                         content,
                                         createdAt: new Date(),
@@ -231,13 +236,14 @@ export default function ChatScreen({chatService}) {
                                             imageURL: profileData?.imageURL,
                                         },
                                         id: uuidv4(),
-                                        isLoading: false};
+                                        isLoading: false,
+                                        realTime: true,};
                 const updatedLastestMessage = {content:invitationMessage.content,
                                                 createdAt:invitationMessage.createdAt,
                                                 id:invitationMessage.id,
                                                 image:invitationMessage.image}
                 const result = chatRooms.map((chatRoom)=>{
-                    if(chatRoom.id === selectedChatRoom.id) {
+                    if(chatRoom.id === chatRoomID) {
                         const updatedChatRoom = {...chatRoom,
                                                 users:updatedUsers,
                                                 latestMessage:updatedLastestMessage}
@@ -267,7 +273,7 @@ export default function ChatScreen({chatService}) {
         }
     
         const newMessage = {
-            chat: { id: selectedChatRoom.id, users: selectedChatRoom.users },
+            chat: { id: chatRoomID, users: selectedChatRoom.users },
             image: false,
             content: text,
             createdAt: new Date(),
@@ -279,6 +285,7 @@ export default function ChatScreen({chatService}) {
                 system: false,
             },
             isLoading: true,
+            realTime: true,
         };
     
         addNewMessage(newMessage);
@@ -286,8 +293,6 @@ export default function ChatScreen({chatService}) {
         chatService.sendMessage(text,chatRoomID,init)
             .then((res)=>{
                 if(res){
-                    console.log(res);
-                    console.log("start");
                     newMessage.isLoading = false;
                     const updatedLastestMessage = {
                         content: newMessage.content,
@@ -296,7 +301,7 @@ export default function ChatScreen({chatService}) {
                         image: newMessage.image,
                     };
                     const updatedChatRooms = chatRooms.map((chatRoom) => {
-                        if (chatRoom.id === selectedChatRoom.id) return {
+                        if (chatRoom.id === chatRoomID) return {
                             ...chatRoom,
                             latestMessage: updatedLastestMessage,
                             unReadMessageCount: 0
@@ -305,48 +310,14 @@ export default function ChatScreen({chatService}) {
                     });
                     updateChatRoomsData(updatedChatRooms);    
                     socket.emit("new message", newMessage);
-                    console.log("end");
                 }
             }).catch( (err) => {
                 newMessage.isLoading = false;
                 newMessage.error = true;
             })
 
-        // await sendMessage({content:text,chatRoomID,init}, {
-        //     onSuccess: (res) => {
-        //         if(res){
-        //             console.log(res);
-        //             console.log("start");
-        //             newMessage.isLoading = false;
-        //             const updatedLastestMessage = {
-        //                 content: newMessage.content,
-        //                 createdAt: newMessage.createdAt,
-        //                 id: newMessage.id,
-        //                 image: newMessage.image,
-        //             };
-        //             const updatedChatRooms = chatRooms.map((chatRoom) => {
-        //                 if (chatRoom.id === selectedChatRoom.id) return {
-        //                     ...chatRoom,
-        //                     latestMessage: updatedLastestMessage,
-        //                     unReadMessageCount: 0
-        //                 };
-        //                 else return chatRoom;
-        //             });
-        //             updateChatRoomsData(updatedChatRooms);    
-        //             socket.emit("new message", newMessage);
-        //             console.log("end");
-        //         }
-        //     },
-        //     onError: () => {
-        //         newMessage.isLoading = false;
-        //         newMessage.error = true;
-        //     }
-        // })
-        moveToBottom();
         setText("");
     };
-
-
 
     const handleKeyDown = (e) => {
         if(e.key === "Enter" && !e.shiftKey) {
@@ -362,39 +333,22 @@ export default function ChatScreen({chatService}) {
         }
     }
 
-    const lastElementRef = useCallback((node)=>{
-        if(isFetching) return;
-        if(observer.current) observer.current.disconnect();
-        observer.current = new IntersectionObserver((entries)=>{
-            if(entries[0].isIntersecting && hasPreviousPage) {
-                fetchPreviousPage();
-                if(!initScrollTop) setInitScrollTop(true);
-            }
-        },{
-            threshold: 0.5,
-        });
-        if(node) observer.current.observe(node);
-    },[fetchPreviousPage,isFetching,initScrollTop,hasPreviousPage])
-
     const imageHandler = () => {
-        console.log(queryClient.getQueryData(["direct-chatroom-message",selectedChatRoom.id]));
         const input = document.createElement("input");
         input.setAttribute("type","file");
         input.setAttribute("accpet","image/*");
         input.click();
         input.addEventListener("change",()=>{
             const file = input.files[0];
-            console.log(input);
             if (file) {
                 if (file.type.startsWith("image/")) {
                     const imageFileURL = URL.createObjectURL(file);
-                    // setImgFile({ file, imageFileURL });
                     let init = true;
                     if(messages.length > 0 && messages.pop().sender.nickname === profileData?.nickname) {
                         init = false;
                     }
                     const newMessage = {
-                        chat: {id:selectedChatRoom.id,users:selectedChatRoom.users},
+                        chat: {id:chatRoomID,users:selectedChatRoom.users},
                         image: true,
                         content: imageFileURL,
                         createdAt: new Date(),
@@ -406,12 +360,12 @@ export default function ChatScreen({chatService}) {
                             system:false,
                         },
                         isLoading: true,
+                        realTime: true,
                     }
                     const formData = new FormData();
                     formData.append("image",file);
-                    formData.append("jsonFile",JSON.stringify({chatRoomID:selectedChatRoom.id,isInit:init}));
+                    formData.append("jsonFile",JSON.stringify({chatRoomID,isInit:init}));
                     addNewMessage(newMessage);
-                    moveToBottom();
 
                     sendImageMessage(formData,{
                         onSuccess: (res) => {
@@ -422,7 +376,7 @@ export default function ChatScreen({chatService}) {
                                 id:newMessage.id,
                                 image:newMessage.image}
                             const updatedChatRooms = chatRooms.map((chatRoom)=>{
-                                if(chatRoom.id === selectedChatRoom.id) return {...chatRoom, 
+                                if(chatRoom.id === chatRoomID) return {...chatRoom, 
                                                                     latestMessage:updatedLastestMessage,
                                                                     unReadMessageCount:0}
                                 else return chatRoom;
@@ -443,52 +397,59 @@ export default function ChatScreen({chatService}) {
         })
     }
 
+    const lastElementRef = useCallback((node)=>{
+        if(isFetching) return;
+        if(observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver((entries)=>{
+            if(entries[0].isIntersecting && hasPreviousPage && !isInit) {
+                fetchPreviousPage();
+            }
+        },{
+            threshold: 0.5,
+        });
+        if(node) observer.current.observe(node);
+    },[fetchPreviousPage,isFetching,isInit,hasPreviousPage])
+
+    const bottomRef= useCallback((node)=>{
+        bottomObserver.current = new IntersectionObserver((entries)=>{
+            if(entries[0].isIntersecting) {
+                setIsScrollBottom(true);
+            } else if(!entries[0].isIntersecting) {
+                setIsScrollBottom(false);
+            }
+        });
+        if(node) bottomObserver.current.observe(node);
+    },[])
+
     useEffect(()=>{
-        if(chatRoomID && isSuccess) {
+        if(chatRoomID) {
+            setIsInit(true);
+            setIsScrollBottom(false);
             const updatedChatRooms = chatRooms.map((chatRoom)=>{
-                if(chatRoom.id === selectedChatRoom.id) return {...chatRoom, unReadMessageCount:0}
+                if(chatRoom.id === chatRoomID) return {...chatRoom, unReadMessageCount:0}
                 else return chatRoom;
             })
             updateChatRoomsData(updatedChatRooms);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[chatRoomID,isSuccess,socket])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[chatRoomID])
 
     useEffect(() => {
-        if(messages) localStorage.setItem('currentChatRoom', JSON.stringify(selectedChatRoom));
-        if(!initScrollTop) moveToBottom();
-    }, [messages,selectedChatRoom,initScrollTop]);
+        if(messages) {
+            if(isInit && !isScrollBottom) {moveScrollToBottom(); return}; 
+            if(isInit && isScrollBottom) {setIsInit(false); return;}
+            if(messages[messages?.length-1].realTime && (messages[messages?.length-1]?.sender?.nickname === profileData.nickname ||
+                messages[messages?.length-1]?.sender?.nickname !== profileData.nickname && isScrollBottom)) {
+                moveScrollToBottom();
+            }
+        }
+    }, [messages,isInit,isScrollBottom,profileData.nickname]);
+
 
     useEffect(() => {
         if(selectedChatRoom && selectedChatRoom.users.length === 1) setEnable(false);
         else setEnable(true);
-        setInitScrollTop(null);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedChatRoom]);
-
-    useEffect(() => {
-        const roomID = selectedChatRoom && selectedChatRoom.id;
-        if(socket) {
-            if(chatRoomID === null) selectChatRoom(roomID);
-        }
-
-        return (async () => {
-            console.log("unmount!");
-            if(socket) {
-                socket.off("room message received");
-            }
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [socket]);
-
-    useEffect(()=>{
-        if(!chatRoomID) {
-            const currentChatRoom = JSON.parse(localStorage.getItem('currentChatRoom'));
-            selectChatRoom(currentChatRoom.id);
-            setSelectedChatRoom(currentChatRoom);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
 
 
     const messageContent = messages && messages.length > 0 &&
@@ -506,15 +467,15 @@ export default function ChatScreen({chatService}) {
                                 }
 
                                 if(index === 0) {
-                                    return  message.sender.system ? <SystemMessage key={message.id} ref={lastElementRef} message={message}/> :
+                                    return  message.sender.system ? <SystemMessage key={message.id} ref={isInit ? undefined : lastElementRef} message={message}/> :
                                             message.sender.nickname === profileData?.nickname ? <MyMessage key={message.id} 
-                                                                                                ref={lastElementRef} 
+                                                                                                ref={isInit ? undefined : lastElementRef}
                                                                                                 message={message} 
                                                                                                 displayTime={displayTime}
                                                                                                 displayDate={displayDate}
                                                                                                 start={message.isInit}/> :
                                                                                     <OpponentMessage key={message.id} 
-                                                                                                    ref={lastElementRef} 
+                                                                                                    ref={isInit ? undefined : lastElementRef}
                                                                                                     displayTime={displayTime}
                                                                                                     displayDate={displayDate}
                                                                                                     message={message} 
@@ -536,6 +497,7 @@ export default function ChatScreen({chatService}) {
 
     return (
         <>
+
             <div className={styles.chatScreen}>
                 <div className={styles.titleContainer}>
                     <div className={styles.titleSubContainer}>
@@ -563,6 +525,7 @@ export default function ChatScreen({chatService}) {
                         {isFetching &&  
                             <div className={styles.loadingSpinner}><LoadingSpinner/></div>}
                         {messageContent}
+                        {messages && <div ref={bottomRef}><div ref={messageEndRef}></div></div>}
                     </div>
                     <form className={styles.msgContainer}>
                             <div className={styles.textContainer}>

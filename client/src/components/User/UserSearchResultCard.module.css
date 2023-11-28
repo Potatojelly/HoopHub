@@ -32,12 +32,12 @@
 }
 
 .requestBtnInactive {
-    background-color:orange;
+    background-color:var(--color-orange);
 }
 
 .requestBtnInactive:hover {
     cursor: not-allowed;
-    background-color:orange;
+    background-color:var(--color-orange);
     filter:brightness(1);
 }
 

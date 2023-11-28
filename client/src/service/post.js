@@ -17,20 +17,24 @@ export default class PostService {
         return data;
     }
 
-    async createPost(formData) {
+    async createPost(formData,signal,uplaodProgressCallback) {
         const data = await this.http.fetch("/forum/create-post", {
             method: "POST",
             body: formData,
             headers: {"Content-Type": "multipart/form-data"},
+            signal,
+            onUploadProgress: uplaodProgressCallback
         });
         return data;
     }
 
-    async updatePost(formData,postID) {
+    async updatePost(formData,postID,signal,uplaodProgressCallback) {
         const data = await this.http.fetch(`/forum/update-post/${postID}`, {
             method: "PUT",
             body: formData,
             headers: {"Content-Type": "multipart/form-data"},
+            signal,
+            onUploadProgress: uplaodProgressCallback
         });
         return data;
     }

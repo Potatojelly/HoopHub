@@ -11,7 +11,6 @@ export default class Socket {
         })
 
         this.io.on("setup",(socket)=>{
-            console.log("connected to socket.io");
         })
 
         this.io.on("connect_error",(error)=>{
@@ -35,12 +34,8 @@ export function initSocket() {
     if(!chatSocket) {
         chatSocket = new Socket();
         chatSocket.io.on("disconnect", () => {
-            console.log("Disconnected");
             chatSocket = null;
         });
-    }
-    else {
-        console.log("Socket exists");
     }
 }
 

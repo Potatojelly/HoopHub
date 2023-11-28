@@ -11,7 +11,6 @@ const searchService = new SearchService(httpClient);
 export function useUserSearchData(term) {
     const {user} = useAuth();
     return useQuery(["users",term],()=>searchService.searchUser(term), {
-                                                                        onSuccess: ()=>{console.log("user-serach")},
                                                                         staleTime: 0,
                                                                         refetchOnWindowFocus: false,
                                                                         refetchOnMount: true,

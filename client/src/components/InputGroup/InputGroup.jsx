@@ -14,6 +14,7 @@ export default function InputGroup({placeholder,value,setValue,error,type,onChan
                 value={value}
                 onChange={onChange ? onChange : handleChange}
                 required
+                autoComplete="off"
             />
             <small className={styles.errorMsg}>{error}</small>
         </div>

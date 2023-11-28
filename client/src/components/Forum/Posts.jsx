@@ -4,13 +4,13 @@ import PostCard from './PostCard';
 import { usePostPage, usePostsData  } from '../../hooks/usePostsData';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../Loader/LoadingSpinner';
-import {useLocation  } from "react-router-dom";
+import {useLocation,useParams} from "react-router-dom";
 const POSTSPERPAGE = 5;
 
-function Posts({keyword}) {
+function Posts() {
     const location = useLocation();
+    const {keyword} = useParams();
     const searchParams = new URLSearchParams(location.search);
-    const postNum = parseInt(searchParams.get("postNum"));
     const page = parseInt(searchParams.get("page"));
     const {user} = useAuth();
     const [currentPage, setCurrentPage] = useState(page ? page : 1);

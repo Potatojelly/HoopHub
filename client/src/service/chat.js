@@ -8,13 +8,10 @@ export default class ChatService {
         const data = await this.http.fetch("/chat/get-chat-rooms", {
             method: "GET"
         });
-        console.log(data);
         return data;
     }
 
     async createChatRoom(participants,chatName) {
-        console.log(participants);
-        console.log(chatName);
         if(chatName === "") chatName = null;
         const data = await this.http.fetch(`/chat/create-chat-room`, {
             method: "POST",
@@ -87,8 +84,6 @@ export default class ChatService {
     }
 
     async kickoutUser(kickedUser,chatRoomID) {
-        console.log(kickedUser);
-        console.log(chatRoomID);
         const data = await this.http.fetch(`/chat/kickout`, {
             method: "PUT",
             body: JSON.stringify({

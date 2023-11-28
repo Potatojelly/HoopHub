@@ -23,7 +23,10 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                         setIsLoading(false);
                     }
                 })
-                .catch((err)=>console.log(err));
+                .catch((err)=>{
+                    setIsLoading(false);
+                    console.log(err)
+                });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[authErrorEventBus]);
@@ -66,6 +69,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 .then(()=>{
                     setUser(undefined);
                     setIsLoading(true);
+                    navigate("/"); 
                 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     ,[authService]);

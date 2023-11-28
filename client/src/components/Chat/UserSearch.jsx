@@ -4,18 +4,17 @@ import styles from './UserSearch.module.css'
 import {v4 as uuidv4} from "uuid";
 import UserSearchCard from './UserSearchCard';
 import {useNavigate,useLocation} from "react-router-dom";
-import {useChatRoomID } from '../../context/ChatRoomContext';
 import { useAddChatRoom } from '../../hooks/useChatRoomData';
 import {IoMdClose} from "react-icons/io";
-import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
 import { useUserSearchData } from '../../hooks/useUserSearchData';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
+import { useParams,useOutletContext } from 'react-router-dom';
 
 export default function UserSearch() {
-    const {state:chatRooms} = useLocation();
     const {user} = useAuth();
     const {data:profileData} = useMyProfileData();
+    const [chatRooms,socket] = useOutletContext();
     const [searchTerm, setSearchTerm] = useState("");
     const {data: users, error} = useUserSearchData(searchTerm);
     const [chatName,setChatName] = useState("");
@@ -24,11 +23,8 @@ export default function UserSearch() {
     const [chatNameError,setChatNameError] = useState("");
 
     const [selectedUser,setSelectedUser] = useState(false);
-
-    const {selectChatRoom,setSelectedChatRoom} = useChatRoomID();
     const {mutate} = useAddChatRoom();
 
-    const {socket} = useSocket();
 
     const navigate = useNavigate();
 
@@ -68,8 +64,6 @@ export default function UserSearch() {
                 return chatRoom.users.find((user)=>user.nickname === participants[0].nickname)
             })
             if(checkChatRoom) {
-                selectChatRoom(checkChatRoom.id);
-                setSelectedChatRoom(checkChatRoom);
                 navigate(`/messages/${participants[0].nickname}/${checkChatRoom.id}`);
                 return;
             }
@@ -77,11 +71,7 @@ export default function UserSearch() {
 
         mutate({participants, chatName},{
             onSuccess: (result) => {
-                console.log(participants);
                 if(result.success === true) {
-                    console.log(result);
-                    selectChatRoom(result.chat.id);
-                    setSelectedChatRoom(result.chat);
                     const text = participants.reduce((prev,cur,index)=>{
                         if(index===participants.length-1) return prev + `${cur.nickname}.`
                         return prev + `${cur.nickname}, `
@@ -118,9 +108,9 @@ export default function UserSearch() {
                             system: true,
                         }
                     }
-                    navigate(`/messages/${result.chat.isGroupChat ? result.chat.chatName : participants[0].nickname}/${result.chat.id}`);
                     socket.emit("new chat room",newChatRoom);
-                    socket.emit("invite", invitationMessage);
+                    navigate(`/messages/${result.chat.isGroupChat ? result.chat.chatName : participants[0].nickname}/${result.chat.id}`);
+                    setTimeout(()=>{socket.emit("invite", invitationMessage);},1000)
                 }
             }
         })

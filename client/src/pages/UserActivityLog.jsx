@@ -11,8 +11,11 @@ export default function UserActivityLog() {
     const {data:userProfile} = useUserProfile(userNickname);
     return (
         <div className={styles.activityContainer}>
-            <UserProfile userNickname={userProfile?.nickname} imageURL={userProfile?.imageURL} statusMsg={userProfile?.statusMsg}/>
-            <ActivityLog userNickname={userProfile?.nickname}/>
+            {userProfile && 
+            <>
+                <UserProfile userNickname={userProfile?.nickname} imageURL={userProfile?.imageURL} statusMsg={userProfile?.statusMsg}/>
+                <ActivityLog userNickname={userProfile?.nickname}/>
+            </>}
         </div>
     );
 }

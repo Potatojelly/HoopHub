@@ -24,7 +24,9 @@ export async function createChatRoom(req,res) {
 }
 
 export async function getMessage(req,res) {
-    const result = await chatRepository.getMessage(req.params.chatRoomID,req.params.offset);
+    const userID = req.userID;
+    const result = await chatRepository.getMessage(req.params.chatRoomID,req.params.offset,userID);
+    if(result?.message) res.status(401).json(result);
     if(result) res.status(200).json({ success: true, result, prevOffset: parseInt(req.params.offset)});
     else res.status(500).json({success:false, message:"Server Error"});
 }

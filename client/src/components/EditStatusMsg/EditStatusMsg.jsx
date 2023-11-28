@@ -13,14 +13,15 @@ export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSu
                 onSuccess: (data)=>{
                     setSuccess(data.message);
                     setTimeout(()=>{setSuccess("")},4000);
+                    onClose(e);
                 },
                 onError: (error)=>{
                     setErrors(error)
                     setTimeout(()=>setErrors(""),4000);
+                    onClose(e);
                 }
             }
         )
-        onClose(e);
     }
 
     const onChange = (e) => {

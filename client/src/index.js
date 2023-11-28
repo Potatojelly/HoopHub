@@ -19,16 +19,13 @@ import ForgotUsername from './pages/ForgotUsername';
 import ForgotPassword from './pages/ForgotPassword';
 import RetrieveService from './service/retr';
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
-import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import PostCreate from './pages/PostCreate';
 import PostService from './service/post';
-import { ChatRoomProvider } from './context/ChatRoomContext';
 import ChatScreen from './components/Chat/ChatScreen';
 import UserSearch from './components/Chat/UserSearch';
 import ChatInbox from './components/Chat/ChatInbox';
 import ViewPost from './pages/ViewPost';
 import { ActivityProvider } from './context/ActivityContext';
-import { SocketProvider } from './context/SocketContext';
 import ActivityLog from './pages/ActivityLog';
 import ActivityPost from './pages/ActivityPost';
 import UserActivityLog from './pages/UserActivityLog';
@@ -50,11 +47,8 @@ const router = createBrowserRouter([
     path: "/",
     element: (<QueryClientProvider client={queryClient}>
                 <AuthProvider authService={authService} authErrorEventBus={authErrorEventBus}>
-                    <ChatRoomProvider>
-                        <App/>
-                    </ChatRoomProvider>
+                  <App/>
                 </AuthProvider>
-                <ReactQueryDevtools initialIsOpen={true}/>
               </QueryClientProvider>),
     errorElement: <NotFound/>,
     children: [
@@ -77,9 +71,7 @@ const router = createBrowserRouter([
       {
         path:"/messages", 
         element: (<ProtectedRoute>
-                      <SocketProvider>
-                          <Messages/>
-                      </SocketProvider>
+                    <Messages/>
                   </ProtectedRoute>),
         children:[
           {
@@ -115,10 +107,12 @@ const router = createBrowserRouter([
                   </ProtectedRoute>),
       },
       {
-        path:"/forums/post/:title/",
-        element: (<ActivityProvider>
-                    <ViewPost/>
-                  </ActivityProvider>)
+        path:"/forums/post/view",
+        element: (<ProtectedRoute>
+                    <ActivityProvider>
+                      <ViewPost/>
+                    </ActivityProvider>
+                  </ProtectedRoute>)
       },
       {
         path:"/forums/search/:keyword", 
@@ -133,7 +127,7 @@ const router = createBrowserRouter([
                   </ProtectedRoute>),
       },
       {
-        path:"/manage-my-activity/my-post/:title/", 
+        path:"/manage-my-activity/my-post/view",
         element: (<ProtectedRoute>
                       <ActivityProvider>
                         <ActivityPost postService={postService}/>
@@ -145,6 +139,14 @@ const router = createBrowserRouter([
         element: (<ProtectedRoute>
                       <UserActivityLog />
                   </ProtectedRoute>),
+      },
+      {
+        path:"/view-user-activity/",
+        element: (<ProtectedRoute>
+                    <ActivityProvider>
+                      <ActivityPost postService={postService}/>
+                    </ActivityProvider>
+                  </ProtectedRoute>)
       },
     ]
   },

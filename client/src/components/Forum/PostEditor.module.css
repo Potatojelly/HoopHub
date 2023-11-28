@@ -45,7 +45,8 @@
     align-self: flex-end;
 }
 
-.createBtn:disabled:hover {
+.createBtn:disabled {
+    background-color: var(--color-grey);
     cursor: not-allowed;
     filter: brightness(1);
 }
@@ -66,6 +67,12 @@
     border-radius: 0.5rem;
     color: white;
     background-color: red;
+}
+
+.cancelBtn:disabled {
+    background-color: var(--color-grey);
+    cursor: not-allowed;
+    filter: brightness(1);
 }
 
 .postInfo {

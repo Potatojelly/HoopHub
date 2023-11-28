@@ -13,7 +13,6 @@ export function useUserProfile(nickname) {
                                                         staleTime: 0,
                                                         refetchOnWindowFocus: false,
                                                         refetchOnMount: true,
-                                                        onSuccess: () => {console.log("Fetched!")}
                                                     })    
 }
 

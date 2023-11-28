@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactQuill, {Quill} from 'react-quill';
 import { useNavigate } from 'react-router-dom';
 import './quill.css';
@@ -7,42 +7,23 @@ import styles from './PostCreator.module.css';
 import ImageResize from 'quill-image-resize';
 import Alarm from '../Alarm/Alarm';
 import { useCreatePost } from '../../hooks/usePostsData';
+import axios from 'axios';
 
 Quill.register('modules/ImageResize', ImageResize);
 
 export default function PostCreator() {
     const navigate = useNavigate();
     const quillRef = useRef();
+    const controller = useRef( new AbortController());
+    const [isUploading,setIsUploading] = useState(false);
     const [isPosting,setIsPosting] = useState(false);
+    const [isCanceled,setIsCanceled] = useState(false);
     const [isError,setIsError] = useState(false);
     const [title, setTitle] = useState("");
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
+    const [progress, setProgress] = useState(0);
     const {mutate:createPost} = useCreatePost();
-
-    const modules = useMemo(()=> {
-        return {
-            toolbar: {
-                container: [
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    [{ 'font': [] }],
-                    [{ 'align': [] }],
-                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, 'link'],
-                    [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466', 'custom-color'] }, 
-                        { 'background': [] }],
-                    ['image', 'video'],
-                ],
-                handlers: {
-                    image: imageHandler,
-                    video: videoHandler,
-                }
-            },
-            ImageResize: {
-                parchment: Quill.import('parchment')
-            }
-        }
-    },[]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -85,14 +66,35 @@ export default function PostCreator() {
         jsonData = {title,content};
         formData.append("jsonFile", JSON.stringify(jsonData));
 
-        setIsPosting(true);
-        createPost(formData,{
+        const uploadProgressCallback = (progressEvent) => {
+            const loaded = progressEvent.loaded; 
+            const total = progressEvent.total; 
+            const percentage = Math.round((loaded / total) * 100);
+            setProgress(percentage);
+            if(percentage === 100) {
+                setIsUploading(false);
+                setIsPosting(true);
+            }
+        }
+
+        setIsUploading(true);
+        createPost({formData,signal:controller.current.signal,callback: uploadProgressCallback},{
             onSuccess: (response) => {
                 const post = {...response}
-                navigate(`/forums/post/${response.title}/?postNum=${post.id}&page=1`);
+                navigate(`/forums/post/view?title=${response.title}&postNum=${post.id}&page=1`);
                 setIsPosting(false);
+                setProgress(0);
             },
-            onError: () => {
+            onError: (err) => {
+                if(err === "CanceledError") {
+                    setIsCanceled(true);
+                    setTimeout(()=>{
+                        setIsCanceled(false);
+                        setIsUploading(false);
+                        navigate("/");
+                    },1000)
+                    return;
+                }
                 setIsError(true);
                 setTimeout(()=>{setIsError(false)},4000);
             }
@@ -152,6 +154,46 @@ export default function PostCreator() {
         })
     };
 
+    const handleCancel = (e) => {
+        e.preventDefault();
+        if(isUploading) {
+            controller.current.abort();
+            return;
+        }
+        navigate("/")
+    }
+
+    useEffect(()=>{
+        const cancelController = controller.current;
+        return () => {
+            cancelController.abort();
+        }
+    },[])
+
+    const modules = useMemo(()=> {
+        return {
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, 'link'],
+                    [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466', 'custom-color'] }, 
+                        { 'background': [] }],
+                    ['image', 'video'],
+                ],
+                handlers: {
+                    image: imageHandler,
+                    video: videoHandler,
+                }
+            },
+            ImageResize: {
+                parchment: Quill.import('parchment')
+            }
+        }
+    },[]);
+
     return (
         <div className={styles.container}>
             <h1 className={styles.pageTitle}>Create Post</h1>
@@ -172,13 +214,15 @@ export default function PostCreator() {
                                     onChange={handleContent}
                                     modules={modules}/>
                         <div className={styles.btnContainer}>
-                            <button className={styles.cancelBtn} onClick={()=>{navigate("/")}}>Cancel</button>
-                            <button className={styles.createBtn} disabled={title.trim().length === 0}>Create</button>
+                            <button className={styles.cancelBtn} onClick={handleCancel} disabled={isPosting}>Cancel</button>
+                            <button className={styles.createBtn} disabled={title.trim().length === 0 || isUploading || isPosting}>Create</button>
                         </div>
                     </div>
                 </form>
             </div>
-            {isPosting && <Alarm message={"Posting..."}/>}
+            {isUploading && <Alarm message={"Uplaoding..."} upload={true} progress={progress}/>}
+            {isPosting && <Alarm message={"Posting..."}/>} 
+            {isCanceled && <Alarm message={"Posting is canceled."}/>} 
             {isError && <Alarm message={"Something went wrong..."}/>}
         </div>
     );

@@ -12,7 +12,6 @@ import SideBar from '../SideBar/SideBar';
 import Logo from '../Logo/Logo';
 import { useAuth } from '../../context/AuthContext';
 import Dropdown from '../Dropdown/Dropdown';
-import { useChatRoomID } from '../../context/ChatRoomContext';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import SmallLoadingSpinner from '../Loader/SmallLoadingSpinner';
 
@@ -21,7 +20,6 @@ export default function Header() {
     const {data: profileData,isFetching} = useMyProfileData();
     const [sidebar, setSidebar] = useState(false);
     const [subFunctions, setSubFunctions] = useState(false);
-    const {selectChatRoom,setSelectedChatRoom} = useChatRoomID();
 
     const showSidebar = () => setSidebar(prev=>!prev);
     const showSubFunctions = () => setSubFunctions(prev=>!prev);
@@ -42,11 +40,8 @@ export default function Header() {
                         <Link to="/"> 
                             <PiNotePencilBold className={styles.service}/>
                         </Link>
-                        <Link to="/messages/inbox" onClick={()=>{selectChatRoom(null); setSelectedChatRoom(null);}}> 
+                        <Link to="/messages/inbox"> 
                             <AiOutlineMessage  className={styles.service}/>
-                        </Link>
-                        <Link to="/view-user-activity/TestingAccount2"> 
-                            <TbMessageCircleSearch  className={styles.service}/>
                         </Link>
                         <Link to="/people"> 
                             <RiUserSearchFill  className={styles.service}/>

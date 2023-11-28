@@ -1,17 +1,19 @@
 import React from 'react';
 import styles from './ActivityCommentCard.module.css';
 import {simplifyDate} from '../../date';
-import {useNavigate} from "react-router-dom";
+import {useNavigate,useParams} from "react-router-dom";
 
 export default function ActivityCommentCard({comment,selectedCard,setSelectedCard,num}) {
     const navigate = useNavigate();
+    const {userNickname} = useParams();
 
     const navigateToPost = () => {
         const state = {type:2, my_comments: num};
         const title = comment.post_title;
         window.history.pushState(state,title);
         setSelectedCard(num);
-        navigate(`/manage-my-activity/my-post/${comment.post_title}/?postNum=${comment.post_id}`,{state:comment});
+        if(userNickname) navigate(`/view-user-activity/?nickname=${userNickname}&title=${comment.post_title}&postNum=${comment.post_id}}`,{state:comment});
+        else navigate(`/manage-my-activity/my-post/view/?title=${comment.post_title}&postNum=${comment.post_id}}`,{state:comment});
     }
 
     return (

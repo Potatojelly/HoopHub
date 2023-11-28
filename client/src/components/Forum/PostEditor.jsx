@@ -14,38 +14,20 @@ import Alarm from '../Alarm/Alarm';
 Quill.register('modules/ImageResize', ImageResize);
 
 export default function PostEditor({post,page,handleEdit}) {
+    const navigate = useNavigate();
+    const quillRef = useRef();
+    const controller = useRef( new AbortController());
     const [title, setTitle] = useState("");
     const queryClient = useQueryClient();
+    const [progress, setProgress] = useState(0);
+    const [isUploading,setIsUploading] = useState(false);
+    const [isPosting,setIsPosting] = useState(false);
+    const [isCanceled,setIsCanceled] = useState(false);
     const [isError,setIsError] = useState(false);
     const [content,setContent] = useState("");
     const [files, setFiles] = useState([]);
     const {mutate: updatePost} = useUpdatePost();
-    const navigate = useNavigate();
-    const quillRef = useRef();
 
-    const modules = useMemo(()=> {
-        return {
-            toolbar: {
-                container: [
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    [{ 'font': [] }],
-                    [{ 'align': [] }],
-                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, 'link'],
-                    [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466', 'custom-color'] }, 
-                        { 'background': [] }],
-                    ['image', 'video'],
-                ],
-                handlers: {
-                    image: imageHandler,
-                    video: videoHandler,
-                }
-            },
-            ImageResize: {
-                parchment: Quill.import('parchment')
-            }
-        }
-    },[]);
 
     useEffect(()=>{
         setTitle(post.title);
@@ -98,16 +80,38 @@ export default function PostEditor({post,page,handleEdit}) {
         jsonData = {title,content};
         formData.append("jsonFile", JSON.stringify(jsonData));
 
-        updatePost({formData,selectedPostID:post.id}, {
+        const uploadProgressCallback = (progressEvent) => {
+            const loaded = progressEvent.loaded; 
+            const total = progressEvent.total; 
+            const percentage = Math.round((loaded / total) * 100);
+            setProgress(percentage);
+            if(percentage === 100) {
+                setIsUploading(false);
+                setIsPosting(true);
+            }
+        }
+
+        setIsUploading(true);
+        updatePost({formData,selectedPostID:post.id,signal:controller.current.signal,callback: uploadProgressCallback}, {
             onSuccess: (response) => {
                 handleEdit();
+                setIsPosting(false);
+                setProgress(0);
                 if(response.success === true) {
                     queryClient.invalidateQueries(['post', post.id]);
                     queryClient.invalidateQueries(['posts']);
-                    navigate(`/forums/post/${response.title}/?postNum=${post.id}&page=${page}`);
+                    navigate(`/forums/post/view?title=${response.title}&postNum=${post.id}&page=${page}`);
                 }
             },
-            onError: () => {
+            onError: (err) => {
+                if(err === "CanceledError") {
+                    setIsCanceled(true);
+                    setTimeout(()=>{
+                        setIsCanceled(false);
+                        navigate("/");
+                    },2000)
+                    return;
+                }
                 setIsError(true);
                 setTimeout(()=>{setIsError(false)},4000);
             }
@@ -167,6 +171,47 @@ export default function PostEditor({post,page,handleEdit}) {
         })
     };
 
+    const handleCancel = (e) => {
+        e.preventDefault();
+        if(isUploading) {
+            controller.current.abort();
+            handleEdit();
+            return;
+        }
+        handleEdit();
+    }
+
+    useEffect(()=>{
+        const cancelController = controller.current;
+        return () => {
+            cancelController.abort();
+        }
+    },[])
+
+    const modules = useMemo(()=> {
+        return {
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, 'link'],
+                    [{ 'color': ['#000000', '#e60000', '#ff9900', '#ffff00', '#008a00', '#0066cc', '#9933ff', '#ffffff', '#facccc', '#ffebcc', '#ffffcc', '#cce8cc', '#cce0f5', '#ebd6ff', '#bbbbbb', '#f06666', '#ffc266', '#ffff66', '#66b966', '#66a3e0', '#c285ff', '#888888', '#a10000', '#b26b00', '#b2b200', '#006100', '#0047b2', '#6b24b2', '#444444', '#5c0000', '#663d00', '#666600', '#003700', '#002966', '#3d1466', 'custom-color'] }, 
+                        { 'background': [] }],
+                    ['image', 'video'],
+                ],
+                handlers: {
+                    image: imageHandler,
+                    video: videoHandler,
+                }
+            },
+            ImageResize: {
+                parchment: Quill.import('parchment')
+            }
+        }
+    },[]);
+
     return (
         <div className={styles.container}>
             <div className={styles.editor}>
@@ -198,12 +243,15 @@ export default function PostEditor({post,page,handleEdit}) {
                                     onChange={handleContent}
                                     modules={modules}/>
                         <div className={styles.btnContainer}>
-                            <button className={styles.cancelBtn} onClick={()=>{handleEdit()}}>Cancel</button>
-                            <button className={styles.createBtn} disabled={title.trim().length === 0}>Edit</button>
+                            <button className={styles.cancelBtn} onClick={handleCancel} disabled={isPosting}>Cancel</button>
+                            <button className={styles.createBtn} disabled={title.trim().length === 0 || isUploading || isPosting}>Edit</button>
                         </div>
                     </div>
                 </form>
             </div>
+            {isUploading && <Alarm message={"Uplaoding..."} upload={true} progress={progress}/>}
+            {isPosting && <Alarm message={"Posting..."}/>} 
+            {isCanceled && <Alarm message={"Posting is canceled."}/>} 
             {isError && <Alarm message={"Something went wrong..."}/>}
         </div>
     );

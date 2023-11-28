@@ -3,11 +3,13 @@ import {useQuery,useInfiniteQuery} from '@tanstack/react-query';
 import { getAuthErrorEventBus } from '../context/AuthContext';
 import HttpClient from '../network/http';
 import ChatService from '../service/chat';
+import {useNavigate} from "react-router-dom";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = getAuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);
 const chatService = new ChatService(httpClient);
+
 export function useChatRoomsData() {
     return useQuery(["direct-chatrooms"],()=>chatService.getMyChatRooms(),         
                                                     {
@@ -27,27 +29,32 @@ export function useChatRoomsData() {
                                                             return data.chats;
                                                         },
                                                         refetchOnMount: true,
-                                                        onSuccess: () => {console.log("Fetched!")}
                                                     })    
 }
 
 export function useChatRoomMessageData(chatRoomID) {
+    const navigate = useNavigate();
     return useInfiniteQuery(["direct-chatroom-message",chatRoomID],({pageParam = 0})=>chatService.getMessage(chatRoomID,pageParam),         
                                                                                 {
                                                                                     getPreviousPageParam : (lastPage, allPages) => {
                                                                                         return lastPage.result.length !== 0 ? lastPage.prevOffset + lastPage.result.length : undefined;
                                                                                     },
-                                                                                    cacheTime: 1000 * 60 * 5,
-                                                                                    staleTime:1000 * 60 * 5,
+                                                                                    staleTime: Infinity,
                                                                                     select: (data) => {
                                                                                         const newData = data?.pages.reduce((prev,cur)=>{
                                                                                             return [...prev,...cur.result];
                                                                                         },[]);
+                                                                                        if(!newData[newData.length-1].realTime) newData[newData.length-1].realTime = false;
                                                                                         return newData;
                                                                                     },
                                                                                     refetchOnWindowFocus: false,
                                                                                     refetchOnMount: true,
-                                                                    
+                                                                                    onError: (err) => {
+                                                                                        if(err.message === "Unauthorized") {
+                                                                                            window.alert("You do not have authorization to access the chat room!");
+                                                                                            navigate("/");
+                                                                                        }
+                                                                                    }
                                                                                 })    
 }
 
@@ -69,15 +76,11 @@ export function useUpdateChatRoomMessage(chatRoomID,newMessage) {
 export function useUnreadMessageNumber(chatRoomID) {
     return useQuery(["unread-message-counter",chatRoomID],()=>chatService.getUnreadMessageNumber(chatRoomID),         
                                                     {
-                                                        cacheTime: 1000 * 60 * 1,
-                                                        staleTime: 0,
+                                                        staleTime: Infinity,
                                                         select: (data) => {
                                                             return data.result;
                                                         },
                                                         refetchOnMount: true,
-                                                        onSuccess: (data) => {
-                                                            console.log(data);
-                                                        }
                                                     })    
 }
 
@@ -90,7 +93,6 @@ export function useSaveLastReadMessage() {
 export function useAddChatRoom() {
     const queryClient = useQueryClient();
     return useMutation((data)=>{const {participants,chatName} = data; return chatService.createChatRoom(participants,chatName)},{onSuccess:(res)=>{
-        console.log(res);
         queryClient.invalidateQueries(["direct-chatrooms"])}})
 }
 

@@ -11,11 +11,10 @@ const profileService = new ProfileService(httpClient);
 
 export function useMyProfileData() {
     const {user} = useAuth();
-    return useQuery(["profile",user],()=>profileService.getProfile(),{
+    return useQuery(["profile"],()=>profileService.getProfile(),{
                                                                     staleTime:Infinity,
-                                                                    cacheTime:Infinity,
                                                                     refetchOnWindowFocus: false,
-                                                                    refetchOnMount: false,
+                                                                    refetchOnMount: true,
                                                                     enabled: !!user
                                                                 });
 }
@@ -23,11 +22,11 @@ export function useMyProfileData() {
 export function useEditProfileImage() {
     const {user} = useAuth();
     const queryClient = useQueryClient();
-    return useMutation((formData)=>profileService.updateProfileImg(formData),{onSuccess: () => {queryClient.invalidateQueries(["profile",user])}});
+    return useMutation((formData)=>profileService.updateProfileImg(formData),{onSuccess: () => {queryClient.invalidateQueries(["profile"])}});
 }
 
 export function useEditStatusMessage() {
     const {user} = useAuth();
     const queryClient = useQueryClient();
-    return useMutation((statusMsg)=>profileService.updateStatusMsg(statusMsg),{onSuccess: () => {queryClient.invalidateQueries(["profile",user])}});
+    return useMutation((statusMsg)=>profileService.updateStatusMsg(statusMsg),{onSuccess: () => {queryClient.invalidateQueries(["profile"])}});
 }

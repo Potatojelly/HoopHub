@@ -11,22 +11,23 @@ export default class HttpClient {
     }
 
     async fetch(url, options) {
-        const {body, method, headers} = options;
+        const {body, method, headers, signal, onUploadProgress} = options;
         console.log(url);
         const req = {
             url,
             method,
             headers: headers,
             data: body,
+            signal,
+            onUploadProgress,
         };
 
         try {
             const res = await this.client(req);
             return res.data;
-        } catch(err) {
+        } catch(err) {;
+            if(axios.isCancel(err)) throw err.name;
             if(err.response.status === 401) {
-                console.log(err);
-                console.log(err.response.data.message);
                 if(err.response.data.message === "Authentication Error") this.authErrorEventBus.notify(
                     "Your login session has expired. Please log in again.");
                 throw err.response.data;

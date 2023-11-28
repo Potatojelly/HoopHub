@@ -22,7 +22,49 @@
 
 .msg {
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     width: 290px;
     color: var(--color-royal-blue);
+}
+
+.progressContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 100%; /* Set the desired width of your progress bar */
+}
+
+.progressBar {
+    width: 70%; /* Match the width of the container */
+    -webkit-appearance: none; /* Removes default styling */
+    appearance: none;
+    height: 15px; /* Set the height of the bar */
+    
+}
+
+/* Style for different browsers */
+.progressBar::-webkit-progress-bar {
+    background:#f0f0f0;
+    border-radius:10px;
+    box-shadow: inset 3px 3px 10px #ccc;
+}
+
+.progressBar::-webkit-progress-value {
+    border-radius:10px;
+    background: #1D976C;
+    background: -webkit-linear-gradient(to right, #93F9B9, #1D976C);
+    background: linear-gradient(to right, #93F9B9, #1D976C);
+}
+
+.progressBar::-moz-progress-bar {
+    background-color: #007bff;
+    border-radius: 10px;
+}
+
+.progressText {
+    font-size: 15px; /* Adjust as needed */
+    margin-left: 3px;
 }

@@ -1,17 +1,19 @@
 import React from 'react';
 import styles from './ActivityPostCard.module.css';
 import {simplifyDate} from '../../date';
-import {useNavigate} from "react-router-dom";
+import {useNavigate,useParams} from "react-router-dom";
 
 export default function ActivityPostCard({post,num,selectedCard,setSelectedCard}) {
     const navigate = useNavigate();
+    const {userNickname} = useParams();
     
     const navigateToPost = () => {
         const state = {type:1, my_posts: num};
         const title = post.title;
         window.history.pushState(state,title);
         setSelectedCard(num);
-        navigate(`/manage-my-activity/my-post/${post.title}/?postNum=${post.id}`);
+        if(userNickname) navigate(`/view-user-activity/?nickname=${userNickname}&title=${post.title}&postNum=${post.id}`);
+        else navigate(`/manage-my-activity/my-post/view/?title=${post.title}&postNum=${post.id}`);
     }
 
     return (

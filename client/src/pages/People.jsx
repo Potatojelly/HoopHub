@@ -37,9 +37,9 @@ export default function People() {
     const handleTaskBtn = (e) => {
         setSelectedTask(parseInt(e.target.id));
         if(parseInt(e.target.id) === 2) {
-            queryClient.refetchQueries("myRequest");
+            queryClient.invalidateQueries(["myRequest"]);
         } else if (parseInt(e.target.id) === 3) {
-            queryClient.refetchQueries("receivedRequest");
+            queryClient.invalidateQueries(["receivedRequest"]);
         }
         setSearchResults([]);
         setSearchTerm("");

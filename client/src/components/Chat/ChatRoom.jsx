@@ -2,26 +2,20 @@ import React, { useEffect} from 'react';
 import styles from './ChatRoom.module.css'
 import {TbMessageCirclePlus} from "react-icons/tb"
 import ChatCard from './ChatCard';
-import {useChatRoomID } from '../../context/ChatRoomContext';
-import {useChatRoomsData, useSaveLastReadMessage} from '../../hooks/useChatRoomData';
+import {useSaveLastReadMessage} from '../../hooks/useChatRoomData';
 import {useNavigate} from "react-router-dom";
-import { useSocket } from '../../context/SocketContext';
 import {useQueryClient} from '@tanstack/react-query';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import LoadingSpinner from '../Loader/LoadingSpinner';
+import { useParams } from 'react-router-dom';
 
-export default function ChatRoom() {
-    const {socket} = useSocket();
+export default function ChatRoom({chatRooms, isFetching, isSuccess, socket}) {
     const queryClient = useQueryClient();
-    const {chatRoomID,selectChatRoom,setSelectedChatRoom} = useChatRoomID();
     const navigate = useNavigate();
-    const {data:chatRooms, isFetching, isSuccess} = useChatRoomsData();
+    const myParam = useParams();
+    const chatRoomID = myParam.chatRoomID;
     const {data:profileData} = useMyProfileData();
     const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
-    console.log("testing!");
-    // useEffect(()=>{
-    //     queryClient.invalidateQueries(["direct-chatrooms"]);
-    // },[])
 
     async function updateSelectedChatRoom (newMessageReceived) {
         if(queryClient.getQueryData(["direct-chatroom-message",newMessageReceived.chat.id])) {
@@ -42,7 +36,6 @@ export default function ChatRoom() {
     }
 
     async function newMessage (newMessageReceived) {
-        console.log(newMessageReceived.content);
         const updatedLastestMessage = {content:newMessageReceived.content,
                                         createdAt:newMessageReceived.createdAt,
                                         id:newMessageReceived.id,
@@ -91,7 +84,6 @@ export default function ChatRoom() {
                                                 users: invitationMessage.chat.users,
                                                 latestMessage:updatedLastestMessage,
                                                 unReadMessageCount:invitationMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}; 
-                    if(invitationMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                         return updatedChatRoom;
                     } else {
                         return chatRoom;
@@ -119,7 +111,6 @@ export default function ChatRoom() {
                                         leftUsers: chatRoom.leftUsers ? [...chatRoom.leftUsers, exitMessage.sender] : [exitMessage.sender],
                                         latestMessage:updatedLastestMessage,
                                         unReadMessageCount:exitMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}
-            if(exitMessage.sender.system && exitMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                 return updatedChatRoom;
             } else {
                 return chatRoom;
@@ -145,8 +136,6 @@ export default function ChatRoom() {
                 }
             })
             if(kickoutMessage.sender.system && kickoutMessage.chat.id === chatRoomID) {
-                setSelectedChatRoom(null);
-                selectChatRoom(null);
                 window.alert("You are kicked out of the room");
                 navigate("/messages/inbox");
             }
@@ -163,7 +152,6 @@ export default function ChatRoom() {
                                         leftUsers: chatRoom.leftUsers ? [...chatRoom.leftUsers, kickoutMessage.kickedUser] :[kickoutMessage.kickedUser],
                                         latestMessage:updatedLastestMessage,
                                         unReadMessageCount:kickoutMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}; 
-                    if(kickoutMessage.sender.system && kickoutMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                         return updatedChatRoom;
                     } else {
                         return chatRoom;
@@ -191,7 +179,6 @@ export default function ChatRoom() {
                                         chatName:chatNameMessage.chat.chatName,
                                         latestMessage:updatedLastestMessage,
                                         unReadMessageCount:chatNameMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}; 
-                if(chatNameMessage.chat.id === chatRoomID) setSelectedChatRoom(updatedChatRoom);
                     return updatedChatRoom;
                 } else {
                     return chatRoom;
@@ -208,8 +195,7 @@ export default function ChatRoom() {
 
     useEffect(()=>{
         if(socket && isSuccess) {
-            console.log("chatRoom!");
-            socket.on("new message received",async (message)=>{console.log(message);newMessage(message)});
+            socket.on("new message received",async (message)=>{newMessage(message)});
             socket.on("new chat message received",(message)=>{newChatRoomMessage(message)});
             socket.on("exit message received",(message)=>{exitMessage(message)});
             socket.on("kickout message received",(message)=>{kickoutMessage(message)});
@@ -231,8 +217,6 @@ export default function ChatRoom() {
     },[socket,isSuccess,chatRoomID]); 
 
     const searchUser = () => {
-        selectChatRoom(null);
-        setSelectedChatRoom(null);
         navigate("/messages/search-user", {state : chatRooms});
     }
 

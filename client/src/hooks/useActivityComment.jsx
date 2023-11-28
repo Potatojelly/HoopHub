@@ -83,6 +83,7 @@ export function useUserCommentsData(nickname, currentPage) {
     const {user} = useAuth();
     return useQuery(["user-comments", nickname, currentPage],()=>postService.getUserComments(nickname,currentPage,COMMENTSPERPAGE),
                                                                                 {
+                                                                                    staleTime: Infinity,
                                                                                     refecthOnMount: true, 
                                                                                     refetchOnWindowFocus: false,
                                                                                     enabled:!!user && !!nickname,
