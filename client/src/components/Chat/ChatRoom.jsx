@@ -107,8 +107,8 @@ export default function ChatRoom({chatRooms, isFetching, isSuccess, socket}) {
             const result = oldData.chats.map((chatRoom)=>{
             if(chatRoom.id === exitMessage.chat.id) {
                 const updatedChatRoom = {...chatRoom,
-                                        users: chatRoom.users.filter((user)=>user.nickname !== exitMessage.sender.nickname),
-                                        leftUsers: chatRoom.leftUsers ? [...chatRoom.leftUsers, exitMessage.sender] : [exitMessage.sender],
+                                        users: chatRoom.users.filter((user)=>user.nickname !== exitMessage.sender.user?.nickname),
+                                        leftUsers: chatRoom.leftUsers ? [...chatRoom.leftUsers, exitMessage.sender.user] : [exitMessage.sender.user],
                                         latestMessage:updatedLastestMessage,
                                         unReadMessageCount:exitMessage.chat.id === chatRoomID ? 0 : chatRoom.unReadMessageCount+1}
                 return updatedChatRoom;
@@ -231,7 +231,7 @@ export default function ChatRoom({chatRooms, isFetching, isSuccess, socket}) {
             <div className={styles.listsContainer}>
                 {isFetching && <div className={styles.loadingSpinner}><LoadingSpinner/></div>}
                 <ul className={styles.directMsgList}>
-                    {chatRooms && chatRooms.map((chatRoom)=><ChatCard key={chatRoom.id} 
+                    {!isFetching && chatRooms && chatRooms.map((chatRoom)=><ChatCard key={chatRoom.id} 
                                                                     chatRoom={chatRoom}/>)}
                 </ul>
             </div>

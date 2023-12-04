@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import styles from './Login.module.css'
 import InputGroup from '../components/InputGroup/InputGroup';
 import Logo from '../components/Logo/Logo';
+import {Link} from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import {useNavigate} from "react-router-dom";
 
@@ -47,14 +48,14 @@ export default function Login() {
                 <div className={styles.smallContainer}>
                     <small>
                         New to Hoop Hub? 
-                        <a href="/register" className={styles.linkBtn}>Sign Up</a>
+                        <Link to="/register" className={styles.linkBtn}>Sign Up</Link>
                     </small>
                     <div className={styles.forgotContainer}>
                         <small>
-                            <a href="/forgot-username" className={styles.linkBtn}>Forgot username?</a>
+                            <Link to="/forgot-username" className={styles.linkBtn}>Forgot username?</Link>
                         </small>
                         <small>
-                            <a href="/forgot-password" className={styles.linkBtn}>Forgot password?</a>
+                            <Link to="/forgot-password" className={styles.linkBtn}>Forgot password?</Link>
                         </small>
                     </div>
                 </div>

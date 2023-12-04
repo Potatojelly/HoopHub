@@ -56,7 +56,7 @@ const CreateReply = ({author, commentID, selectedPostID, handleReplyClick, custo
             },
             onError: () => {
                 setIsError(true);
-                setTimeout(()=>{setIsError(false)},4000);
+                setTimeout(()=>{setIsError(false)},3000);
             }
         })
     }

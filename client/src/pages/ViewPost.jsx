@@ -3,8 +3,9 @@ import styles from './ViewPost.module.css'
 import Post from '../components/Forum/Post';
 import Posts from '../components/Forum/Posts';
 import SearchBar from '../components/Forum/SearchBar';
-import {useNavigate,useLocation  } from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import { useUpdatePostView } from '../hooks/usePostsData';
+
 export default function ViewPost() {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);

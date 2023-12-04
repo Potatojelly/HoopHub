@@ -39,7 +39,7 @@ export async function updateImage(req,res) {
     const user = await myRepository.findById(req.userID);
     const imageURL = req.file.location;
 
-    const result = await profileRepository.updateImage({username:user.username, imageURL});
+    const result = await profileRepository.updateImage({username:user.username, mongoID:user.mongoID, imageURL});
 
     if(result) res.status(200).json({success:true, message:"Update Profile Image Success"});
     else res.status(500).json({success:false, imageURL:"Server Error"});

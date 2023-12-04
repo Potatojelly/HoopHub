@@ -13,7 +13,8 @@ export default function PostCreateEntry() {
         <>
             {user && <div className={styles.container}>
                 
-                    <img src={profileData?.imageURL} alt="myImg"  className={styles.myImg}/>
+                {!profileData && <div className={styles.imageContainer}></div>}
+                {profileData && <img src={profileData?.imageURL} alt="."  className={styles.myImg}/>}
                 <input className={styles.linker}
                         type="text" 
                         placeholder="Create Post"

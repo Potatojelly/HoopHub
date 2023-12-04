@@ -4,7 +4,6 @@ import {Link} from "react-router-dom";
 import Button from '../Button/Button';
 import {AiOutlineMessage} from "react-icons/ai";
 import {RiUserSearchFill} from "react-icons/ri";
-import {TbMessageCircleSearch} from "react-icons/tb";
 import {PiNotePencilBold} from "react-icons/pi";
 import {GiHamburgerMenu} from "react-icons/gi";
 import {IoIosArrowDown} from "react-icons/io";

@@ -32,7 +32,6 @@ import UserActivityLog from './pages/UserActivityLog';
 import ChatService from './service/chat';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
-
 initAuthErrorEventBus();
 const authErrorEventBus = getAuthErrorEventBus();
 const httpClient = new HttpClient(baseURL,authErrorEventBus);

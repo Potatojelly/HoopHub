@@ -8,6 +8,7 @@ import {config} from "../config.js";
 import AWS from 'aws-sdk';
 import path from 'path'; //
 
+
 AWS.config.update(config.aws);
 const s3 = new AWS.S3();
 ffmpeg.setFfmpegPath(config.ff.ffmpeg);
@@ -116,6 +117,7 @@ export async function createPost(req,res) {
     const data = JSON.parse(req.body.jsonFile)
     const title = data.title;
     let content = data.content;
+    let tags = [];
     let thumbnailURL = "";
 
     if( Object.keys(req.files).length > 0) {
@@ -140,11 +142,13 @@ export async function createPost(req,res) {
         }
     } 
 
-    if(content && content[0].startsWith("<img")) {
-        const url = content[0].match(/src="([^"]+)"/);
+    tags = content.match(/(<iframe[^>]*src="[^"]*"[^>]*>|<img[^>]*src="[^"]*"[^>]*>)/gi);
+
+    if(tags && tags[0].startsWith("<img")) {
+        const url = tags[0].match(/src="([^"]+)"/);
         thumbnailURL = url[1];
-    } else if(content && content[0].startsWith("<iframe")) {
-        const url = content[0].match(/src="([^"]+)"/);
+    } else if(tags && tags[0].startsWith("<iframe")) {
+        const url = tags[0].match(/src="([^"]+)"/);
         const s3VideoUrl = url[1];
         const outputPath = "public/thumbnails/tempThumbnail.jpg";
         const extension = s3VideoUrl.split(".").pop();
@@ -213,6 +217,7 @@ export async function updatePost(req,res) {
     }
 
     // extract thumbnail
+    console.log(newContent);
     if(newContent && newContent[0].startsWith("<img")) {
         const url = newContent[0].match(/src="([^"]+)"/);
         thumbnailURL = url[1];
@@ -312,8 +317,6 @@ async function getThumbnail(s3VideoUrl, outputPath, extension) {
                 }
             });
         });
-
-        
 
         fs.unlinkSync('temp_video.mp4');
         fs.unlinkSync(outputPath);

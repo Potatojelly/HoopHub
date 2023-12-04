@@ -5,15 +5,12 @@ const messageSchema = mongoose.Schema(
     {
         sender: {
             system: {type: Boolean, default: false},
-            id: {type:Number},
-            nickname: {type:String},
-            imageURL: {type:String},
+            user: {type:mongoose.Schema.Types.ObjectId, ref: "User",default:null},
         },
         isInit: {type: Boolean},
         image: {type:Boolean, default: false},
         content: {type:String, trim: true},
         chat: {type: mongoose.Schema.Types.ObjectID,ref: "Chat"}
-
     },
     {
         timestamps: true,

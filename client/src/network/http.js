@@ -28,8 +28,7 @@ export default class HttpClient {
         } catch(err) {;
             if(axios.isCancel(err)) throw err.name;
             if(err.response.status === 401) {
-                if(err.response.data.message === "Authentication Error") this.authErrorEventBus.notify(
-                    "Your login session has expired. Please log in again.");
+                if(err.response.data.message === "Authentication Error") this.authErrorEventBus.notify("Your login session has expired. Please log in again.");
                 throw err.response.data;
             }
             throw err.response.data;

@@ -16,7 +16,7 @@ export const config = {
         saltRounds : parseInt(required("BCRYPT_SALT_ROUNDS")),
     },
     port : {
-        port : parseInt(required("PORT")),
+        serverPort : parseInt(required("PORT")),
     },
     db: {
         host: required("DB_HOST"),
@@ -50,5 +50,15 @@ export const config = {
     ff : {
         ffmpeg: required("FFMPEG_PATH"),
         ffprobe: required("FFPROBE_PATH"),
+    },
+    profile: {
+        defaultProfileURL: required("DEFAULT_PROFILE_URL")
+    },
+    origin: {
+        clientURL: required("ORIGIN")
+    },
+    secretHeader: {
+        value: required("SECRET_HEADER_VALUE")
     }
+
 }

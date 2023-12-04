@@ -84,7 +84,8 @@ export function useUserPostsData(nickname,currentPage) {
     const {user} = useAuth();
     return useQuery(["user-posts",nickname,currentPage],()=>postService.getUserPosts(nickname,currentPage,POSTSPERPAGE),
                                                                     {
-                                                                        staleTime: Infinity,
+                                                                        cacheTime: 0,
+                                                                        staleTime: 0,
                                                                         refecthOnMount: true, 
                                                                         refetchOnWindowFocus: false,
                                                                         enabled: !!user && !!nickname,

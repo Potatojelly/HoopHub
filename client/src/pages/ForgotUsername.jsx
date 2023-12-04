@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './ForgotUsername.module.css'
 import Logo from '../components/Logo/Logo';
+import {Link} from "react-router-dom";
 import InputGroup from '../components/InputGroup/InputGroup';
 
 export default function ForgotUsername({retrieveService}) {
@@ -42,7 +43,7 @@ export default function ForgotUsername({retrieveService}) {
                     </button>
                 </form>
                 <small>
-                    <a href="/login" className={styles.linkBtn}>Return to Login</a>
+                    <Link to="/login" className={styles.linkBtn}>Return to Login</Link>
                 </small>
             </div>
             <div>

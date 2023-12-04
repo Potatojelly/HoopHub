@@ -13,7 +13,7 @@ const chatService = new ChatService(httpClient);
 export function useChatRoomsData() {
     return useQuery(["direct-chatrooms"],()=>chatService.getMyChatRooms(),         
                                                     {
-                                                        staleTime: Infinity,
+                                                        staleTime: 0,
                                                         select: (data) => {
                                                             data.chats.sort((a, b) => {
                                                                 if (a.latestMessage && b.latestMessage) {
@@ -28,6 +28,7 @@ export function useChatRoomsData() {
                                                             })
                                                             return data.chats;
                                                         },
+                                                        refetchOnWindowFocus: false,
                                                         refetchOnMount: true,
                                                     })    
 }
@@ -39,7 +40,7 @@ export function useChatRoomMessageData(chatRoomID) {
                                                                                     getPreviousPageParam : (lastPage, allPages) => {
                                                                                         return lastPage.result.length !== 0 ? lastPage.prevOffset + lastPage.result.length : undefined;
                                                                                     },
-                                                                                    staleTime: Infinity,
+                                                                                    staleTime: 0,
                                                                                     select: (data) => {
                                                                                         const newData = data?.pages.reduce((prev,cur)=>{
                                                                                             return [...prev,...cur.result];
@@ -48,7 +49,6 @@ export function useChatRoomMessageData(chatRoomID) {
                                                                                         return newData;
                                                                                     },
                                                                                     refetchOnWindowFocus: false,
-                                                                                    refetchOnMount: true,
                                                                                     onError: (err) => {
                                                                                         if(err.message === "Unauthorized") {
                                                                                             window.alert("You do not have authorization to access the chat room!");
@@ -76,7 +76,8 @@ export function useUpdateChatRoomMessage(chatRoomID,newMessage) {
 export function useUnreadMessageNumber(chatRoomID) {
     return useQuery(["unread-message-counter",chatRoomID],()=>chatService.getUnreadMessageNumber(chatRoomID),         
                                                     {
-                                                        staleTime: Infinity,
+                                                        cacheTime: 0,
+                                                        staleTime: 0,
                                                         select: (data) => {
                                                             return data.result;
                                                         },
@@ -86,13 +87,12 @@ export function useUnreadMessageNumber(chatRoomID) {
 
 
 export function useSaveLastReadMessage() {
-    return useMutation((chatRoomID)=>chatService.saveLastReadMessage(chatRoomID),
-                                {onSuccess:(result)=>{}})
+    return useMutation((chatRoomID)=>chatService.saveLastReadMessage(chatRoomID),)
 }
 
 export function useAddChatRoom() {
     const queryClient = useQueryClient();
-    return useMutation((data)=>{const {participants,chatName} = data; return chatService.createChatRoom(participants,chatName)},{onSuccess:(res)=>{
+    return useMutation((data)=>{const {participants,chatName} = data; return chatService.createChatRoom(participants,chatName)},{onSuccess:()=>{
         queryClient.invalidateQueries(["direct-chatrooms"])}})
 }
 

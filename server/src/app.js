@@ -13,11 +13,13 @@ import chatRouter from "./router/chat.js";
 import cookieParser from 'cookie-parser';
 import {connectMongoDB, db} from "./db/database.js";
 import { initSocket } from './connection/socket.js';
+import {config} from "./config.js";
+import { secretHeaderMiddleware } from './middleware/secretHeader.js';
 
 const app = express();
 
 const corsOption = {
-    origin:["http://localhost:3000","http://localhost:3001","http://localhost:3002","http://localhost:3003"],
+    origin:[config.origin.clientURL],
     optionSuccessStatus: 200,
     credentials: true,
 }
@@ -27,7 +29,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(cors(corsOption));
 app.use(helmet());
-
+app.use(secretHeaderMiddleware)
 
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
@@ -57,8 +59,7 @@ connectMongoDB()
     })
     .catch(console.error);
 
-let port = 8080;
-
+const port = parseInt(config.port.serverPort);
 const server = app.listen(port, async() => {
     console.log(`Server running at http://localhost:${port}`);
 });

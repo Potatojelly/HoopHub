@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './Post.module.css'
 import Comments from './Comments';
 import {simplifyDate} from '../../date';
@@ -9,7 +9,7 @@ import {FiEdit} from "react-icons/fi";
 import {BsTrash3} from "react-icons/bs"
 import {useNavigate,useLocation  } from "react-router-dom";
 import PostEditor from './PostEditor';
-import { useDeletePost, usePostData, useUpdatePostView } from '../../hooks/usePostsData';
+import { useDeletePost, usePostData } from '../../hooks/usePostsData';
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import LoadingSpinner from '../Loader/LoadingSpinner';
 

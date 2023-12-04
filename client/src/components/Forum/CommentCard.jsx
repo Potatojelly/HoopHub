@@ -38,7 +38,7 @@ const CommentCard = ({index,comment,selectedPostID,handleReplyClick,openReplyInd
             },
             onError: () => {
                 setIsError(true);
-                setTimeout(()=>{setIsError(false)},4000);
+                setTimeout(()=>{setIsError(false)},3000);
             }
         })
     }
@@ -52,7 +52,7 @@ const CommentCard = ({index,comment,selectedPostID,handleReplyClick,openReplyInd
                 },
                 onError: () => {
                     setIsError(true);
-                    setTimeout(()=>{setIsError(false)},4000);
+                    setTimeout(()=>{setIsError(false)},3000);
                 }
             })
         } 

@@ -113,7 +113,7 @@ export default function PostEditor({post,page,handleEdit}) {
                     return;
                 }
                 setIsError(true);
-                setTimeout(()=>{setIsError(false)},4000);
+                setTimeout(()=>{setIsError(false)},3000);
             }
         })
     };

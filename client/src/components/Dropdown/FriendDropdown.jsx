@@ -14,14 +14,14 @@ export default function FriendDropdown({position,nickname,setDeleted,setDeletedM
                     setTimeout(()=>{
                         setDeleted(false);
                         setDeletedMsg("");
-                    },4000)
+                    },3000)
                 },
-                onError: (err) => {
+                onError: () => {
                     setDeletedMsg(`Failed to delete${nickname}.`);
                     setTimeout(()=>{
                         setDeleted(false);
                         setDeletedMsg("");
-                    },4000)
+                    },3000)
                 }
             }
         )

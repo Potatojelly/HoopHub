@@ -103,6 +103,6 @@
 .noParticipants {
     width: 50px;
     height: 48px;
-    background: linear-gradient(45deg, orange 25%, white 0, white 50%, orange 0, orange 75%, white 0 );
+    background: linear-gradient(45deg, var(--color-orange) 25%, white 0, white 50%, var(--color-orange) 0, var(--color-orange) 75%, white 0 );
     background-size:42.4px 42.4px;
 }

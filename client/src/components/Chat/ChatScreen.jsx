@@ -10,11 +10,11 @@ import {useQueryClient} from '@tanstack/react-query';
 import {v4 as uuidv4} from "uuid";
 import SystemMessage from './SystemMessage';
 import {useNavigate} from "react-router-dom";
-import LoadingSpinner from '../Loader/LoadingSpinner';
 import { simplifyDateForChatRoom, simplifyTimeForMsg } from '../../date';
 import {AiFillEdit} from "react-icons/ai";
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 import { useParams,useOutletContext } from 'react-router-dom';
+import SmallLoadingSpinner from '../Loader/SmallLoadingSpinner';
 
 export default function ChatScreen({chatService}) {
     const queryClient = useQueryClient();
@@ -23,7 +23,6 @@ export default function ChatScreen({chatService}) {
     const chatRoomID = myParam.chatRoomID;
     const textarea = useRef();
     const observer = useRef();
-    const chatContainerRef = useRef(null);
     const messageEndRef = useRef(null);
     const bottomObserver = useRef();
     const [isInit,setIsInit] = useState(true);
@@ -45,7 +44,6 @@ export default function ChatScreen({chatService}) {
     const {mutate:inviteUsers} = useInviteUsers();
     const {mutate:sendImageMessage} = useSendImageMessage();
     const [selectedChatRoom,setSelectedChatRoom] = useState(chatRooms.find((chatRoom)=>chatRoom.id===chatRoomID));
-
     useEffect(()=>{setSelectedChatRoom(chatRooms.find((chatRoom)=>chatRoom.id===chatRoomID))},[chatRoomID,chatRooms])
 
     const moveScrollToBottom = () => {
@@ -97,9 +95,7 @@ export default function ChatScreen({chatService}) {
                                         createdAt: new Date(),
                                         sender: {
                                             system: true,
-                                            id: null,
-                                            nickname: profileData?.nickname,
-                                            imageURL: profileData?.imageURL,
+                                            user: {nickname: profileData?.nickname,imageURL: profileData?.imageURL}
                                         },
                                         id: uuidv4(),
                                         isLoading: true,
@@ -124,9 +120,7 @@ export default function ChatScreen({chatService}) {
                                             createdAt: new Date(),
                                             sender: {
                                                 system: true,
-                                                id: null,
-                                                nickname: profileData?.nickname,
-                                                imageURL: profileData?.imageURL,
+                                                user: {nickname: profileData?.nickname,imageURL: profileData?.imageURL}
                                             },
                                             kickedUser,
                                             id: uuidv4(),
@@ -171,9 +165,7 @@ export default function ChatScreen({chatService}) {
                                             createdAt: new Date(),
                                             sender: {
                                                 system: true,
-                                                id: null,
-                                                nickname:profileData?.nickname,
-                                                imageURL:profileData?.imageURL,
+                                                user: {nickname: profileData?.nickname,imageURL: profileData?.imageURL}
                                             },
                                             id: uuidv4(),
                                             isLoading: false,
@@ -217,8 +209,7 @@ export default function ChatScreen({chatService}) {
                     users: updatedUsers,
                     unReadMessageCount:0, 
                     sender: {
-                        nickname: profileData?.nickname,
-                        imageURL: profileData?.imageURL,
+                        user: {nickname: profileData?.nickname,imageURL: profileData?.imageURL},
                         system: true,
                     },
                     receiver: [...invitedUsers]
@@ -231,9 +222,7 @@ export default function ChatScreen({chatService}) {
                                         createdAt: new Date(),
                                         sender: {
                                             system: true,
-                                            id: null,
-                                            nickname:profileData?.nickname,
-                                            imageURL: profileData?.imageURL,
+                                            user: {nickname: profileData?.nickname,imageURL: profileData?.imageURL},
                                         },
                                         id: uuidv4(),
                                         isLoading: false,
@@ -268,7 +257,8 @@ export default function ChatScreen({chatService}) {
         }
     
         let init = true;
-        if (messages.length > 0 && messages[messages.length - 1].sender.nickname === profileData?.nickname) {
+
+        if (messages.length > 0 && messages[messages.length - 1].sender.user?.nickname === profileData?.nickname) {
             init = false;
         }
     
@@ -280,8 +270,7 @@ export default function ChatScreen({chatService}) {
             id: uuidv4(),
             isInit: init,
             sender: {
-                nickname:profileData?.nickname,
-                imageURL: profileData?.imageURL,
+                user:{nickname:profileData?.nickname,imageURL: profileData?.imageURL,},
                 system: false,
             },
             isLoading: true,
@@ -311,7 +300,7 @@ export default function ChatScreen({chatService}) {
                     updateChatRoomsData(updatedChatRooms);    
                     socket.emit("new message", newMessage);
                 }
-            }).catch( (err) => {
+            }).catch(() => {
                 newMessage.isLoading = false;
                 newMessage.error = true;
             })
@@ -355,8 +344,7 @@ export default function ChatScreen({chatService}) {
                         id: uuidv4(),
                         isInit: init,
                         sender: {
-                            nickname:profileData?.nickname,
-                            imageURL: profileData?.imageURL,
+                            user:{nickname:profileData?.nickname,imageURL: profileData?.imageURL,},
                             system:false,
                         },
                         isLoading: true,
@@ -451,13 +439,18 @@ export default function ChatScreen({chatService}) {
         else setEnable(true);
     }, [selectedChatRoom]);
 
+    useEffect(()=>{
+        return ()=>{queryClient.removeQueries(["direct-chatroom-message"])}
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
 
     const messageContent = messages && messages.length > 0 &&
                             messages.map((message,index)=>{
                                 let displayTime = true;
                                 let displayDate = true;
                                 if(index !== messages.length-1 &&
-                                    message.sender.nickname === messages[index+1].sender.nickname &&
+                                    // message.sender.nickname === messages[index+1].sender.nickname &&
+                                    message.sender.user?.nickname === messages[index+1].sender.user?.nickname &&
                                     simplifyTimeForMsg(message.createdAt) === simplifyTimeForMsg(messages[index+1].createdAt)) {
                                         displayTime = false;
                                 }
@@ -468,7 +461,7 @@ export default function ChatScreen({chatService}) {
 
                                 if(index === 0) {
                                     return  message.sender.system ? <SystemMessage key={message.id} ref={isInit ? undefined : lastElementRef} message={message}/> :
-                                            message.sender.nickname === profileData?.nickname ? <MyMessage key={message.id} 
+                                            message.sender.user?.nickname === profileData?.nickname ? <MyMessage key={message.id} 
                                                                                                 ref={isInit ? undefined : lastElementRef}
                                                                                                 message={message} 
                                                                                                 displayTime={displayTime}
@@ -482,7 +475,7 @@ export default function ChatScreen({chatService}) {
                                                                                                     start={message.isInit}/>
                                 } else {
                                     return message.sender.system ? <SystemMessage key={message.id} message={message}/> :
-                                    message.sender.nickname === profileData?.nickname ? <MyMessage key={message.id} 
+                                    message.sender.user?.nickname === profileData?.nickname ? <MyMessage key={message.id} 
                                                                                         message={message} 
                                                                                         displayTime={displayTime}
                                                                                         displayDate={displayDate}
@@ -521,11 +514,11 @@ export default function ChatScreen({chatService}) {
                     </button>
                 </div>
                 <div className={styles.mainScreen}>
-                    <div id="chatContainer" className={styles.conversationScreen} ref={chatContainerRef}>
+                    <div id="chatContainer" className={styles.conversationScreen}>
                         {isFetching &&  
-                            <div className={styles.loadingSpinner}><LoadingSpinner/></div>}
+                            <div className={styles.loadingSpinner}><SmallLoadingSpinner/></div>}
                         {messageContent}
-                        {messages && <div ref={bottomRef}><div ref={messageEndRef}></div></div>}
+                        {messages && <div ref={bottomRef}><div ref={messageEndRef} className={styles.messageEndRef}></div></div>}
                     </div>
                     <form className={styles.msgContainer}>
                             <div className={styles.textContainer}>

@@ -54,7 +54,7 @@ export default function UserSearch() {
             setChatNameError("Please type chat name."); 
             setTimeout(() => {
                 setChatNameError(null);
-            }, 3000);
+            }, 2000);
             return;
         }
 
@@ -86,9 +86,7 @@ export default function UserSearch() {
                         latestMessage: null,
                         unReadMessageCount:0, 
                         sender: {
-                            id: user.id,
-                            nickname: profileData?.nickname,
-                            imageURL: profileData?.imageURL,
+                            user: null,
                             system: true,
                         },
                         receiver: [...participants],
@@ -102,15 +100,13 @@ export default function UserSearch() {
                         id: uuidv4(),
                         isInit: false,
                         sender: {
-                            id: null,
-                            nickname: null,
-                            imageURL: null,
+                            user:null,
                             system: true,
                         }
                     }
                     socket.emit("new chat room",newChatRoom);
-                    navigate(`/messages/${result.chat.isGroupChat ? result.chat.chatName : participants[0].nickname}/${result.chat.id}`);
-                    setTimeout(()=>{socket.emit("invite", invitationMessage);},1000)
+                    setTimeout(()=>{navigate(`/messages/${result.chat.isGroupChat ? result.chat.chatName : participants[0].nickname}/${result.chat.id}`);},500);
+                    setTimeout(()=>{socket.emit("invite", invitationMessage);},500)
                 }
             }
         })
@@ -150,6 +146,7 @@ export default function UserSearch() {
                     {searchResults && searchResults.map((user) => (
                         <UserSearchCard key={uuidv4()} 
                                             userID={user.id}
+                                            userMongoID={user.mongoID}
                                             imageURL={user.imageURL} 
                                             nickname={user.nickname}
                                             chatName={chatName}

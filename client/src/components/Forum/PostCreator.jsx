@@ -7,7 +7,6 @@ import styles from './PostCreator.module.css';
 import ImageResize from 'quill-image-resize';
 import Alarm from '../Alarm/Alarm';
 import { useCreatePost } from '../../hooks/usePostsData';
-import axios from 'axios';
 
 Quill.register('modules/ImageResize', ImageResize);
 
@@ -96,7 +95,7 @@ export default function PostCreator() {
                     return;
                 }
                 setIsError(true);
-                setTimeout(()=>{setIsError(false)},4000);
+                setTimeout(()=>{setIsError(false)},3000);
             }
         })
     };

@@ -82,13 +82,13 @@ export default function ActivityPosts({userNickname}) {
                 <span className={styles.infoCreatedDate}>Created Date</span>
                 <span className={styles.infoView}>Views</span>
             </div>
-            {data && !data.my_posts && <div className={styles.noContent}> <span>No Posts</span> </div>}
-            {data && data.my_posts.map((post,index)=><MyPostCard key={index} 
+            {data?.my_posts.length === 0 && <div className={styles.noContent}> <span>No Posts</span> </div>}
+            {data?.my_posts.map((post,index)=><MyPostCard key={index} 
                                                         post={post} 
                                                         num={(currentPage-1)*POSTSPERPAGE+(index+1)}
                                                         selectedCard={selectedCard}
                                                         setSelectedCard={setSelectedCard}/>)}
-            {data && data.my_posts && totalPage &&
+            {data?.my_posts.length > 0 && totalPage &&
             <footer>          
                 <nav className={styles.nav}>
                     {hasPrev && 

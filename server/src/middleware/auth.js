@@ -32,6 +32,7 @@ export const isAuth = async (req,res,next) => {
                 return res.status(401).json(AUTH_ERROR);
             }
             req.userID = user.id;
+            req.mongoID = user.mongoID;
             req.token = token;
             next();
         }

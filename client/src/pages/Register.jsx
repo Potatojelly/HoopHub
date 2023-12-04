@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import styles from './Register.module.css'
 import InputGroup from '../components/InputGroup/InputGroup';
+import {Link} from "react-router-dom";
 import Logo from '../components/Logo/Logo';
 import { useAuth } from '../context/AuthContext';
 
@@ -72,7 +73,7 @@ export default function Register() {
                 </form>
                 <small>
                     Already have an account? 
-                    <a href="/login" className={styles.login}>Login</a>
+                    <Link to="/login" className={styles.login}>Login</Link>
                 </small>
                 {success && <p className={styles.successMsg}> ✅ {success} </p>}
             </div>

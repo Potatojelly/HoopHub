@@ -10,9 +10,9 @@ const OpponentMessage = ({message, displayTime, displayDate, start},ref) => {
             <div className={`${start && styles.initialmsgLine} ${!start && styles.msgLine}`} ref={ref && ref}>
                 {start && 
                 <div className={styles.container}>  
-                    <img src={message.sender.imageURL} alt="opponentProfileImg"  className={styles.profileImg}/>
+                    <img src={message.sender.user?.imageURL} alt="opponentProfileImg"  className={styles.profileImg}/>
                     <div className={styles.subContainer}>
-                        <div className={styles.name}>{message.sender.nickname}</div>
+                        <div className={styles.name}>{message.sender.user?.nickname}</div>
                         <div className={styles.msgContainer}>
                             <div className={styles.initialSpeechBubble}>
                                 {message.image ? 

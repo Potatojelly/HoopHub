@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChatRoom from '../components/Chat/ChatRoom';
 import styles from './Messages.module.css'
 import { Outlet } from 'react-router-dom';
@@ -10,10 +10,10 @@ import LoadingSpinner from '../components/Loader/LoadingSpinner';
 let chatSocket;
 
 export default function Messages() {
-    // const {setSocket} = useSocket();
     const {data:profileData} = useMyProfileData();
     const {data:chatRooms, isFetching, isSuccess} = useChatRoomsData();
     const [socket,setSocket] = useState("");
+
     useEffect(()=>{
         if(profileData?.nickname) {
             initSocket();

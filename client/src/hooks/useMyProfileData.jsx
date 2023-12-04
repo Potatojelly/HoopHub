@@ -11,7 +11,7 @@ const profileService = new ProfileService(httpClient);
 
 export function useMyProfileData() {
     const {user} = useAuth();
-    return useQuery(["profile"],()=>profileService.getProfile(),{
+    return useQuery(["profile",user],()=>profileService.getProfile(),{
                                                                     staleTime:Infinity,
                                                                     refetchOnWindowFocus: false,
                                                                     refetchOnMount: true,
@@ -20,13 +20,11 @@ export function useMyProfileData() {
 }
 
 export function useEditProfileImage() {
-    const {user} = useAuth();
     const queryClient = useQueryClient();
     return useMutation((formData)=>profileService.updateProfileImg(formData),{onSuccess: () => {queryClient.invalidateQueries(["profile"])}});
 }
 
 export function useEditStatusMessage() {
-    const {user} = useAuth();
     const queryClient = useQueryClient();
     return useMutation((statusMsg)=>profileService.updateStatusMsg(statusMsg),{onSuccess: () => {queryClient.invalidateQueries(["profile"])}});
 }

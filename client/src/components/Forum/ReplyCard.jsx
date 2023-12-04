@@ -68,7 +68,7 @@ export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,
                 },
                 onError: () => {
                     setIsError(true);
-                    setTimeout(()=>{setIsError(false)},4000);
+                    setTimeout(()=>{setIsError(false)},3000);
                 }
             })
         } 
@@ -82,7 +82,7 @@ export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,
             },
             onError: () => {
                 setIsError(true);
-                setTimeout(()=>{setIsError(false)},4000);
+                setTimeout(()=>{setIsError(false)},3000);
             }
         })
     }
@@ -134,6 +134,7 @@ export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,
             {openReplyIndex === index && 
                     <CreateReply author={"@"+reply.nickname} 
                                 commentID ={commentID} 
+                                selectedPostID={selectedPostID}
                                 handleReplyClick={handleReplyClick}
                                 custom={true}/>    
                     }

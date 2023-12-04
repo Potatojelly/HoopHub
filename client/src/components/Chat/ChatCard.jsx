@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styles from './ChatCard.module.css'
 import {useNavigate, useParams} from "react-router-dom";
 import {simplifyDate} from '../../date';
-import { useSaveLastReadMessage} from '../../hooks/useChatRoomData';
 import {FcPicture} from "react-icons/fc";
 import { useMyProfileData } from '../../hooks/useMyProfileData';
 
@@ -13,7 +12,6 @@ export default function ChatCard({chatRoom}) {
     const [title,setTitle] = useState(null);
     const [opponent,setOpponent] = useState([]);
     const {data: profileData} = useMyProfileData();
-    const {mutate:saveLastReadMessage} = useSaveLastReadMessage();
 
     useEffect(()=>{
         if(chatRoom?.chatName === null) {
@@ -25,8 +23,10 @@ export default function ChatCard({chatRoom}) {
                     }
                 });
             } else {
-                setTitle(chatRoom.leftUsers[0].nickname);
-                setOpponent(chatRoom.leftUsers)
+                if(chatRoom.leftUsers.length > 0) {
+                    setTitle(chatRoom.leftUsers[0].nickname);
+                    setOpponent(chatRoom.leftUsers)
+                }
             }
         } else {
             setTitle(chatRoom.chatName);
@@ -42,9 +42,6 @@ export default function ChatCard({chatRoom}) {
     },[chatRoom])
 
     const enterChatRoom = () => {
-        // if(chatRoomID) saveLastReadMessage(chatRoomID);
-        // selectChatRoom(chatRoom.id); 
-        // setSelectedChatRoom(chatRoom);
         navigate(`/messages/${title}/${chatRoom.id}`);
     }
 

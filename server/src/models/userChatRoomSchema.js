@@ -3,15 +3,10 @@ import { useVirtualId } from "../db/database.js";
 
 const userChatRoomSchema = mongoose.Schema(
     {
-        user: {
-            id: {type:Number},
-            nickname: {type:String},
-            imageURL: {type:String},
-        },
+        user: {type:mongoose.Schema.Types.ObjectId, ref: "User"},
         chat: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
         lastReadMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message', default: null},
         isDeleted: {type:Boolean, default: false},
-
     },
     {
         timestamps: true,

@@ -12,6 +12,7 @@ const friendService = new FriendService(httpClient);
 export function useFriendData() {
     const {user} = useAuth();
     return useQuery(["myFriend",user],()=>friendService.getMyFriend(),{
+                                                                        cacheTime: 0,
                                                                         staleTime: 0,
                                                                         refetchOnWindowFocus: false,
                                                                         refetchOnMount: true,
@@ -22,6 +23,7 @@ export function useFriendData() {
 export function useFriendRequestData() {
     const {user} = useAuth();
     return useQuery(["myRequest",user],()=>friendService.getMyFriendRequest(),{
+                                                                                cacheTime: 0,
                                                                                 staleTime: 0,
                                                                                 refetchOnWindowFocus: false,
                                                                                 refetchOnMount: true,
@@ -31,7 +33,8 @@ export function useFriendRequestData() {
 
 export function useFriendRequestReceivedData() {
     const {user} = useAuth();
-    return useQuery(["receviedRequest",user],()=>friendService.getReceivedFriendRequest(),{
+    return useQuery(["receivedRequest",user],()=>friendService.getReceivedFriendRequest(),{
+                                                                                            cacheTime: 0,
                                                                                             staleTime: 0,
                                                                                             refetchOnWindowFocus: false,
                                                                                             refetchOnMount: true,

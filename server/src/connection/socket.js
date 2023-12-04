@@ -8,7 +8,7 @@ class Socket {
 
         this.io = new Server(server,{
             cors: {
-                origin: ["http://localhost:3000", "http://localhost:3001","http://localhost:3002","http://localhost:3003"]
+                origin: [config.origin.clientURL]
             }
         });
 
@@ -57,19 +57,17 @@ class Socket {
             })
 
             socket.on("new message",(newMessageRecevied)=>{
-                console.log(newMessageRecevied.content);
                 const chat = newMessageRecevied.chat;
                 chat.users.forEach((user)=>{
-                    if(user.nickname === newMessageRecevied.sender.nickname)  return;
+                    if(user.nickname === newMessageRecevied.sender.user?.nickname)  return;
                     socket.in(user.nickname).emit("new message received",newMessageRecevied);
                 })
-                console.log("end");
             });
 
             socket.on("exit", (exitMessageRecevied)=>{
                 const chat = exitMessageRecevied.chat;
                 chat.users.forEach((user)=>{
-                    if(user.nickname === exitMessageRecevied.sender.nickname)  return;
+                    if(user.nickname === exitMessageRecevied.sender.user?.nickname)  return;
                     socket.in(user.nickname).emit("exit message received",exitMessageRecevied);
                 })
             });
@@ -77,7 +75,7 @@ class Socket {
             socket.on("invite", (inviteMessageRecevied)=>{
                 const chat = inviteMessageRecevied.chat;
                 chat.users.forEach((user)=>{
-                    if(user.nickname === inviteMessageRecevied.sender.nickname)  return;
+                    if(user.nickname === inviteMessageRecevied.sender.user?.nickname)  return;
                     socket.in(user.nickname).emit("invite message received",inviteMessageRecevied);
                 })
             });
@@ -85,7 +83,7 @@ class Socket {
             socket.on("kickout", (kickoutMessageRecevied)=>{
                 const chat = kickoutMessageRecevied.chat;
                 chat.users.forEach((user)=>{
-                    if(user.nickname === kickoutMessageRecevied.sender.nickname)  return;
+                    if(user.nickname === kickoutMessageRecevied.sender.user?.nickname)  return;
                     socket.in(user.nickname).emit("kickout message received",kickoutMessageRecevied);
                 })
             });
@@ -94,7 +92,7 @@ class Socket {
             socket.on("change chat name", (chatNameRecevied)=>{
                 const chat = chatNameRecevied.chat;
                 chat.users.forEach((user)=>{
-                    if(user.nickname === chatNameRecevied.sender.nickname)  return;
+                    if(user.nickname === chatNameRecevied.sender.user?.nickname)  return;
                     socket.in(user.nickname).emit("change chat name message received",chatNameRecevied);
                 })
             });

@@ -6,13 +6,9 @@ const chatRoomSchema = mongoose.Schema(
         chatName: {type:String, default: null, trim:true},
         isGroupChat: {type: Boolean, default: false},
         users: [
-            {
-                id: {type:Number},
-                nickname: {type:String},
-                imageURL: {type:String},
-            }
+            {type:mongoose.Schema.Types.ObjectId, ref: "User"},
         ],
-        leftUsers: {type:Array, default: null},
+        leftUsers: [{type:mongoose.Schema.Types.ObjectId, ref: "User", default: null}],
         latestMessage: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Message",

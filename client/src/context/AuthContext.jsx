@@ -15,7 +15,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
     },[user])
 
     useEffect(() => {
-        if(authErrorEventBus) {
+        if(authErrorEventBus && !user) {
             authService.me()
                 .then((user)=>{
                     if(user?.token) {
@@ -29,7 +29,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
                 });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[authErrorEventBus]);
+    },[authErrorEventBus,user]);
 
     useEffect(()=>{
         if(!user && authErrorEventBus) {
@@ -43,7 +43,7 @@ export function AuthProvider({authService, authErrorEventBus, children}) {
             })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[authErrorEventBus]);
+    },[authErrorEventBus,user]);
 
     const signup = useCallback(
         async (email, nickname, username, password) =>

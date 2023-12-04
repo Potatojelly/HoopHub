@@ -23,6 +23,8 @@
 
 
 .userImg {
+    width:37px;
+    height:37px;
     border-radius: 0.5rem;
     margin-right: 0.5rem;
 }

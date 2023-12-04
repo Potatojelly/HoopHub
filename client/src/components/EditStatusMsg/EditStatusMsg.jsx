@@ -12,12 +12,12 @@ export default function EditStatusMsg({currentMsg,setMsg,setErrors,onClose,setSu
             {
                 onSuccess: (data)=>{
                     setSuccess(data.message);
-                    setTimeout(()=>{setSuccess("")},4000);
+                    setTimeout(()=>{setSuccess("")},3000);
                     onClose(e);
                 },
                 onError: (error)=>{
                     setErrors(error)
-                    setTimeout(()=>setErrors(""),4000);
+                    setTimeout(()=>setErrors(""),3000);
                     onClose(e);
                 }
             }

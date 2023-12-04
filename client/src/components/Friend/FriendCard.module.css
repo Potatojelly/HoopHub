@@ -25,6 +25,7 @@
 
 .friendImg {
     width: 70px;
+    height: 70px;
     border-radius: 0.3rem;
     border: 1px solid black;
 }

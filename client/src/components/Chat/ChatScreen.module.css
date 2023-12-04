@@ -174,3 +174,7 @@
     padding: 0.3rem;
     border-radius: 0.5rem;
 }
+
+.messageEndRef {
+    height: 5px;
+}

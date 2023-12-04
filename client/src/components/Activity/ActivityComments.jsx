@@ -79,14 +79,14 @@ export default function ActivityComments({userNickname}) {
                 <span className={styles.infoComment}>Comment</span>
                 <span className={styles.infoCreatedDate}>Created Date</span>
             </div>
-            {data && !data.my_comments && <div className={styles.noContent}> <span>No Comments</span> </div>}
-            {data && data.my_comments.map((comment,index)=><ActivityCommentCard key={index} 
+            {data?.my_comments.length === 0 && <div className={styles.noContent}> <span>No Comments</span> </div>}
+            {data?.my_comments.map((comment,index)=><ActivityCommentCard key={index} 
                                                                     comment={comment} 
                                                                     num={(currentPage-1)*COMMENTSPERPAGE+(index+1)}
                                                                     selectedCard={selectedCard}
                                                                     setSelectedCard={setSelectedCard}
                                                                     />)}
-            {data && data.my_comments && totalPage && 
+            {data?.my_comments.length > 0 && totalPage && 
             <footer>          
                 <nav className={styles.nav}>
                     {hasPrev && 

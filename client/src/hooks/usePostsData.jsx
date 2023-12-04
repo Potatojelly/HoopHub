@@ -54,21 +54,18 @@ export function usePostPage(keyword) {
     const handlePrevious = (setCurrentPage,setSelectedPage) => {
         const page = startPage-DISPLAYPAGENUM
         setCurrentPage(page)
-        // setSelectedPage(page)
         queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
     const handleNext = (setCurrentPage,setSelectedPage) => {
         const page = startPage+DISPLAYPAGENUM
         setCurrentPage(page)
-        // setSelectedPage(page)
         queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
     const handlePage = (startPage,index,setCurrentPage,setSelectedPage) => {
         const page = startPage + index;
         setCurrentPage(page);
-        // setSelectedPage(page);
         queryClient.invalidateQueries(['posts', keyword, page]);
     }
 
@@ -88,6 +85,8 @@ export function usePostPage(keyword) {
 export function usePostsData(currentPage,keyword) {
     return useQuery(["posts", keyword, currentPage],()=>postService.getPosts(keyword, currentPage, POSTSPERPAGE),
                                                                     {
+                                                                        cacheTime: 0,
+                                                                        staleTime: 0,
                                                                         refetchOnMount: true, 
                                                                         refetchOnWindowFocus: false
                                                                     });
@@ -105,7 +104,8 @@ export function usePostData(selectedPostID) {
                                                                             }
                                                                         },
                                                                         enabled: !!user,
-                                                                        staleTime:Infinity,
+                                                                        cacheTime: 0,
+                                                                        staleTime:0,
                                                                         retry:false,
                                                                         refetchOnMount: true, 
                                                                         refetchOnWindowFocus: false

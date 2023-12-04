@@ -2,9 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import "express-async-errors";
 import * as myRepository from "../data/auth.js";
-import dotenv from "dotenv";
-
-dotenv.config();
+import {config} from "../config.js";
 
 export async function signup(req,res) {
     let errors = {};
@@ -22,15 +20,17 @@ export async function signup(req,res) {
         return res.status(400).json(errors)
     }
 
-    const hashed = await bcrypt.hash(password,parseInt(process.env.BYCRYPT_SALT_ROUNDS));
-    const rowCount = await myRepository.createUser({
+    const hashed = await bcrypt.hash(password,parseInt(config.bcrpyt.saltRounds));
+    const userID = await myRepository.createUser({
         email,
         nickname,
         username,
         password: hashed,
     });
-    
-    if(rowCount) res.status(201).json({username});
+    if(userID) {
+        const result = await myRepository.createUserProfile(userID,nickname);
+        if(result) res.status(201).json({username});
+    } 
     else res.status(500).json({message:"Server Error"});
 }
 
@@ -69,7 +69,7 @@ export async function resetPassword(req,res) {
         return res.status(401).json({password: "Invalid current password"});
     }
 
-    const hashed = await bcrypt.hash(newPassword,parseInt(process.env.BYCRYPT_SALT_ROUNDS));
+    const hashed = await bcrypt.hash(newPassword,parseInt(config.bcrpyt.saltRounds));
     const result = await myRepository.resetPassword({username, newPassword:hashed});
 
     if (result) res.status(200).json({username,message:"Reset Password Success"});
@@ -85,12 +85,12 @@ export async function me(req,res) {
 }
 
 function createJwtToken(id) {
-    return jwt.sign({id},process.env.JWT_SECRET,{expiresIn: parseInt(process.env.JWT_EXPIRES_SEC)});
+    return jwt.sign({id},process.env.JWT_SECRET,{expiresIn: parseInt(config.jwt.expireInSec)});
 }
 
 function setToken(res, token) {
     const options = {
-        maxAge: parseInt(process.env.JWT_EXPIRES_SEC) * 1000,
+        maxAge: parseInt(config.jwt.expireInSec) * 1000,
         httpOnly: true,
         sameSite: "none",
         secure: true,

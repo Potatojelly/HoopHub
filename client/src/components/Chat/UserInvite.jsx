@@ -64,6 +64,7 @@ export default function UserInvite({setInvitation,participants,handleInvitation}
                     {searchResults && searchResults.map((user) => (
                         <UserSearchCard key={uuidv4()} 
                                             userID={user.id}
+                                            userMongoID={user.mongoID}
                                             imageURL={user.imageURL} 
                                             nickname={user.nickname}
                                             participants={invitedUsers}
