@@ -41,9 +41,7 @@ export async function createChatRoom(users,chatName) {
         chatRoom = await ChatRoom({users:[...userIDs],
                                     chatName,
                                     isGroupChat: chatName ? true : false,
-                                    groupAdmin: userIDs.length !== 2 ? users[0].nickname : null}).save({session})
-
-        
+                                    groupAdmin: userIDs.length !== 2 ? users[0].nickname : null}).save({session});
         const userChatRoomPromises =users.map(async (user)=> {
             const result = await UserChatRoom({user: user.id,
                                     chat:chatRoom.id}).save({session})
@@ -66,7 +64,8 @@ export async function createChatRoom(users,chatName) {
             await session.commitTransaction();
             session.endSession();
             console.log("Transaction Committed!");
-            return chatRoom;
+            const populatedChatRoom = await ChatRoom.findById(chatRoom._id).populate('users').populate("leftUsers");
+            return populatedChatRoom;
         } else {
             throw new Error("UserChatRoom creation failed");
         }
