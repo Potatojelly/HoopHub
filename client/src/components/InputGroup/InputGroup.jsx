@@ -16,21 +16,23 @@ export default function InputGroup({placeholder,value,setValue,error,type,onChan
     };
 
     return (
-        <div className={styles.container}>
-            <input
-                className={`${styles.inputContainer} ${error && styles.inputError}`} 
-                type={isPasswordVisible ? 'text' : type} 
-                placeholder={placeholder}
-                value={value}
-                onChange={onChange ? onChange : handleChange}
-                required
-                autoComplete="off"
-                
-            />
-            {type === "password" && 
-            <button type="button" className={styles.viewBtn} onClick={togglePasswordVisibility}>
-                {isPasswordVisible ? <IoMdEyeOff/> : <IoMdEye/>}
-            </button>}
+        <div className={styles.mainContainer}>
+            <div className={styles.subContainer}>
+                <input
+                    className={`${styles.inputContainer} ${error && styles.inputError}`} 
+                    type={isPasswordVisible ? 'text' : type} 
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={onChange ? onChange : handleChange}
+                    required
+                    autoComplete="off"
+                    
+                />
+                {type === "password" && 
+                <button type="button" className={styles.viewBtn} onClick={togglePasswordVisibility}>
+                    {isPasswordVisible ? <IoMdEyeOff/> : <IoMdEye/>}
+                </button>}
+            </div>
             <small className={styles.errorMsg}>{error}</small>
         </div>
     );
