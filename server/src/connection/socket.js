@@ -60,6 +60,7 @@ class Socket {
                 const chat = newMessageRecevied.chat;
                 chat.users.forEach((user)=>{
                     if(user.nickname === newMessageRecevied.sender.user?.nickname)  return;
+                    console.log(user.nickname);
                     socket.in(user.nickname).emit("new message received",newMessageRecevied);
                 })
             });

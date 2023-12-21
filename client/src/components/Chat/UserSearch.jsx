@@ -71,6 +71,7 @@ export default function UserSearch() {
 
         mutate({participants, chatName},{
             onSuccess: (result) => {
+                console.log(result);
                 if(result.success === true) {
                     const text = participants.reduce((prev,cur,index)=>{
                         if(index===participants.length-1) return prev + `${cur.nickname}.`
