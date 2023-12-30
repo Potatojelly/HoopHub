@@ -4,7 +4,7 @@ export default class RetrieveService {
     }
 
     async retrieveUsername(email) {
-        const data = await this.http.fetch("/retrieve/username",{
+        const data = await this.http.fetch("recover/forgot-username",{
             method: "POST",
             body: JSON.stringify({
                 email,
@@ -14,7 +14,7 @@ export default class RetrieveService {
     }
 
     async retrievePassword(username) {
-        const data = await this.http.fetch("/retrieve/password",{
+        const data = await this.http.fetch("recover/forgot-password",{
             method: "POST",
             body: JSON.stringify({
                 username,

@@ -72,10 +72,10 @@ const CommentCard = ({index,comment,selectedPostID,handleReplyClick,openReplyInd
 
     const viewUserActivity = () => {
         if(profileData?.nickname === comment.nickname) {
-            navigate(`/manage-my-activity`)
+            navigate(`/my-activity`)
             return
         }
-        navigate(`/view-user-activity/${comment.nickname}`)
+        navigate(`/user-activity/${comment.nickname}`)
     }
 
     const handleText = (e) => {

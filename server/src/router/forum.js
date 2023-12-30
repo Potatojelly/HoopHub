@@ -41,27 +41,27 @@ const validateFiles = [
     validate
 ]
 
-router.post("/create-post", isAuth,  forumUpload.fields([{name:"image"},{name:"video"}]), validateFiles, forumController.createPost );
-router.put("/update-post/:postID", isAuth, forumUpload.fields([{name:"image"},{name:"video"}]), validateFiles, forumController.updatePost);
-router.delete("/delete-post/:postID", isAuth, forumController.deletePost);
-router.get("/get-posts/:keyword/:page/:postsPerPage",forumController.getPosts);
-router.get("/get-post/:postID",forumController.getPost);
+router.get("/posts/:keyword/:page/:postsPerPage",forumController.getPosts);
+router.post("/posts", isAuth,  forumUpload.fields([{name:"image"},{name:"video"}]), validateFiles, forumController.createPost );
+router.get("/posts/:postID",forumController.getPost);
+router.put("/posts/:postID", isAuth, forumUpload.fields([{name:"image"},{name:"video"}]), validateFiles, forumController.updatePost);
+router.delete("/posts/:postID", isAuth, forumController.deletePost);
 
-router.post("/create-comment",isAuth, forumController.createComment);
-router.put("/update-comment/:postID/:commentID",isAuth, forumController.updateComment);
-router.delete("/delete-comment/:postID/:commentID",isAuth, forumController.deleteComment);
-router.get("/get-comments/:postID/:page/:commentsPerPage",isAuth, forumController.getComments);
+router.post("/comments",isAuth, forumController.createComment);
+router.put("/posts/:postID/comments/:commentID",isAuth, forumController.updateComment);
+router.delete("/posts/:postID/comments/:commentID",isAuth, forumController.deleteComment);
+router.get("/posts/:postID/comments",isAuth, forumController.getComments);
 
-router.post("/create-reply",isAuth, forumController.createReply);
-router.put("/update-reply/:postID/:commentID/:replyID",isAuth, forumController.updateReply);
-router.delete("/delete-reply/:postID/:commentID/:replyID",isAuth, forumController.deleteReply);
+router.post("/replies",isAuth, forumController.createReply);
+router.put("/posts/:postID/comments/:commentID/replies/:replyID",isAuth, forumController.updateReply);
+router.delete("/posts/:postID/comments/:commentID/replies/:replyID",isAuth, forumController.deleteReply);
 
-router.put("/update-view/:postID",isAuth, forumController.updateView);
+router.put("/posts/:postID/views",isAuth, forumController.updateView);
 
-router.get("/get-user-posts/:nickname/:currentPage/:postsPerPage",isAuth,forumController.getUserPosts);
-router.get("/get-user-comments/:nickname/:currentPage/:commentsPerPage",isAuth,forumController.getUserComments);
+router.get("/users/:nickname/posts/:currentPage/:postsPerPage",isAuth,forumController.getUserPosts);
+router.get("/users/:nickname/comments/:currentPage/:commentsPerPage",isAuth,forumController.getUserComments);
 
-router.get("/get-target-comment-number/:postID/:commentID",isAuth,forumController.getTargetCommentNumber);
+router.get("/posts/:postID/comments/:commentID/target-comment-number",isAuth,forumController.getTargetCommentNumber);
 
 
 

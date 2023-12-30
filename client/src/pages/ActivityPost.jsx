@@ -1,8 +1,9 @@
-import React, { useEffect} from 'react';
+import React, { useEffect, useState} from 'react';
 import styles from './ActivityPost.module.css';
 import { useLocation} from 'react-router-dom';
 import Post from '../components/Forum/Post';
 import { useActivityContext } from '../context/ActivityContext';
+import { useUpdatePostView } from '../hooks/usePostsData';
 
 const COMMENTSPERPAGE = 5;
 export default function ActivityPost({postService}) {
@@ -10,7 +11,9 @@ export default function ActivityPost({postService}) {
     const {state:comment} = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const postNum = parseInt(searchParams.get("postNum"));
-    const {setCommentType,setCommentID,setCommentPage} = useActivityContext();
+    const [isViewUpdated,setIsViewUpdated] = useState(false);
+    const {mutate: updatePostView} = useUpdatePostView();
+    const {selectedCommentPage,setCommentType,setCommentID,setCommentPage} = useActivityContext();
 
     useEffect(()=> {
         if(comment) {
@@ -23,9 +26,21 @@ export default function ActivityPost({postService}) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[comment])
 
+    useEffect(()=>{
+        if(postNum) {
+            if(isViewUpdated) setIsViewUpdated(false);
+            updatePostView(postNum,{
+                onSuccess: () => {
+                    setIsViewUpdated(true);
+                }
+            });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[postNum])
+
     return (
         <div className={styles.background}>
-            <Post />
+            {comment ? selectedCommentPage && isViewUpdated && <Post/> : isViewUpdated && <Post/>}
         </div>
     );
 }

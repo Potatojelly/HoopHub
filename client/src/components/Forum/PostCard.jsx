@@ -28,7 +28,7 @@ export default function PostCard({id, num, post, currentPage, keyword, last}) {
         if(user) {
             const contentElement = document.querySelector('#header');
             contentElement.scrollIntoView({ behavior: 'smooth' });
-            navigate(`/forums/post/view?title=${post.title}&postNum=${id}&page=${currentPage}`,{state:true});
+            navigate(`/forums/post?title=${post.title}&postNum=${id}&page=${currentPage}`,{state:true});
         }
         else alert("You do not have permission to view articles, Please Log in");
     }

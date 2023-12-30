@@ -352,10 +352,10 @@ export default function ChatScreen({chatService}) {
                     }
                     const formData = new FormData();
                     formData.append("image",file);
-                    formData.append("jsonFile",JSON.stringify({chatRoomID,isInit:init}));
+                    formData.append("jsonFile",JSON.stringify({isInit:init}));
                     addNewMessage(newMessage);
 
-                    sendImageMessage(formData,{
+                    sendImageMessage({formData,chatRoomID},{
                         onSuccess: (res) => {
                             newMessage.isLoading = false;
                             newMessage.content = res.result.content;

@@ -56,13 +56,13 @@ const router = createBrowserRouter([
         element:(<Forums />)
       },
       {
-        path:"/people", 
+        path:"/friends", 
         element: (<ProtectedRoute>
                       <People/>
                   </ProtectedRoute>)
       },
       {
-        path:"/create-post", 
+        path:"/post/write", 
         element: (<ProtectedRoute>
                       <PostCreate/>
                   </ProtectedRoute>)
@@ -78,7 +78,7 @@ const router = createBrowserRouter([
             element: (<ChatInbox/>)
           },
           {
-            path:"search-user",
+            path:"users/search",
             element: (<UserSearch/>)
           },
           {
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
       ]
       },
       {
-        path:"/edit-profile", 
+        path:"/profile", 
         element: (<ProtectedRoute>
                     <EditProfile/>
                   </ProtectedRoute>)
@@ -106,7 +106,7 @@ const router = createBrowserRouter([
                   </ProtectedRoute>),
       },
       {
-        path:"/forums/post/view",
+        path:"/forums/post",
         element: (<ProtectedRoute>
                     <ActivityProvider>
                       <ViewPost/>
@@ -120,13 +120,13 @@ const router = createBrowserRouter([
                   </ProtectedRoute>)
       },
       {
-        path:"/manage-my-activity", 
+        path:"/my-activity", 
         element: (<ProtectedRoute>
                     <ActivityLog />
                   </ProtectedRoute>),
       },
       {
-        path:"/manage-my-activity/my-post/view",
+        path:"/my-activity/post/",
         element: (<ProtectedRoute>
                       <ActivityProvider>
                         <ActivityPost postService={postService}/>
@@ -134,13 +134,13 @@ const router = createBrowserRouter([
                   </ProtectedRoute>)
       },
       {
-        path:"/view-user-activity/:userNickname", 
+        path:"/user-activity/:userNickname", 
         element: (<ProtectedRoute>
                       <UserActivityLog />
                   </ProtectedRoute>),
       },
       {
-        path:"/view-user-activity/",
+        path:"/user-activity/:userNickname/post",
         element: (<ProtectedRoute>
                     <ActivityProvider>
                       <ActivityPost postService={postService}/>

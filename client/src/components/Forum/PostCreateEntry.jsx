@@ -18,8 +18,8 @@ export default function PostCreateEntry() {
                 <input className={styles.linker}
                         type="text" 
                         placeholder="Create Post"
-                        onClick={()=>{navigate("/create-post")}}/>
-                <button className={styles.createBtn} onClick={()=>{navigate("/create-post")}}>Create</button>
+                        onClick={()=>{navigate("/post/write")}}/>
+                <button className={styles.createBtn} onClick={()=>{navigate("/post/write")}}>Create</button>
             </div>}
         </>
     );

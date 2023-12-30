@@ -80,7 +80,7 @@ export default function PostCreator() {
         createPost({formData,signal:controller.current.signal,callback: uploadProgressCallback},{
             onSuccess: (response) => {
                 const post = {...response}
-                navigate(`/forums/post/view?title=${response.title}&postNum=${post.id}&page=1`);
+                navigate(`/forums/post?title=${response.title}&postNum=${post.id}&page=1`);
                 setIsPosting(false);
                 setProgress(0);
             },

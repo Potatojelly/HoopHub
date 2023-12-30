@@ -217,7 +217,7 @@ export default function ChatRoom({chatRooms, isFetching, isSuccess, socket}) {
     },[socket,isSuccess,chatRoomID]); 
 
     const searchUser = () => {
-        navigate("/messages/search-user", {state : chatRooms});
+        navigate("/messages/users/search", {state : chatRooms});
     }
 
     return (

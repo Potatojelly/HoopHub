@@ -5,20 +5,20 @@ import {isAuth} from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/get-my-friend", isAuth, friendController.getMyFriend);
+router.get("/", isAuth, friendController.getMyFriend);
 
-router.get("/my-friend-request", isAuth, friendController.getMyFriendRequest);
+router.get("/requests", isAuth, friendController.getMyFriendRequest);
 
-router.get("/received-friend-request", isAuth, friendController.getReceivedFriendRequest);
+router.get("/requests/received", isAuth, friendController.getReceivedFriendRequest);
 
-router.post("/send-friend-request", isAuth, friendController.sendFriendRequest);
+router.post("/requests", isAuth, friendController.sendFriendRequest);
 
-router.delete("/cancel-my-friend-request/:nickname", isAuth, friendController.cancelFriendRequest);
+router.delete("/requests/:nickname", isAuth, friendController.cancelFriendRequest);
 
-router.put("/accept-friend-request/:nickname", isAuth, friendController.accceptFriendRequest);
+router.put("/requests/:nickname/accept", isAuth, friendController.accceptFriendRequest);
 
-router.delete("/reject-friend-request/:nickname", isAuth, friendController.rejectFriendRequest);
+router.delete("/requests/:nickname/reject", isAuth, friendController.rejectFriendRequest);
 
-router.delete("/delete-friend/:nickname", isAuth, friendController.deleteFriend);
+router.delete("/:nickname", isAuth, friendController.deleteFriend);
 
 export default router;

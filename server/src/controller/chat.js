@@ -42,7 +42,7 @@ export async function sendMessage(req,res) {
     }
     user = {id:user.mongoID,userID:user.id,imageURL:user.imageURL,nickname:user.nickname}
 
-    const result = await chatRepository.sendMessage(user,req.body.content,req.body.chatRoomID,req.body.init);
+    const result = await chatRepository.sendMessage(user,req.body.content,req.params.chatRoomID,req.body.init);
     if(result) res.status(200).json({ success: true, result});
     else res.status(500).json({success:false, message:"Server Error"});
 }
@@ -56,7 +56,7 @@ export async function sendImageMessage(req,res) {
     const imageURL = req.file.location;
     const data = JSON.parse(req.body.jsonFile);
 
-    const result = await chatRepository.sendImageMessage(user,imageURL,data.chatRoomID,data.isInit);
+    const result = await chatRepository.sendImageMessage(user,imageURL,req.params.chatRoomID,data.isInit);
     if(result) res.status(200).json({ success: true, result});
     else res.status(500).json({success:false, message:"Server Error"});
 }
@@ -80,7 +80,7 @@ export async function saveLastReadMessage(req,res) {
     }
     user = {id:user.mongoID,userID:user.id,imageURL:user.imageURL,nickname:user.nickname}
 
-    const result = await chatRepository.saveLastReadMessage(user,req.body.chatRoomID);
+    const result = await chatRepository.saveLastReadMessage(user,req.params.chatRoomID);
     if(result) res.status(200).json({ success: true, result});
     else res.status(500).json({success:false, message:"Server Error"});
 }
@@ -103,7 +103,7 @@ export async function invite(req,res) {
         return res.status(401).json({message:"User not found"});
     }
     user = {id:user.mongoID,userID:user.id,imageURL:user.imageURL,nickname:user.nickname}
-    const chatRoomID = req.body.chatRoomID;
+    const chatRoomID = req.params.chatRoomID;
     const invitedUsers = req.body.invitedUsers
 
     const result = await chatRepository.invite(user,invitedUsers,chatRoomID);
@@ -117,7 +117,7 @@ export async function kickout(req,res) {
         return res.status(401).json({message:"User not found"});
     }
     user = {id:user.mongoID,userID:user.id,imageURL:user.imageURL,nickname:user.nickname}
-    const chatRoomID = req.body.chatRoomID;
+    const chatRoomID = req.params.chatRoomID;
     const kickedUser= req.body.kickedUser;
 
     const result = await chatRepository.kickout(user,kickedUser,chatRoomID);
@@ -132,7 +132,7 @@ export async function chatName(req,res) {
     }
     user = {id:user.mongoID,userID:user.id,imageURL:user.imageURL,nickname:user.nickname}
     const changedChatName = req.body.chatName;
-    const chatRoomID = req.body.chatRoomID;
+    const chatRoomID = req.params.chatRoomID;
     
     const result = await chatRepository.chatName(user,chatRoomID,changedChatName);
     if(result) res.status(200).json({ success: true, result});

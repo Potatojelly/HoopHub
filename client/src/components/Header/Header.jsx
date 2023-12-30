@@ -42,7 +42,7 @@ export default function Header() {
                         <Link to="/messages/inbox"> 
                             <AiOutlineMessage  className={styles.service}/>
                         </Link>
-                        <Link to="/people"> 
+                        <Link to="/friends"> 
                             <RiUserSearchFill  className={styles.service}/>
                         </Link>
                         <div className={styles.headerUser}>

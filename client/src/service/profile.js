@@ -4,21 +4,21 @@ export default class ProfileService {
     }
 
     async getProfile() {
-        const data = await this.http.fetch("/profile/get-profile", {
+        const data = await this.http.fetch("/profile", {
             method: "GET",
         });
         return data;
     }
 
     async getUserProfile(nickname) {
-        const data = await this.http.fetch(`/profile/get-profile/${nickname}`, {
+        const data = await this.http.fetch(`/profile/${nickname}`, {
             method: "GET",
         });
         return data;
     }
 
     async updateStatusMsg(statusMsg) {
-        const data = await this.http.fetch("/profile/update-status-message", {
+        const data = await this.http.fetch("/profile/status-message", {
             method: "PUT",
             body: JSON.stringify({
                 statusMsg,
@@ -28,7 +28,7 @@ export default class ProfileService {
     }
 
     async updateProfileImg(formData) {
-        const data = this.http.fetch("/profile/update-image", {
+        const data = this.http.fetch("/profile/image", {
             method: "PUT",
             body: formData,
             headers: {"Content-Type": "multipart/form-data"},

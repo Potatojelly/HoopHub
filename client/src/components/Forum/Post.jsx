@@ -46,10 +46,10 @@ export default function Post() {
 
     const viewUserActivity = () => {
         if(profileData?.nickname === postData?.post.nickname) {
-            navigate(`/manage-my-activity`)
+            navigate(`/my-activity`)
             return
         }
-        navigate(`/view-user-activity/${postData?.post.nickname}`)
+        navigate(`/user-activity/${postData?.post.nickname}`)
     }
 
     if(isFetching) {

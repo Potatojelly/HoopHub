@@ -33,9 +33,9 @@ app.use(helmet());
 
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
-app.use("/retrieve", retrRouter);
-app.use("/search", searchRouter);
-app.use("/friend", friendRouter);
+app.use("/recover", retrRouter);
+app.use("/users", searchRouter);
+app.use("/friends", friendRouter);
 app.use("/forum", forumRouter);
 app.use("/chat", chatRouter);
 

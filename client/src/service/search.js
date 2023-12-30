@@ -4,7 +4,7 @@ export default class SearchService {
     }
 
     async searchUser(nickname) {
-        const data =await this.http.fetch(`search/user?nickname=${nickname}`,{
+        const data =await this.http.fetch(`users/search?nickname=${nickname}`,{
             method: "GET",
         });
         return data;

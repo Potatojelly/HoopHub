@@ -12,8 +12,8 @@ export default function ActivityPostCard({post,num,selectedCard,setSelectedCard}
         const title = post.title;
         window.history.pushState(state,title);
         setSelectedCard(num);
-        if(userNickname) navigate(`/view-user-activity/?nickname=${userNickname}&title=${post.title}&postNum=${post.id}`);
-        else navigate(`/manage-my-activity/my-post/view/?title=${post.title}&postNum=${post.id}`);
+        if(userNickname) navigate(`/user-activity/${userNickname}/post?title=${post.title}&postNum=${post.id}`);
+        else navigate(`/my-activity/post?title=${post.title}&postNum=${post.id}`);
     }
 
     return (

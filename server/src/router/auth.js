@@ -57,7 +57,7 @@ router.post("/logout", authController.logout);
 
 router.get("/me", isAuth, authController.me);
 
-router.put("/reset-password", validateResetPassword, authController.resetPassword);
+router.put("/password/reset", validateResetPassword, authController.resetPassword);
 
 
 export default router;

@@ -15,8 +15,10 @@ ffmpeg.setFfmpegPath(config.ff.ffmpeg);
 ffmpeg.setFfprobePath(config.ff.ffprobe);
 
 export async function getComments(req,res) {
-    const currentPage = req.params.page;
-    const commentsPerPage = parseInt(req.params.commentsPerPage);
+    const currentPage = req.query.page;
+    const commentsPerPage = parseInt(req.query.commentsPerPage);
+    // const currentPage = req.params.page;
+    // const commentsPerPage = parseInt(req.params.commentsPerPage);
     const postID = req.params.postID;
     let result = await forumRepository.getComments(postID,currentPage,commentsPerPage);
     if(result) res.status(200).json({ success: true, ...result });

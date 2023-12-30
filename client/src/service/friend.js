@@ -4,35 +4,35 @@ export default class FriendService {
     }
 
     async getMyFriend() {
-        const data = await this.http.fetch("/friend/get-my-friend", {
+        const data = await this.http.fetch("/friends", {
             method: "GET"
         });
         return data;
     }
 
     async deleteMyFriend(nickname) {
-        const data = await this.http.fetch(`/friend/delete-friend/${nickname}`, {
+        const data = await this.http.fetch(`/friends/${nickname}`, {
             method: "DELETE"
         });
         return data;
     }
 
     async getMyFriendRequest() {
-        const data = await this.http.fetch("/friend/my-friend-request", {
+        const data = await this.http.fetch("/friends/requests", {
             method: "GET"
         });
         return data;
     }
 
     async getReceivedFriendRequest() {
-        const data = await this.http.fetch("/friend/received-friend-request", {
+        const data = await this.http.fetch("/friends/requests/received", {
             method: "GET"
         });
         return data;
     }
 
     async sendFriendRequest(nickname) {
-        const data = await this.http.fetch("/friend/send-friend-request", {
+        const data = await this.http.fetch('/friends/requests', {
             method: "POST",
             body: JSON.stringify({
                 nickname,
@@ -42,21 +42,21 @@ export default class FriendService {
     }
 
     async cancelMyFriendRequest(nickname) {
-        const data = await this.http.fetch(`/friend/cancel-my-friend-request/${nickname}`,{
+        const data = await this.http.fetch(`/friends/requests/${nickname}`,{
             method: "DELETE"
         });
         return data;
     }
 
     async acceptFriendRequest(nickname) {
-        const data = await this.http.fetch(`/friend/accept-friend-request/${nickname}`,{
+        const data = await this.http.fetch(`/friends/requests/${nickname}/accept`,{
             method: "PUT"
         })
         return data;
     }
 
     async rejectFriendRequest(nickname) {
-        const data = await this.http.fetch(`/friend/reject-friend-request/${nickname}`,{
+        const data = await this.http.fetch(`/friends/requests/${nickname}/reject`,{
             method: "DELETE"
         });
         return data;

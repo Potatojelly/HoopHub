@@ -12,8 +12,8 @@ export default function ActivityCommentCard({comment,selectedCard,setSelectedCar
         const title = comment.post_title;
         window.history.pushState(state,title);
         setSelectedCard(num);
-        if(userNickname) navigate(`/view-user-activity/?nickname=${userNickname}&title=${comment.post_title}&postNum=${comment.post_id}}`,{state:comment});
-        else navigate(`/manage-my-activity/my-post/view/?title=${comment.post_title}&postNum=${comment.post_id}}`,{state:comment});
+        if(userNickname) navigate(`/user-activity/${userNickname}/post?&title=${comment.post_title}&postNum=${comment.post_id}}`,{state:comment});
+        else navigate(`/my-activity/post?title=${comment.post_title}&postNum=${comment.post_id}`,{state:comment});
     }
 
     return (

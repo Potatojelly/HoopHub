@@ -5,6 +5,6 @@ import * as userController from "../controller/user.js";
 
 const router = express.Router();
 
-router.get("/user", isAuth, userController.searchUser)
+router.get("/search", isAuth, userController.searchUser)
 
 export default router;

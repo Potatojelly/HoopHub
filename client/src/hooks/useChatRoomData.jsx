@@ -117,5 +117,5 @@ export function useSendMessage() {
 }
 
 export function useSendImageMessage() {
-    return useMutation((formData)=>chatService.sendImageMessage(formData));
+    return useMutation((data)=>{const {formData,chatRoomID} = data; return chatService.sendImageMessage(formData,chatRoomID)})
 }

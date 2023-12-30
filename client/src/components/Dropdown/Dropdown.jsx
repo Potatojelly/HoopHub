@@ -23,7 +23,7 @@ export default function Dropdown({myStuff,showMyStuff}) {
 
     const directToEditProfile = () =>{
         showMyStuff();
-        navigate("/edit-profile");
+        navigate("/profile");
     }
     const directToResetPassword = () =>{
         showMyStuff();
@@ -31,7 +31,7 @@ export default function Dropdown({myStuff,showMyStuff}) {
     }
     const directToMyActivity = () =>{
         showMyStuff();
-        navigate("/manage-my-activity");
+        navigate("/my-activity");
     }
     
     return (

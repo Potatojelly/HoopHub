@@ -25,26 +25,26 @@ const validateImage = [
     validate
 ]
 
-router.get("/get-chat-rooms", isAuth, chatController.getChatRooms);
+router.get("/rooms", isAuth, chatController.getChatRooms);
 
-router.post("/create-chat-room", isAuth, chatController.createChatRoom);
+router.post("/rooms", isAuth, chatController.createChatRoom);
 
-router.get("/get-message/:chatRoomID/:offset",isAuth, chatController.getMessage);
+router.get("/rooms/:chatRoomID/messages/:offset",isAuth, chatController.getMessage);
 
-router.post("/send-message",isAuth, chatController.sendMessage);
+router.post("/rooms/:chatRoomID/messages",isAuth, chatController.sendMessage);
 
-router.get("/count-unread-message/:chatRoomID",isAuth, chatController.countUnreadMessage);
+router.get("/rooms/:chatRoomID/unread-message-count",isAuth, chatController.countUnreadMessage);
 
-router.put("/save-last-read-message",isAuth, chatController.saveLastReadMessage);
+router.put("/rooms/:chatRoomID/save-last-read-message",isAuth, chatController.saveLastReadMessage);
 
-router.post("/send-image-message",isAuth, chatUpload.single("image"), validateImage, chatController.sendImageMessage);
+router.post("/rooms/:chatRoomID/images",isAuth, chatUpload.single("image"), validateImage, chatController.sendImageMessage);
 
-router.put("/exit-chat-room/:chatRoomID",isAuth,chatController.exitChatRoom);
+router.put("/rooms/:chatRoomID/participants",isAuth,chatController.exitChatRoom);
 
-router.put("/invite",isAuth,chatController.invite);
+router.put("/rooms/:chatRoomID/invite",isAuth,chatController.invite);
 
-router.put("/kickout",isAuth,chatController.kickout);
+router.put("/rooms/:chatRoomID/kickout",isAuth,chatController.kickout);
 
-router.put("/chatName",isAuth,chatController.chatName);
+router.put("/rooms/:chatRoomID/name",isAuth,chatController.chatName);
 
 export default router;

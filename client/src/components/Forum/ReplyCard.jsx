@@ -93,10 +93,10 @@ export default function ReplyCard ({index,reply,handleReplyClick,selectedPostID,
 
     const viewUserActivity = () => {
         if(profileData?.nickname === reply.nickname) {
-            navigate(`/manage-my-activity`);
+            navigate(`/my-activity`);
             return;
         }
-        navigate(`/view-user-activity/${reply.nickname}`)
+        navigate(`/user-activity/${reply.nickname}`)
     }
 
     return (

@@ -26,8 +26,8 @@ const validateEmail= [
     validate
 ]
 
-router.post("/username", validateEmail, retrController.retrieveUsername);
+router.post("/forgot-username", validateEmail, retrController.retrieveUsername);
 
-router.post("/password", validateUsername, retrController.retrievePassword);
+router.post("/forgot-password", validateUsername, retrController.retrievePassword);
 
 export default router;
