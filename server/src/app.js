@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(cors(corsOption));
 app.use(helmet());
-// app.use(secretHeaderMiddleware)
+ app.use(secretHeaderMiddleware)
 
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);

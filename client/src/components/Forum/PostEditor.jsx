@@ -100,7 +100,7 @@ export default function PostEditor({post,page,handleEdit}) {
                 if(response.success === true) {
                     queryClient.invalidateQueries(['post', post.id]);
                     queryClient.invalidateQueries(['posts']);
-                    navigate(`/forums/post/view?title=${response.title}&postNum=${post.id}&page=${page}`);
+                    navigate(`/forums/post?title=${response.title}&postNum=${post.id}&page=${page}`);
                 }
             },
             onError: (err) => {
