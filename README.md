@@ -14,7 +14,6 @@ After providing basic features, it aims to offer services specialized for basket
 ## Screenshots <a name="screenshot"></a>
 
 Demo:https://youtu.be/3RpPk8TwV5o  
-Website:https://www.hoophubapp.com
 
 ### User Authentication
 ![image](https://github.com/Potatojelly/Capstone-HoopHub/assets/108857524/479706f2-60ea-4d23-b661-5d9ff92104a8)
